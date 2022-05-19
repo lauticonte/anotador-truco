@@ -15,6 +15,14 @@ class App extends React.Component {
     this.setState({ finished: true, winner });
   }
 
+  showWinner () {
+    if (this.state.winner === 'NOSOTROS') {
+      return <><p>GANAMOS <br /> NOSOTROS :D</p><img className='img-lost' src="/images/happy.png" alt="happy" /></>
+    } else
+        return <><p>GANARON <br /> ELLOS :(</p><img className='img-lost' src="/images/sadge.png" alt="sadge" /></>;
+          
+  };
+
   render () {
     return (
       <div className="app">
@@ -24,12 +32,12 @@ class App extends React.Component {
         <div className="board">
           { this.state.finished ?
             <div className="finished-message">
-              <h3>{ `Ganador: ${ this.state.winner }` }</h3>
+              <h3>{ this.showWinner() }</h3>
               <button
                 className="restart-button"
                 onClick={ () => { this.setState({ finished: false }) } }
               >
-                Reiniciar
+                REINICIAR
               </button>
             </div>
             :
