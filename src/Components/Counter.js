@@ -1,5 +1,7 @@
 import React from 'react';
 import './Counter.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 
 class Counter extends React.Component {
     
@@ -104,9 +106,11 @@ class Counter extends React.Component {
 
 
     render () {
-        const stageIndicatorColorStyle = { background: this.stage === 'Buenas' ? '#4287f5' : '#C84B31', color: '#ECDBBA' };
+        const stageIndicatorColorBg = { background: this.stage === 'Buenas' ? '#4287f5' : '#C84B31', color: '#ECDBBA' };
 
-        const titleStyle = { className: this.props.title === 'Nosotros' ? 'counter-body-nos' : 'counter-body-ellos' };
+        const stageIndicatorColorFont = { color: this.stage === 'Buenas' ? '#4287f5' : '#C84B31' };
+
+        const titleStyle = { className: this.props.title === 'NOSOTROS' ? 'counter-body-nos' : 'counter-body-ellos' };
 
         const string = titleStyle.className.toString();
 
@@ -116,7 +120,7 @@ class Counter extends React.Component {
                 <h2>{ this.props.title }</h2>
                 </div>
                 <div className="stage-indicator">
-                <h3 style={ stageIndicatorColorStyle }>{ this.stage }</h3>
+                <h3 style={ stageIndicatorColorBg }>{ this.stage }</h3>
                 </div>
                 <svg
                 className="svg-canvas"
@@ -126,16 +130,19 @@ class Counter extends React.Component {
                 >
                     { this.renderLines() }
                 </svg>
+                <div className="counter-points">
+                    <h1 style={stageIndicatorColorFont}>{ this.state.points }</h1>
+                </div>
                 <div
                 className="counter-buttons-container">
                     <button 
                     className="counter-button"
                     onClick={ this.addPoint }
-                    > + </button>
+                    >  <FontAwesomeIcon icon={faPlus} /> </button>
                     <button 
                     className="counter-button"
                     onClick={ this.subtractPoint }
-                    > - </button>
+                    > <FontAwesomeIcon icon={faMinus} className='awesome-text' /> </button>
                 </div>
             </div>
         );

@@ -35,22 +35,20 @@ class App extends React.Component {
             :
             <>
               <Counter
-                title="Nosotros"
-                onWin={ () => { this.handleWin('Nosotros') } }
+                title="NOSOTROS"
+                onWin={ () => { this.handleWin('NOSOTROS') } }
               />
 
               <Counter
-                title="Ellos"
-                onWin={ () => { this.handleWin('Ellos') } }
+                title="ELLOS"
+                onWin={ () => { this.handleWin('ELLOS') } }
               />
             </>
           }
         </div>
         <div className="footer">
         <span className="footer__copy">
-                    &#169;Copyright, <script>document.write(new Date().getFullYear())</script>
-                     <span className="footer__title"><b><a href='https://github.com/lauticonte' target='_blank' rel='noreferrer'>Conte</a></b></span>. All rights reserved.
-                </span>
+                    &#169; Copyright {(new Date().getFullYear())} - <span className="footer__title"><a href='https://github.com/lauticonte' target='_blank' rel='noreferrer'> Conte</a></span>.</span>
         </div>
       </div>
     )
