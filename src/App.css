@@ -1,38 +1,114 @@
-.App {
-  text-align: center;
+@font-face {
+  font-family: 'Magnifika';
+  src: url('/public/fonts/Magnifika.otf') format('truetype');
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+@font-face {
+  font-family: 'MBF';
+  src: url('/public/fonts/MBF-m.ttf') format('truetype');
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
+.app {
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100vw;
+  height: 100vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  background-color: #191919;
+
+  color: #ECDBBA;
+}
+
+.board {
+  height: 100%;
+
+  display: flex;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  padding: .5em;
+
+  font-size: .7em;
+}
+
+.finished-message {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.restart-button {
+  height: 30px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+a {
+  color: darkslateblue;
+}
+
+.finished-message > h3 {
+  font-size: 2em;
+}
+
+.finished-message > button {
+  background-color: #2D4263;
+  color: #ECDBBA;
+}
+
+h2, h3 {
+  margin-block-start: 0em;
+  margin-block-end: .1em;
+}
+
+.title {
+  padding: 0;
+  font-family: 'Magnifika';
+  font-size: 1.2em;
+  background-color: #191919;
+  width: 100%;
+  color: #ECDBBA;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-bottom: 3px solid #ECDBBA;
+}
+
+.footer {
+  width: 100vw;
+  background-color: #2D4263;
+  border-top: 3px solid #ECDBBA;
+}
+
+.footer__title{
+  /* font-family: MBF; */
+  font-family: 'MBF';
+  text-align: center;
+  
+  /* margin-bottom: 2rem; */
+}
+
+.footer__copy{
+  display: block;
+  color: #ECDBBA;
+  text-align: center;
+  font-size: 1rem;
+  
+}
+
+a:link, :visited, :hover, :active { 
+  text-decoration: none;
+  color: #ECDBBA; 
 }

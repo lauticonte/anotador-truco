@@ -1,0 +1,59 @@
+.counter-body-nos {
+    min-height: 100%;
+    width: 200px;
+
+    display: flex;
+    flex-flow: column;
+
+    align-items: center;
+
+    border-right: 3px solid #ECDBBA;
+}
+
+.counter-body-ellos {
+    min-height: 100%;
+    width: 200px;
+
+    display: flex;
+    flex-flow: column;
+
+    align-items: center;
+}
+
+.counter-buttons-container {
+    margin-top: 65vw;
+}
+
+.counter-button {
+    height: 60px;
+    width: 60px;
+
+    vertical-align: middle;
+    text-align: center;
+    text-align: -moz-center;
+    text-align: -webkit-center;
+
+    border-style: none;
+    border-radius: 50%;
+    background-color: #2D4263;
+
+    margin: .1em;
+
+    color: #ECDBBA;
+
+    font-size: 30px;
+}
+
+.counter-title {
+    width: 100%;
+    /* border-bottom:  3px solid #fafafa; */
+    text-align: center;
+    background-color: #2D4263;
+
+    color: #ECDBBA;
+}
+
+.stage-indicator{
+    width: 100%;
+    text-align: center;
+}
