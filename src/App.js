@@ -56,7 +56,7 @@ class App extends React.Component {
         </div>
         <div className="footer">
         <span className="footer__copy">
-                    &#169; Copyright {(new Date().getFullYear())} - <span className="footer__title"><a href='https://github.com/lauticonte' target='_blank' rel='noreferrer'> Conte</a></span>.</span>
+                    &#169; Copyright {(new Date().getFullYear())} - <span className="footer__title"><a href='https://contelautaro.com.ar' target='_blank' rel='noreferrer'> Conte</a></span>.</span>
         </div>
       </div>
     )
