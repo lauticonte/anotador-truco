@@ -1,11 +1,13 @@
 @font-face {
   font-family: 'Magnifika';
   src: url('/public/fonts/Magnifika.otf') format('truetype');
+  font-display: swap;
 }
 
 @font-face {
   font-family: 'MBF';
   src: url('/public/fonts/MBF-m.ttf') format('truetype');
+  font-display: swap;
 }
 
 .app {

@@ -17,9 +17,9 @@ class App extends React.Component {
 
   showWinner () {
     if (this.state.winner === 'NOSOTROS') {
-      return <><p>GANAMOS <br /> NOSOTROS :D</p><img className='img-lost' src="/images/happy.png" alt="happy" /></>
+      return <><p>GANAMOS <br /> NOSOTROS :D</p><img className='img-lost' src="/images/happy.png" alt="happy" loading="lazy" /></>
     } else
-        return <><p>GANARON <br /> ELLOS :(</p><img className='img-lost' src="/images/sadge.png" alt="sadge" /></>;
+        return <><p>GANARON <br /> ELLOS :(</p><img className='img-lost' src="/images/sadge.png" alt="sadge" loading="lazy" /></>;
           
   };
 

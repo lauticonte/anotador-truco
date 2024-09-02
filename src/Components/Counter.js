@@ -1,148 +1,124 @@
-import React from 'react';
+import React, { Component } from 'react';
 import './Counter.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 
-class Counter extends React.Component {
-    
-    constructor (props) {
+class Counter extends Component {
+    constructor(props) {
         super(props);
 
         this.state = {
-            points: 0
-        }
+            points: 0,
+        };
 
-        this.stage      = 'Malas';
+        this.stage = 'Malas';
         this.lineLength = 90;
-        this.offsetX    = 5;
-        this.offsetY    = 7;
-        this.box        = 0;
+        this.offsetX = 5;
+        this.offsetY = 7;
 
         this.mask = [
-            { 
-                x1: 0, y1: 0, 
-                x2: this.lineLength, y2: 0 
-            },
-            { 
-                x1: 0, y1: 0, 
-                x2: 0, y2: this.lineLength 
-            },
-            { 
-                x1: 0, y1: this.lineLength, 
-                x2: this.lineLength, y2: this.lineLength 
-            },
-            { 
-                x1: this.lineLength, y1: 0, 
-                x2: this.lineLength, y2: this.lineLength 
-            },
-            { 
-                x1: 0, y1: 0, 
-                x2: this.lineLength, y2: this.lineLength }
+            { x1: 0, y1: 0, x2: this.lineLength, y2: 0 },
+            { x1: 0, y1: 0, x2: 0, y2: this.lineLength },
+            { x1: 0, y1: this.lineLength, x2: this.lineLength, y2: this.lineLength },
+            { x1: this.lineLength, y1: 0, x2: this.lineLength, y2: this.lineLength },
+            { x1: 0, y1: 0, x2: this.lineLength, y2: this.lineLength },
         ];
-
-        this.renderLine     = this.renderLine.bind(this);
-        this.renderLines    = this.renderLines.bind(this);
-        this.addPoint       = this.addPoint.bind(this);
-        this.subtractPoint  = this.subtractPoint.bind(this);
     }
 
-    addPoint () {
-        this.setState(state => {
-            if (this.stage === 'Buenas' && state.points === 15) return null;
+    updatePoints = (newPoints, stage) => {
+        this.setState({ points: newPoints });
+        this.stage = stage;
+    };
 
-            let nextPoints = state.points + 1;
+    addPoint = () => {
+        this.setState(prevState => {
+            let nextPoints = prevState.points + 1;
+            let nextStage = this.stage;
 
-            if(nextPoints === 16) {
-                this.stage = 'Buenas';
+            if (this.stage === 'Buenas' && nextPoints > 15) return null;
+
+            if (nextPoints === 16) {
+                nextStage = 'Buenas';
                 nextPoints = 1;
-            }   
+            }
 
-            if (nextPoints === 15 && this.stage === 'Buenas') setTimeout(this.props.onWin, 200);
+            if (nextPoints === 15 && nextStage === 'Buenas') {
+                setTimeout(this.props.onWin, 200);
+            }
 
-            return { points: nextPoints }
+            this.updatePoints(nextPoints, nextStage);
+            return null;
         });
-    }
+    };
 
-    subtractPoint () {
-        this.setState(state => {
-            if (this.stage === 'Malas' && state.points === 0) return null;
+    subtractPoint = () => {
+        this.setState(prevState => {
+            let nextPoints = prevState.points - 1;
+            let nextStage = this.stage;
 
-            let nextPoints = state.points - 1;
+            if (this.stage === 'Malas' && nextPoints < 0) return null;
 
-            if (nextPoints === 0 && this.stage === 'Buenas') {
-                this.stage = 'Malas';
+            if (nextPoints < 1 && this.stage === 'Buenas') {
+                nextStage = 'Malas';
                 nextPoints = 15;
             }
 
-            return { points: nextPoints }
+            this.updatePoints(nextPoints, nextStage);
+            return null;
         });
-    }
+    };
 
-    renderLines () {
-        const lines = [];
-        let box = 0;
-        for (let i = 0; i < this.state.points; i++) {
-            if (i / 5 === ( 1 + box )) ++box;
-            lines.push(this.renderLine(this.mask[i % 5], box, i));
-        }
+    renderLines = () => {
+        return Array.from({ length: this.state.points }, (_, i) => {
+            const box = Math.floor(i / 5);
+            const line = this.mask[i % 5];
+            return this.renderLine(line, box, i);
+        });
+    };
 
-        return lines;
-    }
-
-    renderLine ({ x1, y1, x2, y2 }, box, key) {
-        return <line 
-        x1={ x1 + this.offsetX } 
-        y1={ y1 + this.offsetY + (box * (this.offsetY + this.lineLength)) } 
-        
-        x2={ x2 + this.offsetX } 
-        y2={ y2 + this.offsetY + (box * (this.offsetY + this.lineLength)) } 
-        
-        key={ key }
-        stroke="#ECDBBA" 
-        strokeWidth="5"
-        strokeLinecap="round"
+    renderLine = ({ x1, y1, x2, y2 }, box, key) => (
+        <line
+            key={key}
+            x1={x1 + this.offsetX}
+            y1={y1 + this.offsetY + box * (this.offsetY + this.lineLength)}
+            x2={x2 + this.offsetX}
+            y2={y2 + this.offsetY + box * (this.offsetY + this.lineLength)}
+            stroke="#ECDBBA"
+            strokeWidth="5"
+            strokeLinecap="round"
         />
-    }
+    );
 
+    render() {
+        const { title } = this.props;
+        const stageIndicatorStyle = {
+            background: this.stage === 'Buenas' ? '#4287f5' : '#C84B31',
+            color: '#ECDBBA',
+        };
 
-    render () {
-        const stageIndicatorColorBg = { background: this.stage === 'Buenas' ? '#4287f5' : '#C84B31', color: '#ECDBBA' };
-
-        const stageIndicatorColorFont = { color: this.stage === 'Buenas' ? '#4287f5' : '#C84B31' };
-
-        const titleStyle = { className: this.props.title === 'NOSOTROS' ? 'counter-body-nos' : 'counter-body-ellos' };
-
-        const string = titleStyle.className.toString();
+        const titleClassName = title === 'NOSOTROS' ? 'counter-body-nos' : 'counter-body-ellos';
 
         return (
-            <div className={string}>
+            <div className={titleClassName}>
                 <div className="counter-title">
-                <h2>{ this.props.title }</h2>
+                    <h2>{title}</h2>
                 </div>
                 <div className="stage-indicator">
-                <h3 style={ stageIndicatorColorBg }>{ this.stage }</h3>
+                    <h3 style={stageIndicatorStyle}>{this.stage}</h3>
                 </div>
-                <svg
-                className="svg-canvas"
-                viewBox="0 0 100 300"
-                width="100px" 
-                height="300px"
-                >
-                    { this.renderLines() }
+                <svg className="svg-canvas" viewBox="0 0 100 300" width="100px" height="300px">
+                    {this.renderLines()}
                 </svg>
                 <div className="counter-points">
-                    <h1 style={stageIndicatorColorFont}>{ this.state.points }</h1>
+                    <h1 style={{ color: stageIndicatorStyle.background }}>{this.state.points}</h1>
                 </div>
-                <div
-                className="counter-buttons-container">
-                    <button 
-                    className="counter-button"
-                    onClick={ this.addPoint }
-                    >  <FontAwesomeIcon icon={faPlus} /> </button>
-                    <button 
-                    className="counter-button"
-                    onClick={ this.subtractPoint }
-                    > <FontAwesomeIcon icon={faMinus} className='awesome-text' /> </button>
+                <div className="counter-buttons-container">
+                    <button name='+' className="counter-button" onClick={this.addPoint}>
+                        <FontAwesomeIcon icon={faPlus} />
+                    </button>
+                    <button name='-' className="counter-button" onClick={this.subtractPoint}>
+                        <FontAwesomeIcon icon={faMinus} className="awesome-text" />
+                    </button>
                 </div>
             </div>
         );
