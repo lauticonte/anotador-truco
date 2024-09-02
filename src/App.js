@@ -34,6 +34,7 @@ class App extends React.Component {
             <div className="finished-message">
               <h3>{ this.showWinner() }</h3>
               <button
+                aria-label='Reiniciar'
                 className="restart-button"
                 onClick={ () => { this.setState({ finished: false }) } }
               >

@@ -113,10 +113,10 @@ class Counter extends Component {
                     <h1 style={{ color: stageIndicatorStyle.background }}>{this.state.points}</h1>
                 </div>
                 <div className="counter-buttons-container">
-                    <button name='+' className="counter-button" onClick={this.addPoint}>
+                    <button aria-label='Suma' className="counter-button" onClick={this.addPoint}>
                         <FontAwesomeIcon icon={faPlus} />
                     </button>
-                    <button name='-' className="counter-button" onClick={this.subtractPoint}>
+                    <button aria-label='Resta' className="counter-button" onClick={this.subtractPoint}>
                         <FontAwesomeIcon icon={faMinus} className="awesome-text" />
                     </button>
                 </div>
