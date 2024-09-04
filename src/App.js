@@ -34,11 +34,11 @@ class App extends React.Component {
             <div className="finished-message">
               <h3>{ this.showWinner() }</h3>
               <button
-                aria-label='Reiniciar'
+                aria-label='Revancha'
                 className="restart-button"
                 onClick={ () => { this.setState({ finished: false }) } }
               >
-                REINICIAR
+                REVANCHA
               </button>
             </div>
             :
