@@ -54,7 +54,7 @@
 }
 
 .restart-button {
-  background-color: #BA0018;
+  background-color: #C84B31;
   color: #ecdbba;
   height: 50px;
   border: none;
@@ -120,6 +120,7 @@ a {
 
 .submit-feedback-button:hover {
   background-color: #f0e1c0;
+  color: #2d4283;
 }
 
 .title {
