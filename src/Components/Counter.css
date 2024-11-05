@@ -28,6 +28,7 @@
   width: 100%; /* Asegura que ocupe el ancho total */
   gap: 1rem; /* Espacio entre el contador y los botones */
   margin-top: auto;
+  margin-bottom: 70px;
 }
 
 .buttons-row {
