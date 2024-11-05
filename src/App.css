@@ -138,11 +138,31 @@ a {
 }
 
 .footer {
-  position: relative;
-  bottom: 0;
-  width: 100vw;
-  background-color: #2d4263;
-  border-top: 3px solid #ecdbba;
+  display: flex;
+  justify-content: space-between; /* Espacio entre los elementos */
+  align-items: center; /* Centra verticalmente */
+  padding: 0em 20px; /* Espacio interno */
+  width: 100%; /* Ocupa todo el ancho del contenedor */
+  background-color: #2d4263; /* Color de fondo */
+  border-top: 3px solid #ecdbba; /* Borde superior */
+  box-sizing: border-box; /* Asegura que el padding no afecte al ancho */
+  
+}
+
+.footer__copy,
+.footer__version {
+  display: flex; /* Permite que el contenido interno se alinee correctamente */
+  align-items: center; /* Centra verticalmente */
+  color: #ecdbba; /* Color de texto */
+  margin: 0; /* Elimina márgenes innecesarios */
+  font-size: .9rem;
+  gap: 1rem; /* Espacio entre los elementos */
+  height: 35px;
+}
+
+.footer__version {
+  margin-left: auto; /* Empuja la versión al extremo derecho */
+  font-size: 1rem; /* Tamaño de fuente */
 }
 
 h1,
@@ -159,13 +179,13 @@ h3 {
   /* margin-bottom: 2rem; */
 }
 
-.footer__copy {
+/* .footer__copy {
   display: block;
   color: #ecdbba;
   text-align: center;
   font-size: 1rem;
   font-weight: normal;
-}
+} */
 
 a:link,
 :visited,

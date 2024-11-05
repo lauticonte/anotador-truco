@@ -1,31 +1,31 @@
 import "./App.css";
 import React from "react";
 import Counter from "./Components/Counter.js";
+import packageInfo from "../package.json";
 
 async function enviarFeedback(feedback) {
   try {
-    const response = await fetch('/api/sendFeedback', {
-      method: 'POST',
+    const response = await fetch("/api/sendFeedback", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ feedback }),
     });
 
-    console.log('Estado de la respuesta:', response.status);
-    console.log('Texto de la respuesta:', await response.text());
+    console.log("Estado de la respuesta:", response.status);
+    console.log("Texto de la respuesta:", await response.text());
 
     if (response.ok) {
-      alert('Feedback enviado correctamente 😁');
+      alert("Feedback enviado correctamente 😁");
     } else {
-      alert('Error al enviar el feedback ⚠️ ');
+      alert("Error al enviar el feedback ⚠️ ");
     }
   } catch (error) {
-    console.error('Error al enviar el feedback:', error);
-    alert('Error al enviar el feedback');
+    console.error("Error al enviar el feedback:", error);
+    alert("Error al enviar el feedback");
   }
 }
-
 
 class App extends React.Component {
   constructor(props) {
@@ -58,9 +58,7 @@ class App extends React.Component {
     } else
       return (
         <>
-          <p>
-            GANARON ELLOS :(
-          </p>
+          <p>GANARON ELLOS :(</p>
           <img
             className="img-lost"
             src="/images/sadge.png"
@@ -70,8 +68,6 @@ class App extends React.Component {
         </>
       );
   }
-
-  
 
   render() {
     return (
@@ -92,36 +88,37 @@ class App extends React.Component {
               >
                 REVANCHA
               </button>
-              
-             <div className="feedback-section">
-             <h4>¡Dejanos tus sugerencias!</h4>
-             <textarea
-               placeholder="Escribe tus comentarios aquí..."
-               rows="4"
-               cols="50"
-             />
-             <button
-               aria-label="Enviar sugerencias"
-               className="submit-feedback-button"
-               onClick={() => {
-                const feedbackText = document.querySelector('.feedback-section textarea').value;
-                if (feedbackText) {
-                  enviarFeedback(feedbackText);
-                  document.querySelector('.feedback-section textarea').value = ''; // Limpia el campo después de enviar
-                } else {
-                  alert('Por favor, escribe un comentario antes de enviar.');
-                }
-              }}
-             >
-               Enviar
-             </button>
-           </div>
 
+              <div className="feedback-section">
+                <h4>¡Dejanos tus sugerencias!</h4>
+                <textarea
+                  placeholder="Escribe tus comentarios aquí..."
+                  rows="4"
+                  cols="50"
+                />
+                <button
+                  aria-label="Enviar sugerencias"
+                  className="submit-feedback-button"
+                  onClick={() => {
+                    const feedbackText = document.querySelector(
+                      ".feedback-section textarea"
+                    ).value;
+                    if (feedbackText) {
+                      enviarFeedback(feedbackText);
+                      document.querySelector(
+                        ".feedback-section textarea"
+                      ).value = ""; // Limpia el campo después de enviar
+                    } else {
+                      alert(
+                        "Por favor, escribe un comentario antes de enviar."
+                      );
+                    }
+                  }}
+                >
+                  Enviar
+                </button>
+              </div>
             </div>
-
-
-         
-
           ) : (
             <>
               <Counter
@@ -142,19 +139,21 @@ class App extends React.Component {
         </div>
         <div className="footer">
           <span className="footer__copy">
-            &#169; Copyright {new Date().getFullYear()} -{" "}
+            &#169; Copyright {new Date().getFullYear()}{" "}
             <span className="footer__title">
               <a
                 href="https://contelautaro.com.ar"
                 target="_blank"
                 rel="noreferrer"
               >
-                {" "}
                 Conte
               </a>
             </span>
-            .
+            <span className="footer__version">
+            <p>versión {packageInfo.version} 🚀</p>
           </span>
+          </span>
+
         </div>
       </div>
     );
