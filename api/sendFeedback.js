@@ -1,33 +1,47 @@
 export default async function handler(req, res) {
-  console.log('Request recibida:', req.body);
-
-  if (req.method !== 'POST') {
-    console.error('Método no permitido');
-    return res.status(405).json({ message: 'Method Not Allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method Not Allowed" });
   }
 
-  try {
-    const response = await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chat_id: process.env.CHAT_ID,
-        text: `Nuevo feedback recibido:\n${req.body.feedback}`,
-      }),
-    });
+  const botToken = process.env.BOT_TOKEN;
+  const chatId = process.env.CHAT_ID;
+  const { feedback } = req.body;
 
-    console.log('Respuesta de Telegram:', response.status);
-    console.log('Respuesta de Telegram (texto):', await response.text());
+  // Función para formatear el mensaje sin caracteres y etiquetas no soportadas
+  const mensaje = `
+🚀 <b>Nuevo Feedback Recibido</b> 🚀
+📝 <i>${feedback}</i>
+
+<pre>------------------------------------</pre>
+
+📅 <b>Fecha:</b> ${new Date().toLocaleString()}
+  `;
+
+  try {
+    const response = await fetch(
+      `https://api.telegram.org/bot${botToken}/sendMessage`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: mensaje.trim(), // Se asegura de que no haya espacios innecesarios
+          parse_mode: "HTML",
+        }),
+      }
+    );
 
     if (response.ok) {
-      res.status(200).json({ message: 'Feedback enviado correctamente' });
+      res.status(200).json({ message: "Feedback enviado correctamente" });
     } else {
-      res.status(500).json({ error: 'Error al enviar el feedback' });
+      const errorResponse = await response.text();
+      console.error("Error en la respuesta de Telegram:", errorResponse);
+      res.status(500).json({ error: `Error al enviar el feedback: ${errorResponse}` });
     }
   } catch (error) {
-    console.error('Error al enviar el mensaje:', error);
-    res.status(500).json({ error: 'Error en la solicitud' });
+    console.error("Error al enviar el mensaje:", error);
+    res.status(500).json({ error: "Error en la solicitud" });
   }
 }
