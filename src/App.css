@@ -1,17 +1,16 @@
 @font-face {
-  font-family: 'Magnifika';
-  src: url('/public/fonts/Magnifika.otf') format('truetype');
+  font-family: "Magnifika";
+  src: url("/public/fonts/Magnifika.otf") format("truetype");
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'MBF';
-  src: url('/public/fonts/MBF-m.ttf') format('truetype');
+  font-family: "MBF";
+  src: url("/public/fonts/MBF-m.ttf") format("truetype");
   font-display: swap;
 }
 
 .app {
-
   margin: 0;
   overflow: hidden;
   position: absolute;
@@ -27,7 +26,7 @@
 
   background-color: #191919;
 
-  color: #ECDBBA;
+  color: #ecdbba;
 }
 
 .board {
@@ -42,9 +41,9 @@
 
   align-items: center;
 
-  padding: .5em;
+  padding: 0.5em;
 
-  font-size: .7em;
+  font-size: 0.7em;
 }
 
 .finished-message {
@@ -54,14 +53,13 @@
 }
 
 .restart-button {
-  background-color: #2D4263;
-  color: #ECDBBA;
+  background-color: #2d4263;
+  color: #ecdbba;
   height: 50px;
   border: none;
   font-weight: bold;
   font-size: 1em;
   border-radius: 50px;
-
 }
 
 a {
@@ -77,48 +75,53 @@ a {
 .title {
   padding: 0;
   margin: 0;
-  font-family: 'Magnifika';
+  font-family: "Magnifika";
   font-size: 1.2em;
   background-color: #191919;
   width: 100%;
-  color: #ECDBBA;
+  color: #ecdbba;
   align-items: center;
   display: flex;
   justify-content: center;
-  border-bottom: 3px solid #ECDBBA;
+  border-bottom: 3px solid #ecdbba;
 }
 
 .footer {
+  position: relative;
+  bottom: 0;
   width: 100vw;
-  background-color: #2D4263;
-  border-top: 3px solid #ECDBBA;
+  background-color: #2d4263;
+  border-top: 3px solid #ecdbba;
 }
 
-h1, h3 {
+h1,
+h3 {
   margin-block-start: 0;
   margin-block-end: 0;
 }
 
-.footer__title{
+.footer__title {
   /* font-family: MBF; */
-  font-family: 'MBF';
+  font-family: "MBF";
   text-align: center;
   font-weight: bold;
   /* margin-bottom: 2rem; */
 }
 
-.footer__copy{
+.footer__copy {
   display: block;
-  color: #ECDBBA;
+  color: #ecdbba;
   text-align: center;
   font-size: 1rem;
   font-weight: normal;
-  
 }
 
-a:link, :visited, :hover, :active { 
+a:link,
+:visited,
+:hover,
+:active {
   text-decoration: none;
-  color: #ECDBBA; 
+  color: #ecdbba;
 }
 
 .img-lost {

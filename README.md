@@ -1,70 +1,40 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Anotador de Truco
 
-## Available Scripts
+**Anotador de Truco** es una aplicación web interactiva diseñada para anotar los partidos del juego tradicional Argentino, el Truco. La app permite llevar el conteo de puntos de manera visual y sencilla, mostrando los puntos en forma de fósforos, al igual que en un anotador físico.
 
-In the project directory, you can run:
+## Descripción
 
-### `npm start`
+La aplicación cuenta con las siguientes características principales:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- 📱 **Diseño responsive**: Interfaz adaptada para dispositivos móviles.
+- 🃏 **Interfaz intuitiva**: Dos contadores de puntos, uno para "Nosotros" y otro para "Ellos", con botones para sumar y restar puntos.
+- 🔢 **Visualización de puntos**: Los puntos se representan con líneas en una cuadrícula, emulando un anotador clásico de truco.
+- 🏆 **Detección de ganador**: La aplicación muestra un mensaje de victoria y una imagen cuando uno de los equipos alcanza el puntaje máximo.
+- 🎨 **Diseño atractivo**: Incluye un indicador visual de etapas (Malas y Buenas).
+- ⚙️ **Funcionalidades adicionales**: Botón de revancha para reiniciar la partida y comenzar de nuevo.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Futuras Funcionalidades
 
-### `npm test`
+- 📊 **Historial de partidas**: Guardar y visualizar el historial de partidas jugadas.
+- 📝 **Registro de jugadores**: Ingresar los nombres de los jugadores para personalizar la app.
+- 🎮 **Modo de juego**: Seleccionar entre diferentes modos de juego (Partidas a 15, 30, etc.).
+- ➕ **Botones para sumar puntos**: Añadir botones para sumar puntos según lo que se cante en la partida.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Tecnologías Utilizadas
 
-### `npm run build`
+- **React**: Para el desarrollo de la interfaz de usuario.
+- **JavaScript**: Lógica del juego y funcionalidad interactiva.
+- **FontAwesome**: Íconos de botones.
+- **CSS**: Estilización y diseño de la interfaz.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Funcionamiento
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **Sumar puntos**: Haz clic en el botón `+` para aumentar el puntaje del equipo seleccionado.
+- **Restar puntos**: Haz clic en el botón `-` para reducir el puntaje del equipo.
+- **Cambio de etapa**: Al llegar a 16 puntos, el contador cambia de la etapa de "Malas" a "Buenas".
+- **Detección de victoria**: Al alcanzar 15 puntos en la etapa de "Buenas", la aplicación declara al equipo ganador.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Contacto
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- **Lautaro Conte** - [GitHub](https://github.com/lauticonte)

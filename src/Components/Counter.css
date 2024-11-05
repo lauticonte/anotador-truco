@@ -1,67 +1,113 @@
 .counter-body-nos {
-    min-height: 100%;
-    width: 200px;
+  min-height: 100%;
+  width: 50vw;
 
-    display: flex;
-    flex-flow: column;
+  display: flex;
+  flex-flow: column;
 
-    align-items: center;
+  align-items: center;
 
-    border-right: 3px solid #ECDBBA;
+  border-right: 3px solid #ecdbba;
 }
 
 .counter-body-ellos {
-    min-height: 100%;
-    width: 200px;
+  min-height: 100%;
+  width: 50vw;
 
-    display: flex;
-    flex-flow: column;
+  display: flex;
+  flex-flow: column;
 
-    align-items: center;
+  align-items: center;
 }
 
 .counter-buttons-container {
-    margin-top: 1vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra los elementos horizontalmente */
+  justify-content: center; /* Centra los elementos verticalmente */
+  width: 100%; /* Asegura que ocupe el ancho total */
+  gap: 1rem; /* Espacio entre el contador y los botones */
+  margin-top: auto;
+}
+
+.buttons-row {
+  display: flex;
+  flex-direction: row; /* Mantiene los botones en una fila horizontal */
+  gap: 0.5rem; /* Espacio entre los botones */
 }
 
 .counter-points {
-    margin-top: 5vw;
+  margin-top: 7vh;
 }
 
 .counter-button {
-    height: 65px;
-    width: 65px;
+  height: 65px;
+  width: 65px;
 
-    align-items: center;
-    text-align: center;
+  align-items: center;
+  text-align: center;
 
-    border-style: none;
-    border-radius: 100%;
-    background-color: #2D4263;
+  border-style: none;
+  border-radius: 100%;
+  background-color: #2d4263;
 
-    margin: 0 0.7em 0 0.7em;
+  margin: 0 0.7em 0 0.7em;
+  margin-bottom: 1em;
 
-    color: #ECDBBA;
+  color: #ecdbba;
 
-    font-size: 1em;
+  font-size: 1em;
 }
 
 .counter-title {
-    width: 100%;
-    /* border-bottom:  3px solid #fafafa; */
-    text-align: center;
-    background-color: #2D4263;
+  width: 100%;
+  /* border-bottom:  3px solid #fafafa; */
+  text-align: center;
+  background-color: #2d4263;
 
-    color: #ECDBBA;
+  color: #ecdbba;
 }
 
 .counter-title h2 {
-    font-size: 1.5em;
-    margin: 0;
-    padding: 0.3em;
+  font-size: 1.5em;
+  margin: 0;
+  padding: 0.3em;
 }
 
-.stage-indicator{
-    width: 100%;
-    text-align: center;
+.stage-indicator {
+  width: 100%;
+  text-align: center;
+}
+
+.svg-canvas {
+  width: 100px;
+  height: 300px;
+}
+
+@media screen and (max-height: 600px) {
+  .counter-buttons-container {
+    flex-direction: column; /* Asegura que los botones se vean en una columna si es necesario */
+    gap: 0.5rem; /* Reduce el espacio entre los botones y el contador */
+    margin: 0;
+  }
+
+  .counter-points h1 {
+    font-size: 1.5rem; /* Ajusta el tamaño del número */
+  }
+
+  .counter-button {
+    height: 50px; /* Reduce el tamaño de los botones */
+    width: 50px;
+  }
+
+  .footer {
+    font-size: 0.7rem; /* Ajusta el tamaño de fuente del footer */
+  }
+
+  .svg-canvas {
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    height: 230px;
+  }
 }
