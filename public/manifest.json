@@ -1,6 +1,8 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Anotador de Truco",
+  "name": "Anotador de Truco | Online y Gratis",
+  "description": "Una herramienta online para anotar partidas de truco de forma rápida y sencilla.",
+  "lang": "es-AR",
   "icons": [
     {
       "src": "favicon.ico",
@@ -19,6 +21,8 @@
     }
   ],
   "start_url": ".",
+  "scope": "/",
+  "dir": "ltr",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
