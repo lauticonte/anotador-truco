@@ -27,8 +27,8 @@
   justify-content: center; /* Centra los elementos verticalmente */
   width: 100%; /* Asegura que ocupe el ancho total */
   gap: 1rem; /* Espacio entre el contador y los botones */
-  margin-top: auto;
-  margin-bottom: 70px;
+  margin-bottom: 1em;
+  
 }
 
 .buttons-row {
@@ -102,6 +102,7 @@
   }
 
   .footer {
+    margin-bottom: 50px;
     font-size: 0.7rem; /* Ajusta el tamaño de fuente del footer */
   }
 
