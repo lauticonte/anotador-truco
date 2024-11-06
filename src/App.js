@@ -2,6 +2,10 @@ import "./App.css";
 import React from "react";
 import Counter from "./Components/Counter.js";
 import packageInfo from "../package.json";
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+
+
 
 async function enviarFeedback(feedback) {
   try {
@@ -121,6 +125,8 @@ class App extends React.Component {
             </div>
           ) : (
             <>
+              <Analytics />
+              <SpeedInsights />
               <Counter
                 title="NOSOTROS"
                 onWin={() => {
