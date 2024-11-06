@@ -7,14 +7,29 @@ export default async function handler(req, res) {
   const chatId = process.env.CHAT_ID;
   const { feedback } = req.body;
 
+  // Función para formatear la fecha y hora en el formato deseado
+  function getDate() {
+    const opciones = {
+      timeZone: "America/Argentina/Buenos_Aires",
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    };
+    return new Intl.DateTimeFormat("es-AR", opciones).format(new Date());
+  }
+
   // Función para formatear el mensaje sin caracteres y etiquetas no soportadas
   const mensaje = `
 🚀 <b>Nuevo Feedback Recibido</b> 🚀
+
 📝 <i>${feedback}</i>
 
 <pre>------------------------------------</pre>
 
-📅 <b>Fecha:</b> ${new Date().toLocaleString()}
+📅 <b>Fecha:</b> ${getDate()}
   `;
 
   try {
@@ -38,7 +53,9 @@ export default async function handler(req, res) {
     } else {
       const errorResponse = await response.text();
       console.error("Error en la respuesta de Telegram:", errorResponse);
-      res.status(500).json({ error: `Error al enviar el feedback: ${errorResponse}` });
+      res
+        .status(500)
+        .json({ error: `Error al enviar el feedback: ${errorResponse}` });
     }
   } catch (error) {
     console.error("Error al enviar el mensaje:", error);

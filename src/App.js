@@ -6,7 +6,7 @@ import { Analytics } from '@vercel/analytics/react';
 
 
 
-async function enviarFeedback(feedback) {
+async function sendFeedbackFunction(feedback) {
   try {
     const response = await fetch("/api/sendFeedback", {
       method: "POST",
@@ -107,7 +107,7 @@ class App extends React.Component {
                       ".feedback-section textarea"
                     ).value;
                     if (feedbackText) {
-                      enviarFeedback(feedbackText);
+                      sendFeedbackFunction(feedbackText);
                       document.querySelector(
                         ".feedback-section textarea"
                       ).value = ""; // Limpia el campo después de enviar
