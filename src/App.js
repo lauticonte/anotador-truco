@@ -109,7 +109,7 @@ class App extends React.Component {
                     });
                   }}
                 >
-                  REVANCHA 3️⃣0️⃣
+                  REVANCHA 1️⃣5️⃣
                 </button>
 
                 <button
@@ -121,7 +121,7 @@ class App extends React.Component {
                     });
                   }}
                 >
-                  REVANCHA 1️⃣5️⃣
+                  REVANCHA 3️⃣0️⃣
                 </button>
               </div>
 
