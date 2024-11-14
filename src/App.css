@@ -10,7 +10,10 @@
   font-display: swap;
 }
 
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Rubik+Glitch&display=swap");
+
 .app {
+  font-family: "Outfit", sans-serif;
   margin: 0;
   overflow: hidden;
   position: absolute;
@@ -29,6 +32,69 @@
   color: #ecdbba;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background-color: #191919;
+  padding: 0.5em 0.5em; /* Añade un padding menor y uniforme */
+  box-sizing: border-box;
+  font-family: "Magnifika";
+  font-size: 1em; /* Ajusta el tamaño del texto del header */
+  color: #ecdbba;
+  border-bottom: 3px solid #ecdbba;
+}
+
+.header-left {
+  flex: 0.2;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  padding: 0; /* Elimina el padding de los laterales */
+}
+
+.header-right {
+  flex: 0.5;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  padding: 0; /* Elimina el padding de los laterales */
+}
+
+.header-center {
+  flex: 2.5;
+  text-align: center;
+}
+
+.header-center h1 {
+  margin: 0; /* Elimina márgenes adicionales */
+  padding: 0; /* Asegura que no haya padding extra */
+  font-size: 2.3em; /* Ajusta el tamaño del texto en el h1 */
+  line-height: 1; /* Reduce la altura de línea */
+}
+
+.points-button {
+  background-color: transparent;
+  color: #ecdbba;
+  height: 30px;
+  width: 55px;
+  padding: 0 12px;
+  border: 1px solid #ecdbba;
+  font-weight: bold;
+  font-size: 0.8em;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.points-button:hover {
+  background-color: #ecdbba; /* Fondo en color claro al hacer hover */
+  color: #191919; /* Cambia el color del texto al hacer hover */
+
+  transform: scale(1.05); /* Efecto de agrandamiento leve */
+}
+
 .board {
   height: 100%;
 
@@ -36,7 +102,6 @@
 }
 
 .footer {
-  
   display: flex;
   flex-direction: column;
 
@@ -50,21 +115,27 @@
 .finished-message {
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: flex-start;
+}
+
+.revancha-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espacio entre los botones */
+  justify-content: center; /* Centra los botones */
 }
 
 .restart-button {
-  background-color: #C84B31;
+  background-color: #c84b31;
   color: #ecdbba;
-  height: 50px;
+  height: 35px;
   border: none;
   font-weight: bold;
-  font-size: 1.3em;
+  font-size: 1em;
   border-radius: 50px;
   cursor: pointer;
-  width: 80%;
+  width: 70%;
   margin: 0 auto;
-
 }
 
 a {
@@ -77,14 +148,31 @@ a {
   justify-content: center;
 }
 
+.winner {
+  margin-top: 1.2em;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.winner p {
+  margin-top: 0;
+  line-height: 1;
+}
+
+.img-lost {
+  height: auto;
+  width: 120px;
+  margin: 0 auto;
+}
+
 .feedback-section {
-  margin-top: .1em;
+  margin-top: 0.1em;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  padding: .5em;
+  padding: 0.5em;
   width: 80%;
   max-width: 600px; /* Limita el ancho máximo */
   margin: 0 auto; /* Centra el contenedor */
@@ -107,9 +195,9 @@ a {
 }
 
 .submit-feedback-button {
-  background-color: #ecdbba;
-  color: #2d4263;
-  border: none;
+  background-color: transparent;
+  color: #ecdbba;
+  border: 2px solid #ecdbba;
   border-radius: 20px;
   padding: 0.5em 1em;
   margin-top: 0.5em;
@@ -119,22 +207,9 @@ a {
 }
 
 .submit-feedback-button:hover {
-  background-color: #f0e1c0;
-  color: #2d4283;
-}
-
-.title {
-  padding: 0;
-  margin: 0;
-  font-family: "Magnifika";
-  font-size: 1.2em;
-  background-color: #191919;
-  width: 100%;
-  color: #ecdbba;
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  border-bottom: 3px solid #ecdbba;
+  background-color: #ecdbba;
+  color: #191919;
+  transform: scale(1.1);
 }
 
 .footer {
@@ -146,7 +221,6 @@ a {
   background-color: #2d4263; /* Color de fondo */
   border-top: 3px solid #ecdbba; /* Borde superior */
   box-sizing: border-box; /* Asegura que el padding no afecte al ancho */
-  
 }
 
 .footer__copy,
@@ -155,7 +229,7 @@ a {
   align-items: center; /* Centra verticalmente */
   color: #ecdbba; /* Color de texto */
   margin: 0; /* Elimina márgenes innecesarios */
-  font-size: .9rem;
+  font-size: 0.9rem;
   gap: 1rem; /* Espacio entre los elementos */
   height: 35px;
 }
@@ -193,9 +267,4 @@ a:link,
 :active {
   text-decoration: none;
   color: #ecdbba;
-}
-
-.img-lost {
-  height: 150px;
-  width: auto;
 }

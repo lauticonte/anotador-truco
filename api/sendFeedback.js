@@ -7,14 +7,24 @@ export default async function handler(req, res) {
   const chatId = process.env.CHAT_ID;
   const { feedback } = req.body;
 
+  const dateInBuenosAires = new Date().toLocaleString("es-AR", {
+    timeZone: "America/Argentina/Buenos_Aires",
+    hour12: false, // Usa formato de 24 horas
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
   // Función para formatear el mensaje sin caracteres y etiquetas no soportadas
   const mensaje = `
 🚀 <b>Nuevo Feedback Recibido</b> 🚀
 📝 <i>${feedback}</i>
 
-<pre>------------------------------------</pre>
+-------------------------------------
 
-📅 <b>Fecha:</b> ${new Date().toLocaleString()}
+📅 <b>${dateInBuenosAires}</b>
   `;
 
   try {

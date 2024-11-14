@@ -6,12 +6,11 @@ import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 class Counter extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       points: 0,
     };
 
-    this.stage = "Malas";
+    this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas"; // Cambia la etapa inicial según maxPoints
     this.lineLength = 90;
     this.offsetX = 5;
     this.offsetY = 7;
@@ -30,20 +29,35 @@ class Counter extends Component {
     this.stage = stage;
   };
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.maxPoints !== this.props.maxPoints) {
+      // Reinicia puntos y etapa cuando maxPoints cambia
+      this.setState({ points: 0 });
+      this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas";
+    }
+  };
+
   addPoint = () => {
     this.setState((prevState) => {
       let nextPoints = prevState.points + 1;
       let nextStage = this.stage;
 
-      if (this.stage === "Buenas" && nextPoints > 15) return null;
+      if (this.props.maxPoints === 30) {
+        if (this.stage === "Buenas" && nextPoints > 15) return null;
 
-      if (nextPoints === 16) {
-        nextStage = "Buenas";
-        nextPoints = 1;
-      }
+        if (nextPoints === 16) {
+          nextStage = "Buenas";
+          nextPoints = 1;
+        }
 
-      if (nextPoints === 15 && nextStage === "Buenas") {
-        setTimeout(this.props.onWin, 200);
+        if (nextPoints === 15 && nextStage === "Buenas") {
+          setTimeout(this.props.onWin, 200);
+        }
+      } else {
+        // Si el puntaje máximo es 15
+        if (nextPoints === 15) {
+          setTimeout(this.props.onWin, 200);
+        }
       }
 
       this.updatePoints(nextPoints, nextStage);
@@ -56,11 +70,16 @@ class Counter extends Component {
       let nextPoints = prevState.points - 1;
       let nextStage = this.stage;
 
-      if (this.stage === "Malas" && nextPoints < 0) return null;
+      if (this.props.maxPoints === 30) {
+        if (this.stage === "Malas" && nextPoints < 0) return null;
 
-      if (nextPoints < 1 && this.stage === "Buenas") {
-        nextStage = "Malas";
-        nextPoints = 15;
+        if (nextPoints < 1 && this.stage === "Buenas") {
+          nextStage = "Malas";
+          nextPoints = 15;
+        }
+      } else {
+        // Si el puntaje máximo es 15, evitamos bajar de 0
+        if (nextPoints < 0) return null;
       }
 
       this.updatePoints(nextPoints, nextStage);
@@ -91,9 +110,17 @@ class Counter extends Component {
 
   render() {
     const { title } = this.props;
+
+    // Determina el estilo de la etapa según maxPoints
+    const stageText = this.props.maxPoints === 15 ? "a 15" : this.stage;
     const stageIndicatorStyle = {
-      background: this.stage === "Buenas" ? "#4287f5" : "#C84B31",
-      color: "#ECDBBA",
+      background:
+    this.props.maxPoints === 15
+      ? "#6A9F58" // Color verde cuando es a 15
+      : this.stage === "Buenas"
+      ? "#4287f5"
+      : "#C84B31",
+  color: "#ECDBBA",
     };
 
     const titleClassName =
@@ -105,7 +132,7 @@ class Counter extends Component {
           <h2>{title}</h2>
         </div>
         <div className="stage-indicator">
-          <h3 style={stageIndicatorStyle}>{this.stage}</h3>
+          <h3 style={stageIndicatorStyle}>{stageText}</h3>
         </div>
         <svg className="svg-canvas" viewBox="0 0 100 300">
           {this.renderLines()}
@@ -138,7 +165,5 @@ class Counter extends Component {
     );
   }
 }
-
-
 
 export default Counter;
