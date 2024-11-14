@@ -47,7 +47,7 @@
 }
 
 .header-left {
-  flex: 0.2;
+  flex: 1;
   display: flex;
   justify-content: left;
   align-items: center;
@@ -55,7 +55,7 @@
 }
 
 .header-right {
-  flex: 0.5;
+  
   display: flex;
   justify-content: right;
   align-items: center;
@@ -63,7 +63,7 @@
 }
 
 .header-center {
-  flex: 2.5;
+  flex: 1 1 100%;
   text-align: center;
 }
 
