@@ -589,3 +589,15 @@ improvedigital.com,2106,RESELLER
 smartadserver.com,4288,RESELLER
 video.unrulymedia.com,533898005,reseller
 dauup.com,34141,reseller
+richaudience.com,RxVFrJzPTg,RESELLER
+trustedstack.com,TS7LELSN3,DIRECT
+rubiconproject.com,26144,RESELLER,0bfd66d529a55807
+pubmatic.com,164187,RESELLER,5d62403b186f2ace
+amxrtb.com,105199734,RESELLER
+media.net,8CU67TH23,RESELLER
+openx.com,559911747,RESELLER,6a698e2ec38604c6
+yieldmo.com,3377199372461613093,RESELLER
+onetag.com,87f58fe90234d0e,RESELLER
+triplelift.com,13907,RESELLER,6c33edb13117fd86
+media.net,8CU7H33B7,RESELLER
+richaudience.com,9komJKwMhZ,RESELLER
