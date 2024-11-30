@@ -2,9 +2,9 @@
 <html lang="es">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="icon preconnect" href="%PUBLIC_URL%/favicon.ico" />
     <link
-      rel="fontawesome"
+      rel="fontawesome preconnect"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -45,13 +45,14 @@
     />
 
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="preload" as="image" href="/main_logo.webp" />
 
     <!-- Google tag (gtag.js) -->
     <script
       defer
       src="https://www.googletagmanager.com/gtag/js?id=G-KZNCYNPR7L"
     ></script>
-    <script>
+    <script defer>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
         dataLayer.push(arguments);
@@ -60,19 +61,110 @@
 
       gtag("config", "G-KZNCYNPR7L");
     </script>
+    <!-- Inline Critical CSS -->
     <style>
-      /* Critical CSS inline */
-      .title {
-        font-family: "Magnifika";
+      .app {
+        font-family: "Outfit", sans-serif;
+        margin: 0;
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #191919;
         color: #ecdbba;
       }
-      /* Otros estilos críticos... */
+
+      .header {
+        display: flex;
+        align-items: left;
+        justify-content: space-between;
+        width: 100%;
+        background-color: #191919;
+        padding: 0.3em 0.5em 0.2em; /* Añade un padding menor y uniforme */
+        box-sizing: border-box;
+        font-family: "Magnifika";
+        font-size: 1em; /* Ajusta el tamaño del texto del header */
+        color: #ecdbba;
+        border-bottom: 3px solid #ecdbba;
+      }
+
+      .header-left {
+        flex: 1;
+        display: flex;
+        justify-content: left;
+        align-items: left;
+        padding: 0; /* Elimina el padding de los laterales */
+      }
+
+      .header-right {
+        display: flex;
+        justify-content: right;
+        align-items: center;
+        padding: 0; /* Elimina el padding de los laterales */
+      }
+
+      .header-center {
+        flex: 1 1 100%;
+        text-align: center;
+        margin-left: 3.8em;
+      }
+
+      .header-center h1 {
+        margin: 0; /* Elimina márgenes adicionales */
+        padding: 0; /* Asegura que no haya padding extra */
+        font-size: 2.3em; /* Ajusta el tamaño del texto en el h1 */
+        line-height: 1; /* Reduce la altura de línea */
+      }
+
+      .counter-button {
+        height: 65px;
+        width: 65px;
+        align-items: center;
+        text-align: center;
+        border-style: none;
+        border-radius: 100%;
+        background-color: #2d4263;
+        margin: 0 0.7em 0 0.7em;
+        margin-bottom: 1em;
+        color: #ecdbba;
+        font-size: 1em;
+      }
+
+      .counter-points {
+        margin-top: 7vh;
+      }
+
+      .counter-title {
+        width: 100%;
+        /* border-bottom:  3px solid #fafafa; */
+        text-align: center;
+        background-color: #2d4263;
+
+        color: #ecdbba;
+      }
+
+      .counter-title h2 {
+        font-size: 1.3em;
+        margin: 0;
+        padding: 0.3em;
+      }
+
+      .stage-indicator h3 {
+        font-size: 1em;
+        font-weight: 400;
+      }
+    
     </style>
 
     <title>Anotador de Truco | Online y Gratis</title>
 
     <!-- InMobi Choice. Consent Manager Tag v3.0 (for TCF 2.2) -->
-    <script type="text/javascript" async="true">
+    <script type="text/javascript" defer>
       (function () {
         var host = "www.themoneytizer.com";
         var element = document.createElement("script");
@@ -240,7 +332,7 @@
     <!-- End InMobi Choice. Consent Manager Tag v3.0 (for TCF 2.2) -->
   </head>
   <body>
-    <script>
+    <script defer>
       window.si =
         window.si ||
         function () {

@@ -37,47 +37,11 @@
   gap: 0.5rem; /* Espacio entre los botones */
 }
 
-.counter-points {
-  margin-top: 7vh;
-}
-
-.counter-button {
-  height: 65px;
-  width: 65px;
-
-  align-items: center;
-  text-align: center;
-
-  border-style: none;
-  border-radius: 100%;
-  background-color: #2d4263;
-
-  margin: 0 0.7em 0 0.7em;
-  margin-bottom: 1em;
-
-  color: #ecdbba;
-
-  font-size: 1em;
-}
-
-.counter-title {
-  width: 100%;
-  /* border-bottom:  3px solid #fafafa; */
-  text-align: center;
-  background-color: #2d4263;
-
-  color: #ecdbba;
-}
-
-.counter-title h2 {
-  font-size: 1.3em;
-  margin: 0;
-  padding: 0.3em;
-}
-
-.stage-indicator h3 {
-  font-size: 1em;
-  font-weight: 400;
+.svg-icon {
+  width: 22px;
+  height: 24px;
+  fill: currentColor; /* Hereda el color del texto */
+  vertical-align: middle; /* Alineación vertical */
 }
 
 

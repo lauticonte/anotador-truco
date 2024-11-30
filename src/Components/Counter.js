@@ -1,7 +1,14 @@
 import React, { Component } from "react";
 import "./Counter.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+
+// Inline SVG como reemplazo
+const PlusIcon = () => (
+<svg className="svg-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="plus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z"></path></svg>
+);
+
+const MinusIcon = () => (
+<svg className="svg-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="minus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M400 288h-352c-17.69 0-32-14.32-32-32.01s14.31-31.99 32-31.99h352c17.69 0 32 14.3 32 31.99S417.7 288 400 288z"></path></svg>
+);
 
 class Counter extends Component {
   constructor(props) {
@@ -10,7 +17,7 @@ class Counter extends Component {
       points: 0,
     };
 
-    this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas"; // Cambia la etapa inicial según maxPoints
+    this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas";
     this.lineLength = 90;
     this.offsetX = 5;
     this.offsetY = 7;
@@ -31,11 +38,10 @@ class Counter extends Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.maxPoints !== this.props.maxPoints) {
-      // Reinicia puntos y etapa cuando maxPoints cambia
       this.setState({ points: 0 });
       this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas";
     }
-  };
+  }
 
   addPoint = () => {
     this.setState((prevState) => {
@@ -54,7 +60,6 @@ class Counter extends Component {
           setTimeout(this.props.onWin, 200);
         }
       } else {
-        // Si el puntaje máximo es 15
         if (nextPoints === 15) {
           setTimeout(this.props.onWin, 200);
         }
@@ -78,7 +83,6 @@ class Counter extends Component {
           nextPoints = 15;
         }
       } else {
-        // Si el puntaje máximo es 15, evitamos bajar de 0
         if (nextPoints < 0) return null;
       }
 
@@ -111,16 +115,15 @@ class Counter extends Component {
   render() {
     const { title } = this.props;
 
-    // Determina el estilo de la etapa según maxPoints
     const stageText = this.props.maxPoints === 15 ? "a 15" : this.stage;
     const stageIndicatorStyle = {
       background:
-    this.props.maxPoints === 15
-      ? "#6A9F58" // Color verde cuando es a 15
-      : this.stage === "Buenas"
-      ? "#4287f5"
-      : "#C84B31",
-  color: "#ECDBBA",
+        this.props.maxPoints === 15
+          ? "#6A9F58"
+          : this.stage === "Buenas"
+          ? "#4287f5"
+          : "#C84B31",
+      color: "#ECDBBA",
     };
 
     const titleClassName =
@@ -137,7 +140,6 @@ class Counter extends Component {
         <svg className="svg-canvas" viewBox="0 0 100 300">
           {this.renderLines()}
         </svg>
-
         <div className="counter-buttons-container">
           <div className="counter-points">
             <h1 style={{ color: stageIndicatorStyle.background }}>
@@ -150,14 +152,14 @@ class Counter extends Component {
               className="counter-button"
               onClick={this.addPoint}
             >
-              <FontAwesomeIcon icon={faPlus} />
+              <PlusIcon />
             </button>
             <button
               aria-label="Resta"
               className="counter-button"
               onClick={this.subtractPoint}
             >
-              <FontAwesomeIcon icon={faMinus} className="awesome-text" />
+              <MinusIcon />
             </button>
           </div>
         </div>
