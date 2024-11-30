@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from "react";
 import "./App.css";
-import Header from "./components/Header.js";
-import Footer from "./components/Footer.js";
-import Board from "./components/Board.js";
-import AdComponent from "./components/Ads.js";
+import Header from "./Components/Header.js";
+import Footer from "./Components/Footer.js";
+import Board from "./Components/Board.js";
+import AdComponent from "./Components/AdComponent.js";
 
 const App = () => {
   const [finished, setFinished] = useState(false);
