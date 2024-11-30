@@ -3,7 +3,7 @@ import "./App.css";
 import Header from "./Components/Header.js";
 import Footer from "./Components/Footer.js";
 import Board from "./Components/Board.js";
-import AdComponent from "./Components/AdComponent.js";
+import AdComponent from "./Components/Ads.js";
 
 const App = () => {
   const [finished, setFinished] = useState(false);
