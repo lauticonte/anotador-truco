@@ -1,0 +1,14 @@
+.fade-in {
+    opacity: 1;
+    transition: opacity 200ms ease-in;
+  }
+  
+  .fade-out {
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+  }
+  
+  .board {
+    transition: transform 200ms ease-in-out;
+  }
+  
