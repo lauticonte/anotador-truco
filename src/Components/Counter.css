@@ -70,10 +70,17 @@
 }
 
 .counter-title h2 {
-  font-size: 1.5em;
+  font-size: 1.3em;
   margin: 0;
   padding: 0.3em;
 }
+
+.stage-indicator h3 {
+  font-size: 1em;
+  font-weight: 400;
+}
+
+
 
 .stage-indicator {
   width: 100%;
