@@ -21,6 +21,7 @@ class Counter extends Component {
     this.lineLength = 90;
     this.offsetX = 5;
     this.offsetY = 7;
+    this.stackSpacing = 6; // Espaciado adicional entre grupos de 5 líneas
 
     this.mask = [
       { x1: 0, y1: 0, x2: this.lineLength, y2: 0 },
@@ -100,16 +101,25 @@ class Counter extends Component {
   };
 
   renderLine = ({ x1, y1, x2, y2 }, box, key) => (
-    <line
-      key={key}
-      x1={x1 + this.offsetX}
-      y1={y1 + this.offsetY + box * (this.offsetY + this.lineLength)}
-      x2={x2 + this.offsetX}
-      y2={y2 + this.offsetY + box * (this.offsetY + this.lineLength)}
-      stroke="#ECDBBA"
-      strokeWidth="5"
-      strokeLinecap="round"
-    />
+    
+<line
+    key={key}
+    x1={x1 + this.offsetX}
+    y1={
+      y1 +
+      this.offsetY +
+      box * (this.offsetY + this.lineLength + this.stackSpacing)
+    }
+    x2={x2 + this.offsetX}
+    y2={
+      y2 +
+      this.offsetY +
+      box * (this.offsetY + this.lineLength + this.stackSpacing)
+    }
+    stroke="#ECDBBA"
+    strokeWidth="5"
+    strokeLinecap="round"
+  />
   );
 
   render() {

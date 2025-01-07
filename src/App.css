@@ -12,13 +12,42 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 
+html,
+body {
+  font-family: "Outfit", sans-serif;
+  margin: 0;
+  padding: 0;
+  
+  overflow: hidden;
+}
+
+main {
+  flex: 1; /* Ocupa el espacio restante entre header y footer */
+  display: flex;
+  flex-direction: column;
+} 
+
+
+.app {
+  flex-shrink: 0;
+  margin: 0;
+  position: relative;
+  width: 100vw;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: #191919;
+  color: #ecdbba;
+}
+
+
 .header {
   display: flex;
   align-items: left;
   justify-content: space-between;
   width: 100%;
   background-color: #191919;
-  padding: 0.3em 0.5em 0.2em; /* Añade un padding menor y uniforme */
+  padding: 0.35em 0.5em 0.2em; /* Añade un padding menor y uniforme */
   box-sizing: border-box;
   font-family: "Magnifika";
   font-size: 1em; /* Ajusta el tamaño del texto del header */
@@ -46,6 +75,10 @@
   flex: 1 1 100%;
   text-align: center;
   margin-left: 3.8em;
+  align-items: center;
+  justify-content: center;
+  padding: 0; /* Elimina el padding de los laterales */
+  font-family: "MBF";
 }
 
 .header-center h1 {
@@ -88,9 +121,11 @@
 }
 
 .board {
-  height: 100%;
-
+  flex: 1; /* El contenido ocupa el espacio restante */
   display: flex;
+  flex-direction: row;
+  justify-content: center;
+  
 }
 
 .footer {

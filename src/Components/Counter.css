@@ -1,23 +1,25 @@
 .counter-body-nos {
-  min-height: 100%;
-  width: 50vw;
-
-  display: flex;
-  flex-flow: column;
 
   align-items: center;
+  border-right: 2px solid #ecdbba;
+}
 
-  border-right: 3px solid #ecdbba;
+.counter-body-ellos, .counter-body-nos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Alinea los elementos al inicio */
+  align-items: center;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  width: 50vw;
+  
 }
 
 .counter-body-ellos {
-  min-height: 100%;
-  width: 50vw;
-
-  display: flex;
-  flex-flow: column;
-
-  align-items: center;
+  border-left: 2px solid #ecdbba;
+  
 }
 
 .counter-buttons-container {
@@ -26,9 +28,80 @@
   align-items: center; /* Centra los elementos horizontalmente */
   justify-content: center; /* Centra los elementos verticalmente */
   width: 100%; /* Asegura que ocupe el ancho total */
-  gap: 1rem; /* Espacio entre el contador y los botones */
-  margin-bottom: 1em;
+  gap: .5rem; /* Espacio entre el contador y los botones */
   
+  
+}
+
+.counter-button {
+  height: 65px;
+  width: 65px;
+  align-items: center;
+  text-align: center;
+  border-style: none;
+  border-radius: 100%;
+  background-color: #2d4263;
+  margin: 0 0.7em 0 0.7em;
+  color: #ecdbba;
+  font-size: 1em;
+}
+
+.counter-points {
+  margin-top: 2dvh;
+}
+
+.counter-title {
+  width: 100%;
+  /* border-bottom:  3px solid #fafafa; */
+  text-align: center;
+  background-color: #2d4263;
+
+  color: #ecdbba;
+}
+
+.counter-title h2 {
+  font-size: 1.3em;
+  margin: 0;
+  padding: 0.3em;
+}
+
+.stage-indicator h3 {
+  font-size: 1em;
+  font-weight: 400;
+}
+
+
+
+.points-container{
+  display: inline-block; /* Asegura que no ocupe todo el ancho */
+  padding: 2.5px; /* Margen entre el borde negro y la carta */
+  background-color: #ecdbba; /* Color del borde negro */
+  border-radius: 10px; /* Bordes redondeados */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Sombra para darle realismo */
+  color: #191919;
+  
+}
+
+.points-button {
+  
+  background-color: #ecdbba; /* Color claro del fondo */
+  color: #191919;
+  height: 30px;
+  width: 55px;
+  padding: 0 12px;
+  font-weight: bold;
+  font-size: 0.8em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #191919;
+}
+
+.points-button:hover {
+  
+  color: #191919; /* Cambia el color del texto al hacer hover */
+
+  transform: scale(1.03); /* Efecto de agrandamiento leve */
 }
 
 .buttons-row {
@@ -44,8 +117,6 @@
   vertical-align: middle; /* Alineación vertical */
 }
 
-
-
 .stage-indicator {
   width: 100%;
   text-align: center;
@@ -53,7 +124,8 @@
 
 .svg-canvas {
   width: 100px;
-  height: 300px;
+  height: 310px;
+  gap: 2rem;
 }
 
 @media screen and (max-height: 600px) {
@@ -68,19 +140,19 @@
   }
 
   .counter-button {
-    height: 50px; /* Reduce el tamaño de los botones */
-    width: 50px;
+    height: 60px; /* Reduce el tamaño de los botones */
+    width: 60px;
   }
 
   .footer {
-    margin-bottom: 50px;
-    font-size: 0.7rem; /* Ajusta el tamaño de fuente del footer */
+    margin-top: 0;
+    font-size: 0.8rem; /* Ajusta el tamaño de fuente del footer */
   }
 
   .svg-canvas {
     margin: 0;
     padding: 0;
     width: 200px;
-    height: 230px;
+    height: 250px;
   }
 }

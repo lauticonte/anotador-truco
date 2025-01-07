@@ -42,7 +42,7 @@ const FeedbackSection = () => {
     <div className="feedback-section">
       <h4>¡Dejanos tus sugerencias!</h4>
       <textarea
-        placeholder="Escribe tus comentarios aquí..."
+        placeholder="Escribí tus comentarios acá..."
         rows="4"
         cols="50"
       />

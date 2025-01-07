@@ -1,26 +1,36 @@
 {
-  "short_name": "Anotador de Truco",
+  "short_name": "Anotador",
   "name": "Anotador de Truco | Online y Gratis",
-  "description": "Una contador online para anotar partidas de truco de forma rápida y gratis.",
+  "description": "Un contador online para anotar partidas de truco. ¡Fácil, rápido y gratis! Perfecto para jugadores de truco en cualquier momento.",
   "lang": "es-AR",
   "icons": [
+    {
+      "src": "favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
     {
       "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
-    },
-    {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "scope": "/",
   "dir": "ltr",
   "display": "standalone",
