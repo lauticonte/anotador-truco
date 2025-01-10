@@ -54,9 +54,8 @@
   
   .history-item {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
+    align-items: center; /* Centra verticalmente */
+    padding: 10px;
     margin-bottom: 8px;
     border-radius: 6px;
     background-color: #ecdbba;
@@ -69,10 +68,39 @@
   .history-item:nth-child(odd) {
     background-color: #f9f9f9;
   }
+
   
   .history-item span {
-    flex: 1;
+    flex: 1; /* Cada elemento ocupa el mismo espacio proporcional */
+    overflow: hidden; /* Evita desbordes si el texto es muy largo */
+    white-space: nowrap; /* Evita saltos de línea */
+    text-overflow: ellipsis; /* Muestra puntos suspensivos si el texto es largo */
+  }
+
+  .history-team {
+    font-weight: bold;
+    color: #2d4263;
+    font-size: 1.2em;
+    max-width: 15px; /* Ancho fijo ajustado */
+    flex-shrink: 0; /* No permite que este elemento cambie su tamaño */
     text-align: center;
+  }
+
+  .history-action {
+    flex: 2; /* Ocupa más espacio para el texto de la acción */
+    text-align: left; /* Alineación a la izquierda */
+    padding-left: 10%; /* Espaciado interno */
+  }
+  
+  .history-points {
+    flex: 1; /* Espacio intermedio para los puntos */
+    text-align: center; /* Centramos los puntos */
+  }
+
+  
+  .history-date {
+    flex: 1.5; /* Espacio ajustado para la fecha */
+    text-align: center; /* Centramos la fecha */
   }
   
   .no-history {
@@ -81,19 +109,27 @@
     font-size: 1.1em;
   }
   
-  .close-button {
-    background-color: #c84b31;
-    color: #ffffff;
+  .close-button, .clean-button {
+    background-color: transparent;
     border: none;
-    padding: 5px 15px;
-    border-radius: 6px;
     cursor: pointer;
-    font-weight: bold;
-    font-size: 0.9em;
-    transition: transform 0.2s ease;
+    padding: 5px;
+    margin-left: 5px;
   }
   
-  .close-button:hover {
-    transform: scale(1.05);
+  .close-button:hover, .clean-button:hover {
+    transform: scale(1.1);
+  }
+  
+  .svg-history-icon {
+    width: 20px;
+    height: 20px;
+    fill: #ecdbba; /* Color del icono */
+    transition: transform 0.2s ease;
+    vertical-align: middle;
+  }
+  
+  .svg-icon:hover {
+    fill: #c84b31; /* Cambia de color al pasar el mouse */
   }
   

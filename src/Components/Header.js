@@ -13,7 +13,7 @@ const Header = React.memo(({ toggleMaxPoints, maxPoints, toggleHistory }) => {
     <div className="header">
       <div className="header-left">
       <button className="history-button" onClick={toggleHistory}>
-        Ver Historial
+        VAR
       </button>
       </div>
       <div className="header-center">

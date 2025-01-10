@@ -137,15 +137,24 @@ class Counter extends Component {
       this.updatePoints(nextPoints, nextStage);
     });
   };
+
+  
   
 
   registerHistory = (action, points) => {
+    const currentTime = new Date();
+      const formattedTime = currentTime.toLocaleTimeString("es-AR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
     const history = JSON.parse(localStorage.getItem("history")) || [];
     const entry = {
-      action: `${action} (${this.props.title})`, // Incluye el equipo en la acción
+      action: action, // Incluye el equipo en la acción
       points,
       team: this.props.title,
-      timestamp: new Date().toISOString(),
+      timestamp: formattedTime,
     };
   
     history.push(entry);

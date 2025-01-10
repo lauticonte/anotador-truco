@@ -55,13 +55,7 @@ main {
   border-bottom: 3px solid #ecdbba;
 }
 
-.header-left {
-  flex: 1;
-  display: flex;
-  justify-content: left;
-  align-items: left;
-  padding: 0; /* Elimina el padding de los laterales */
-}
+
 
 .header-right {
   
@@ -111,6 +105,23 @@ main {
   cursor: pointer;
   transition: all 0.3s ease;
   border: 1px solid #191919;
+}
+
+.history-button {
+  
+  background-color: #ecdbba; /* Color claro del fondo */
+  color: #191919;
+  height: 30px;
+  width: 55px;
+  padding: 0 12px;
+  font-weight: bold;
+  font-size: 0.8em;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #191919;
+  align-items: center;
+  display: flex;
 }
 
 .points-button:hover {

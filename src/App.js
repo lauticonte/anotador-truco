@@ -46,12 +46,12 @@ const App = () => {
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
-        hour12: true,
+        hour12: false,
       });
   
       const result = {
         action: winner === "NOSOTROS" ? "GANAMOS" : "GANARON", // Mensajes simplificados
-        points: null,
+        points: "-",
         team: winner,
         timestamp: formattedTime, // Guardar el string formateado
       };
