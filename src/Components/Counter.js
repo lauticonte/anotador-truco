@@ -3,18 +3,48 @@ import "./Counter.css";
 
 // Inline SVG como reemplazo
 const PlusIcon = () => (
-<svg className="svg-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="plus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z"></path></svg>
+  <svg
+    className="svg-icon"
+    aria-hidden="true"
+    focusable="false"
+    data-prefix="fas"
+    data-icon="plus"
+    role="img"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 448 512"
+  >
+    <path
+      fill="currentColor"
+      d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z"
+    ></path>
+  </svg>
 );
 
 const MinusIcon = () => (
-<svg className="svg-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="minus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M400 288h-352c-17.69 0-32-14.32-32-32.01s14.31-31.99 32-31.99h352c17.69 0 32 14.3 32 31.99S417.7 288 400 288z"></path></svg>
+  <svg
+    className="svg-icon"
+    aria-hidden="true"
+    focusable="false"
+    data-prefix="fas"
+    data-icon="minus"
+    role="img"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 448 512"
+  >
+    <path
+      fill="currentColor"
+      d="M400 288h-352c-17.69 0-32-14.32-32-32.01s14.31-31.99 32-31.99h352c17.69 0 32 14.3 32 31.99S417.7 288 400 288z"
+    ></path>
+  </svg>
 );
 
 class Counter extends Component {
   constructor(props) {
     super(props);
+    const savedPoints =
+      parseInt(localStorage.getItem(`points-${props.title}`), 10) || 0;
     this.state = {
-      points: 0,
+      points: savedPoints,
     };
 
     this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas";
@@ -37,60 +67,91 @@ class Counter extends Component {
     this.stage = stage;
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.points !== this.state.points) {
+      localStorage.setItem(`points-${this.props.title}`, this.state.points);
+    }
+
     if (prevProps.maxPoints !== this.props.maxPoints) {
       this.setState({ points: 0 });
       this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas";
     }
   }
 
+  // Nueva función para reiniciar puntos desde el componente padre
+  resetPoints = () => {
+    this.setState({ points: 0 });
+    this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas";
+    localStorage.setItem(`points-${this.props.title}`, 0);
+  };
+
   addPoint = () => {
+    if (this.props.finished) return; // Evitar sumar puntos si el juego terminó
+  
+    let nextPoints, nextStage;
     this.setState((prevState) => {
-      let nextPoints = prevState.points + 1;
-      let nextStage = this.stage;
-
+      nextPoints = prevState.points + 1;
+      nextStage = this.stage;
+  
       if (this.props.maxPoints === 30) {
-        if (this.stage === "Buenas" && nextPoints > 15) return null;
-
-        if (nextPoints === 16) {
+        if (nextPoints === 16 && this.stage === "Malas") {
           nextStage = "Buenas";
           nextPoints = 1;
         }
-
         if (nextPoints === 15 && nextStage === "Buenas") {
-          setTimeout(this.props.onWin, 200);
+          this.props.onWin(this.props.title);
         }
-      } else {
-        if (nextPoints === 15) {
-          setTimeout(this.props.onWin, 200);
-        }
+      } else if (nextPoints === 15) {
+        this.props.onWin(this.props.title);
       }
-
+  
+      return { points: nextPoints }; // Actualiza el estado con los nuevos puntos
+    }, () => {
+      // Registrar el historial después de actualizar el estado
+      this.registerHistory("SUMA", 1);
       this.updatePoints(nextPoints, nextStage);
-      return null;
     });
   };
-
+  
   subtractPoint = () => {
+    if (this.props.finished) return; // Evitar restar puntos si el juego terminó
+  
+    let nextPoints, nextStage;
     this.setState((prevState) => {
-      let nextPoints = prevState.points - 1;
-      let nextStage = this.stage;
-
+      nextPoints = prevState.points - 1;
+      nextStage = this.stage;
+  
       if (this.props.maxPoints === 30) {
-        if (this.stage === "Malas" && nextPoints < 0) return null;
-
-        if (nextPoints < 1 && this.stage === "Buenas") {
+        if (nextPoints === 0 && this.stage === "Buenas") {
           nextStage = "Malas";
           nextPoints = 15;
         }
-      } else {
-        if (nextPoints < 0) return null;
+      } else if (nextPoints < 0) {
+        return null;
       }
-
+  
+      return { points: nextPoints }; // Actualiza el estado con los nuevos puntos
+    }, () => {
+      // Registrar el historial después de actualizar el estado
+      this.registerHistory("RESTA", -1);
       this.updatePoints(nextPoints, nextStage);
-      return null;
     });
   };
+  
+
+  registerHistory = (action, points) => {
+    const history = JSON.parse(localStorage.getItem("history")) || [];
+    const entry = {
+      action: `${action} (${this.props.title})`, // Incluye el equipo en la acción
+      points,
+      team: this.props.title,
+      timestamp: new Date().toISOString(),
+    };
+  
+    history.push(entry);
+    localStorage.setItem("history", JSON.stringify(history));
+  };
+  
 
   renderLines = () => {
     return Array.from({ length: this.state.points }, (_, i) => {
@@ -101,25 +162,24 @@ class Counter extends Component {
   };
 
   renderLine = ({ x1, y1, x2, y2 }, box, key) => (
-    
-<line
-    key={key}
-    x1={x1 + this.offsetX}
-    y1={
-      y1 +
-      this.offsetY +
-      box * (this.offsetY + this.lineLength + this.stackSpacing)
-    }
-    x2={x2 + this.offsetX}
-    y2={
-      y2 +
-      this.offsetY +
-      box * (this.offsetY + this.lineLength + this.stackSpacing)
-    }
-    stroke="#ECDBBA"
-    strokeWidth="5"
-    strokeLinecap="round"
-  />
+    <line
+      key={key}
+      x1={x1 + this.offsetX}
+      y1={
+        y1 +
+        this.offsetY +
+        box * (this.offsetY + this.lineLength + this.stackSpacing)
+      }
+      x2={x2 + this.offsetX}
+      y2={
+        y2 +
+        this.offsetY +
+        box * (this.offsetY + this.lineLength + this.stackSpacing)
+      }
+      stroke="#ECDBBA"
+      strokeWidth="5"
+      strokeLinecap="round"
+    />
   );
 
   render() {
@@ -158,18 +218,19 @@ class Counter extends Component {
           </div>
           <div className="buttons-row">
             <button
-              aria-label="Suma"
-              className="counter-button"
-              onClick={this.addPoint}
-            >
-              <PlusIcon />
-            </button>
-            <button
               aria-label="Resta"
               className="counter-button"
               onClick={this.subtractPoint}
             >
               <MinusIcon />
+            </button>
+
+            <button
+              aria-label="Suma"
+              className="counter-button"
+              onClick={this.addPoint}
+            >
+              <PlusIcon />
             </button>
           </div>
         </div>

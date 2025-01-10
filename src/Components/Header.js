@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-const Header = React.memo(({ toggleMaxPoints, maxPoints }) => {
+const Header = React.memo(({ toggleMaxPoints, maxPoints, toggleHistory }) => {
   useEffect(() => {
     // Prioridad alta para la imagen
     const logoImage = document.querySelector(".logo");
@@ -11,7 +11,11 @@ const Header = React.memo(({ toggleMaxPoints, maxPoints }) => {
 
   return (
     <div className="header">
-      <div className="header-left"></div>
+      <div className="header-left">
+      <button className="history-button" onClick={toggleHistory}>
+        Ver Historial
+      </button>
+      </div>
       <div className="header-center">
         <img
           src="/main_logo.webp"

@@ -1,0 +1,99 @@
+.history-container {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    width: 100vw; /* Ocupa todo el ancho de la pantalla */
+    max-height: 50%;
+    background-color: #2d4263;
+    border-top: 3px solid #ecdbba;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+    transition: bottom 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+    padding: 0px 0; /* Ajustado para evitar desbordes */
+  }
+  
+  .history-container.visible {
+    bottom: 0;
+  }
+  
+  .history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px; /* Espaciado ajustado */
+    border-bottom: 2px solid #ecdbba;
+    color: #ecdbba;
+    font-size: 1.2em;
+    font-weight: bold;
+    position: sticky;
+    top: 0; /* Se fija en la parte superior */
+    z-index: 1010; /* Más alto que el contenido desplazable */
+    background-color: #2d4263; /* Fondo para contraste */
+
+  }
+  
+  .history-header h3 {
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .history-list {
+    padding: 10px 0;
+    max-height: calc(50% - 50px); /* Ajusta la altura para dejar espacio al header */
+    overflow-y: auto; /* Habilita el scroll solo para la lista */
+    width: 100%; /* Asegura que ocupe el ancho completo */
+    box-sizing: border-box; /* Incluye el padding en el ancho */
+  } 
+
+  .history-date:hover {
+    
+    color: #191919;
+
+  }
+  
+  .history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    background-color: #ecdbba;
+    color: #191919;
+    font-size: 1em;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+  
+  .history-item:nth-child(odd) {
+    background-color: #f9f9f9;
+  }
+  
+  .history-item span {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .no-history {
+    text-align: center;
+    color: #ecdbba;
+    font-size: 1.1em;
+  }
+  
+  .close-button {
+    background-color: #c84b31;
+    color: #ffffff;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9em;
+    transition: transform 0.2s ease;
+  }
+  
+  .close-button:hover {
+    transform: scale(1.05);
+  }
+  
