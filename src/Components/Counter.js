@@ -41,11 +41,13 @@ const MinusIcon = () => (
 class Counter extends Component {
   constructor(props) {
     super(props);
-    const savedPoints =
-      parseInt(localStorage.getItem(`points-${props.title}`), 10) || 0;
-    this.state = {
-      points: savedPoints,
-    };
+  const savedPoints =
+    parseInt(localStorage.getItem(`points-${props.title}`), 10) || 0;
+  this.state = {
+    points: savedPoints,
+    stage: this.props.maxPoints === 15 ? "a 15" : "Malas",
+  };
+
 
     this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas";
     this.lineLength = 90;
@@ -71,12 +73,15 @@ class Counter extends Component {
     if (prevState.points !== this.state.points) {
       localStorage.setItem(`points-${this.props.title}`, this.state.points);
     }
-
+  
     if (prevProps.maxPoints !== this.props.maxPoints) {
-      this.setState({ points: 0 });
-      this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas";
+      this.setState({
+        points: 0,
+        stage: this.props.maxPoints === 15 ? "a 15" : "Malas",
+      });
     }
   }
+  
 
   // Nueva función para reiniciar puntos desde el componente padre
   resetPoints = () => {
@@ -88,60 +93,59 @@ class Counter extends Component {
   addPoint = () => {
     if (this.props.finished) return; // Evitar sumar puntos si el juego terminó
   
-    let nextPoints, nextStage;
     this.setState((prevState) => {
-      nextPoints = prevState.points + 1;
-      nextStage = this.stage;
+      let nextPoints = prevState.points + 1;
+      let nextStage = prevState.stage;
   
+      // Manejar transición a "Buenas" si corresponde
       if (this.props.maxPoints === 30) {
-        if (nextPoints === 16 && this.stage === "Malas") {
+        if (nextPoints === 16 && prevState.stage === "Malas") {
           nextStage = "Buenas";
-          nextPoints = 1;
+          nextPoints = 1; // Reiniciar puntos en "Buenas"
         }
         if (nextPoints === 15 && nextStage === "Buenas") {
-          this.props.onWin(this.props.title);
+          this.props.onWin(this.props.title); // Juego terminado
         }
       } else if (nextPoints === 15) {
-        this.props.onWin(this.props.title);
+        this.props.onWin(this.props.title); // Juego terminado a 15 puntos
       }
   
-      return { points: nextPoints }; // Actualiza el estado con los nuevos puntos
+      return { points: nextPoints, stage: nextStage }; // Actualizamos puntos y stage
     }, () => {
       // Registrar el historial después de actualizar el estado
       this.registerHistory("SUMA", 1);
-      this.updatePoints(nextPoints, nextStage);
     });
   };
+  
   
   subtractPoint = () => {
     if (this.props.finished) return; // Evitar restar puntos si el juego terminó
-
-    
   
-    let nextPoints, nextStage;
     this.setState((prevState) => {
-
-
-      nextPoints = prevState.points - 1;
-      nextStage = this.stage;
-
-  
-      if (this.props.maxPoints === 30) {
-        if (nextPoints === 0 && this.stage === "Buenas") {
-          nextStage = "Malas";
-          nextPoints = 15;
-        }
-      } else if (nextPoints < 0) {
+      // Evitar valores negativos
+      if (prevState.points <= 0) {
         return null;
       }
   
-      return { points: nextPoints }; // Actualiza el estado con los nuevos puntos
+      let nextPoints = prevState.points - 1;
+      let nextStage = prevState.stage;
+  
+      // Manejar transiciones entre "Buenas" y "Malas" para 30 puntos
+      if (this.props.maxPoints === 30) {
+        if (nextPoints === 0 && prevState.stage === "Buenas") {
+          nextStage = "Malas";
+          nextPoints = 15; // Volver a "Malas" con 15 puntos
+        }
+      }
+  
+      return { points: nextPoints, stage: nextStage }; // Actualizamos tanto puntos como stage
     }, () => {
       // Registrar el historial después de actualizar el estado
       this.registerHistory("RESTA", -1);
-      this.updatePoints(nextPoints, nextStage);
     });
   };
+  
+  
 
   
   
@@ -198,24 +202,24 @@ class Counter extends Component {
 
   render() {
     const { title } = this.props;
-
+  
     // Calculamos el puntaje a mostrar, asegurándonos de que no sea negativo
     const displayedPoints = Math.max(this.state.points, 0);
-
-    const stageText = this.props.maxPoints === 15 ? "a 15" : this.stage;
+  
+    const stageText = this.state.stage; // Tomamos stage del estado
     const stageIndicatorStyle = {
       background:
         this.props.maxPoints === 15
           ? "#6A9F58"
-          : this.stage === "Buenas"
+          : this.state.stage === "Buenas"
           ? "#4287f5"
           : "#C84B31",
       color: "#ECDBBA",
     };
-
+  
     const titleClassName =
       title === "NOSOTROS" ? "counter-body-nos" : "counter-body-ellos";
-
+  
     return (
       <div className={titleClassName}>
         <div className="counter-title">
@@ -241,7 +245,7 @@ class Counter extends Component {
             >
               <MinusIcon />
             </button>
-
+  
             <button
               aria-label="Suma"
               className="counter-button"
@@ -254,6 +258,7 @@ class Counter extends Component {
       </div>
     );
   }
+  
 }
 
 export default Counter;
