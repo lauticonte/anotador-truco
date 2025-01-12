@@ -601,3 +601,9 @@ onetag.com,87f58fe90234d0e,RESELLER
 triplelift.com,13907,RESELLER,6c33edb13117fd86
 media.net,8CU7H33B7,RESELLER
 richaudience.com,9komJKwMhZ,RESELLER
+thebrave.io,1234750,RESELLER,c25b2154543746ac
+appnexus.com,12061,RESELLER,f5ab79cb980f11d1
+rubiconproject.com,24752,RESELLER,0bfd66d529a55807
+video.unrulymedia.com,3881266972,RESELLER
+sonobi.com,2b51f34067,RESELLER,d1a215d9eb5aee9e
+Media.net,8CU9B72O6,RESELLER

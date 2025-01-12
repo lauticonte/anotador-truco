@@ -12,9 +12,11 @@ const Header = React.memo(({ toggleMaxPoints, maxPoints, toggleHistory }) => {
   return (
     <div className="header">
       <div className="header-left">
+      <div className="points-container">
       <button className="history-button" onClick={toggleHistory}>
-        VAR
+        <img className="history-var-img" src="./images/var.svg" alt="History Icon" />
       </button>
+      </div>
       </div>
       <div className="header-center">
         <img

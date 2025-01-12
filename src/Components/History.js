@@ -78,7 +78,7 @@ const History = ({ isVisible, onClose }) => {
                   {entry.points > 0 ? `+${entry.points}` : entry.points}
                 </span>
               )}
-              <span className="history-date">{entry.timestamp}</span>
+              <span className="history-date">{entry.timestamp} hs</span>
             </div>
           ))
         ) : (

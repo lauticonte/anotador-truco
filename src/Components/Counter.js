@@ -115,11 +115,16 @@ class Counter extends Component {
   
   subtractPoint = () => {
     if (this.props.finished) return; // Evitar restar puntos si el juego terminó
+
+    
   
     let nextPoints, nextStage;
     this.setState((prevState) => {
+
+
       nextPoints = prevState.points - 1;
       nextStage = this.stage;
+
   
       if (this.props.maxPoints === 30) {
         if (nextPoints === 0 && this.stage === "Buenas") {
@@ -154,7 +159,7 @@ class Counter extends Component {
       action: action, // Incluye el equipo en la acción
       points,
       team: this.props.title,
-      timestamp: formattedTime,
+      timestamp: formattedTime, // Guardar el string formateado
     };
   
     history.push(entry);
@@ -194,6 +199,9 @@ class Counter extends Component {
   render() {
     const { title } = this.props;
 
+    // Calculamos el puntaje a mostrar, asegurándonos de que no sea negativo
+    const displayedPoints = Math.max(this.state.points, 0);
+
     const stageText = this.props.maxPoints === 15 ? "a 15" : this.stage;
     const stageIndicatorStyle = {
       background:
@@ -222,7 +230,7 @@ class Counter extends Component {
         <div className="counter-buttons-container">
           <div className="counter-points">
             <h1 style={{ color: stageIndicatorStyle.background }}>
-              {this.state.points}
+              {displayedPoints}
             </h1>
           </div>
           <div className="buttons-row">
