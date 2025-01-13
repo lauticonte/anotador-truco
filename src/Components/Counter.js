@@ -1,42 +1,6 @@
 import React, { Component } from "react";
 import "./Counter.css";
 
-// Inline SVG como reemplazo
-const PlusIcon = () => (
-  <svg
-    className="svg-icon"
-    aria-hidden="true"
-    focusable="false"
-    data-prefix="fas"
-    data-icon="plus"
-    role="img"
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 448 512"
-  >
-    <path
-      fill="currentColor"
-      d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z"
-    ></path>
-  </svg>
-);
-
-const MinusIcon = () => (
-  <svg
-    className="svg-icon"
-    aria-hidden="true"
-    focusable="false"
-    data-prefix="fas"
-    data-icon="minus"
-    role="img"
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 448 512"
-  >
-    <path
-      fill="currentColor"
-      d="M400 288h-352c-17.69 0-32-14.32-32-32.01s14.31-31.99 32-31.99h352c17.69 0 32 14.3 32 31.99S417.7 288 400 288z"
-    ></path>
-  </svg>
-);
 
 class Counter extends Component {
   constructor(props) {
@@ -91,31 +55,40 @@ class Counter extends Component {
   };
 
   addPoint = () => {
-    if (this.props.finished) return; // Evitar sumar puntos si el juego terminó
+    if (this.props.finished) return; // Bloquear acción si el juego terminó
   
-    this.setState((prevState) => {
-      let nextPoints = prevState.points + 1;
-      let nextStage = prevState.stage;
+    this.setState(
+      (prevState) => {
+        let nextPoints = prevState.points + 1;
+        let nextStage = prevState.stage;
   
-      // Manejar transición a "Buenas" si corresponde
-      if (this.props.maxPoints === 30) {
-        if (nextPoints === 16 && prevState.stage === "Malas") {
-          nextStage = "Buenas";
-          nextPoints = 1; // Reiniciar puntos en "Buenas"
+        // Manejar transición a "Buenas" para 30 puntos
+        if (this.props.maxPoints === 30) {
+          if (nextPoints === 16 && prevState.stage === "Malas") {
+            nextStage = "Buenas";
+            nextPoints = 1; // Reiniciar puntos en "Buenas"
+          } else if (nextPoints === 15 && nextStage === "Buenas") {
+            this.props.onWin(this.props.title); // Llamar al evento de victoria
+            return prevState; // No registrar el último punto
+          }
+        } else if (nextPoints === 15) {
+          this.props.onWin(this.props.title); // Llamar al evento de victoria
+          return prevState; // No registrar el último punto
         }
-        if (nextPoints === 15 && nextStage === "Buenas") {
-          this.props.onWin(this.props.title); // Juego terminado
+  
+        return { points: nextPoints, stage: nextStage }; // Actualizar estado
+      },
+      () => {
+        if (!this.props.finished) {
+          this.registerHistory("SUMA", 1); // Registrar solo si el juego no terminó
         }
-      } else if (nextPoints === 15) {
-        this.props.onWin(this.props.title); // Juego terminado a 15 puntos
       }
-  
-      return { points: nextPoints, stage: nextStage }; // Actualizamos puntos y stage
-    }, () => {
-      // Registrar el historial después de actualizar el estado
-      this.registerHistory("SUMA", 1);
-    });
+    );
   };
+  
+  
+  
+  
   
   
   subtractPoint = () => {
@@ -151,24 +124,30 @@ class Counter extends Component {
   
 
   registerHistory = (action, points) => {
+    if (this.props.finished) return; // No registrar si el juego terminó
+  
     const currentTime = new Date();
-      const formattedTime = currentTime.toLocaleTimeString("es-AR", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      });
+    const formattedTime = currentTime.toLocaleTimeString("es-AR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+  
     const history = JSON.parse(localStorage.getItem("history")) || [];
     const entry = {
-      action: action, // Incluye el equipo en la acción
+      action,
       points,
       team: this.props.title,
-      timestamp: formattedTime, // Guardar el string formateado
+      timestamp: formattedTime,
     };
   
     history.push(entry);
     localStorage.setItem("history", JSON.stringify(history));
   };
+  
+  
+  
   
 
   renderLines = () => {
@@ -243,7 +222,7 @@ class Counter extends Component {
               className="counter-button"
               onClick={this.subtractPoint}
             >
-              <MinusIcon />
+              <i class='bx bx-minus bx-md'></i>
             </button>
   
             <button
@@ -251,7 +230,7 @@ class Counter extends Component {
               className="counter-button"
               onClick={this.addPoint}
             >
-              <PlusIcon />
+              <i class='bx bx-plus bx-md '></i>
             </button>
           </div>
         </div>

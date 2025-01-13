@@ -26,12 +26,14 @@ const App = () => {
 
   const handleWin = useCallback(
     (winner) => {
-      if (finished) return; // Si el juego ya terminó, no registrar más.
+      if (finished) return; // Bloquear si el juego ya terminó
+  
+      setFinished(true); // Bloquea cualquier acción adicional
   
       const history = JSON.parse(localStorage.getItem("history")) || [];
       const lastEntry = history[history.length - 1];
   
-      // Verificar si el último registro ya es el ganador
+      // Verificar si ya hay un registro de victoria
       if (
         lastEntry &&
         (lastEntry.action === "GANARON" || lastEntry.action === "GANAMOS") &&
@@ -40,35 +42,39 @@ const App = () => {
         return;
       }
   
-      // Generar la hora local con formato AM/PM
-      const currentTime = new Date();
-      const formattedTime = currentTime.toLocaleTimeString("es-AR", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      });
+      // Retrasar el registro del evento GANAMOS/GANARON
+      setTimeout(() => {
+        const currentTime = new Date();
+        const formattedTime = currentTime.toLocaleTimeString("es-AR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        });
   
-      const result = {
-        action: winner === "NOSOTROS" ? "GANAMOS" : "GANARON", // Mensajes simplificados
-        points: "-",
-        team: winner,
-        timestamp: formattedTime, // Guardar el string formateado
-      };
+        const result = {
+          action: winner === "NOSOTROS" ? "GANAMOS" : "GANARON",
+          points: "-",
+          team: winner,
+          timestamp: formattedTime,
+        };
   
-      history.push(result);
-      localStorage.setItem("history", JSON.stringify(history));
+        // Limpiar los puntos del localStorage antes de registrar la victoria
+        localStorage.removeItem("points-NOSOTROS");
+        localStorage.removeItem("points-ELLOS");
   
-      // Limpiar puntos de los equipos
-      localStorage.removeItem("points-NOSOTROS");
-      localStorage.removeItem("points-ELLOS");
+        history.push(result);
+        localStorage.setItem("history", JSON.stringify(history));
   
-      // Finalizar partida
-      setWinner(winner);
-      setFinished(true);
+        setWinner(winner); // Establece el ganador
+      }, 200); // Retrasar 200ms (puedes ajustar este valor según lo necesario)
     },
     [finished]
   );
+  
+  
+  
+  
   
   
   const resetGame = useCallback((points) => {
@@ -79,15 +85,18 @@ const App = () => {
         entry.action.includes("GANAMOS") || entry.action.includes("GANARON")
     );
     localStorage.setItem("history", JSON.stringify(filteredHistory));
-
+  
     // Reiniciar puntos y estado del juego
     localStorage.removeItem("points-NOSOTROS");
     localStorage.removeItem("points-ELLOS");
-
+  
     setWinner("");
     setFinished(false);
     setMaxPoints(points);
   }, []);
+  
+
+  
 
   return (
     <div className="app">
