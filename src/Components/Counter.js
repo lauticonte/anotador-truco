@@ -1,21 +1,17 @@
 import React, { Component } from "react";
 import "./Counter.css";
 
-// Inline SVG como reemplazo
-const PlusIcon = () => (
-<svg className="svg-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="plus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z"></path></svg>
-);
-
-const MinusIcon = () => (
-<svg className="svg-icon" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="minus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M400 288h-352c-17.69 0-32-14.32-32-32.01s14.31-31.99 32-31.99h352c17.69 0 32 14.3 32 31.99S417.7 288 400 288z"></path></svg>
-);
 
 class Counter extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      points: 0,
-    };
+  const savedPoints =
+    parseInt(localStorage.getItem(`points-${props.title}`), 10) || 0;
+  this.state = {
+    points: savedPoints,
+    stage: this.props.maxPoints === 15 ? "a 15" : "Malas",
+  };
+
 
     this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas";
     this.lineLength = 90;
@@ -37,60 +33,122 @@ class Counter extends Component {
     this.stage = stage;
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.points !== this.state.points) {
+      localStorage.setItem(`points-${this.props.title}`, this.state.points);
+    }
+  
     if (prevProps.maxPoints !== this.props.maxPoints) {
-      this.setState({ points: 0 });
-      this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas";
+      this.setState({
+        points: 0,
+        stage: this.props.maxPoints === 15 ? "a 15" : "Malas",
+      });
     }
   }
+  
+
+  // Nueva función para reiniciar puntos desde el componente padre
+  resetPoints = () => {
+    this.setState({ points: 0 });
+    this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas";
+    localStorage.setItem(`points-${this.props.title}`, 0);
+  };
 
   addPoint = () => {
-    this.setState((prevState) => {
-      let nextPoints = prevState.points + 1;
-      let nextStage = this.stage;
-
-      if (this.props.maxPoints === 30) {
-        if (this.stage === "Buenas" && nextPoints > 15) return null;
-
-        if (nextPoints === 16) {
-          nextStage = "Buenas";
-          nextPoints = 1;
+    if (this.props.finished) return; // Bloquear acción si el juego terminó
+  
+    this.setState(
+      (prevState) => {
+        let nextPoints = prevState.points + 1;
+        let nextStage = prevState.stage;
+  
+        // Manejar transición a "Buenas" para 30 puntos
+        if (this.props.maxPoints === 30) {
+          if (nextPoints === 16 && prevState.stage === "Malas") {
+            nextStage = "Buenas";
+            nextPoints = 1; // Reiniciar puntos en "Buenas"
+          } else if (nextPoints === 15 && nextStage === "Buenas") {
+            this.props.onWin(this.props.title); // Llamar al evento de victoria
+            return prevState; // No registrar el último punto
+          }
+        } else if (nextPoints === 15) {
+          this.props.onWin(this.props.title); // Llamar al evento de victoria
+          return prevState; // No registrar el último punto
         }
-
-        if (nextPoints === 15 && nextStage === "Buenas") {
-          setTimeout(this.props.onWin, 200);
-        }
-      } else {
-        if (nextPoints === 15) {
-          setTimeout(this.props.onWin, 200);
+  
+        return { points: nextPoints, stage: nextStage }; // Actualizar estado
+      },
+      () => {
+        if (!this.props.finished) {
+          this.registerHistory("SUMA", 1); // Registrar solo si el juego no terminó
         }
       }
-
-      this.updatePoints(nextPoints, nextStage);
-      return null;
-    });
+    );
   };
-
+  
+  
+  
+  
+  
+  
   subtractPoint = () => {
+    if (this.props.finished) return; // Evitar restar puntos si el juego terminó
+  
     this.setState((prevState) => {
-      let nextPoints = prevState.points - 1;
-      let nextStage = this.stage;
-
-      if (this.props.maxPoints === 30) {
-        if (this.stage === "Malas" && nextPoints < 0) return null;
-
-        if (nextPoints < 1 && this.stage === "Buenas") {
-          nextStage = "Malas";
-          nextPoints = 15;
-        }
-      } else {
-        if (nextPoints < 0) return null;
+      // Evitar valores negativos
+      if (prevState.points <= 0) {
+        return null;
       }
-
-      this.updatePoints(nextPoints, nextStage);
-      return null;
+  
+      let nextPoints = prevState.points - 1;
+      let nextStage = prevState.stage;
+  
+      // Manejar transiciones entre "Buenas" y "Malas" para 30 puntos
+      if (this.props.maxPoints === 30) {
+        if (nextPoints === 0 && prevState.stage === "Buenas") {
+          nextStage = "Malas";
+          nextPoints = 15; // Volver a "Malas" con 15 puntos
+        }
+      }
+  
+      return { points: nextPoints, stage: nextStage }; // Actualizamos tanto puntos como stage
+    }, () => {
+      // Registrar el historial después de actualizar el estado
+      this.registerHistory("RESTA", -1);
     });
   };
+  
+  
+
+  
+  
+
+  registerHistory = (action, points) => {
+    if (this.props.finished) return; // No registrar si el juego terminó
+  
+    const currentTime = new Date();
+    const formattedTime = currentTime.toLocaleTimeString("es-AR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+  
+    const history = JSON.parse(localStorage.getItem("history")) || [];
+    const entry = {
+      action,
+      points,
+      team: this.props.title,
+      timestamp: formattedTime,
+    };
+  
+    history.push(entry);
+    localStorage.setItem("history", JSON.stringify(history));
+  };
+  
+  
+  
+  
 
   renderLines = () => {
     return Array.from({ length: this.state.points }, (_, i) => {
@@ -101,44 +159,46 @@ class Counter extends Component {
   };
 
   renderLine = ({ x1, y1, x2, y2 }, box, key) => (
-    
-<line
-    key={key}
-    x1={x1 + this.offsetX}
-    y1={
-      y1 +
-      this.offsetY +
-      box * (this.offsetY + this.lineLength + this.stackSpacing)
-    }
-    x2={x2 + this.offsetX}
-    y2={
-      y2 +
-      this.offsetY +
-      box * (this.offsetY + this.lineLength + this.stackSpacing)
-    }
-    stroke="#ECDBBA"
-    strokeWidth="5"
-    strokeLinecap="round"
-  />
+    <line
+      key={key}
+      x1={x1 + this.offsetX}
+      y1={
+        y1 +
+        this.offsetY +
+        box * (this.offsetY + this.lineLength + this.stackSpacing)
+      }
+      x2={x2 + this.offsetX}
+      y2={
+        y2 +
+        this.offsetY +
+        box * (this.offsetY + this.lineLength + this.stackSpacing)
+      }
+      stroke="#ECDBBA"
+      strokeWidth="5"
+      strokeLinecap="round"
+    />
   );
 
   render() {
     const { title } = this.props;
-
-    const stageText = this.props.maxPoints === 15 ? "a 15" : this.stage;
+  
+    // Calculamos el puntaje a mostrar, asegurándonos de que no sea negativo
+    const displayedPoints = Math.max(this.state.points, 0);
+  
+    const stageText = this.state.stage; // Tomamos stage del estado
     const stageIndicatorStyle = {
       background:
         this.props.maxPoints === 15
           ? "#6A9F58"
-          : this.stage === "Buenas"
+          : this.state.stage === "Buenas"
           ? "#4287f5"
           : "#C84B31",
       color: "#ECDBBA",
     };
-
+  
     const titleClassName =
       title === "NOSOTROS" ? "counter-body-nos" : "counter-body-ellos";
-
+  
     return (
       <div className={titleClassName}>
         <div className="counter-title">
@@ -153,29 +213,31 @@ class Counter extends Component {
         <div className="counter-buttons-container">
           <div className="counter-points">
             <h1 style={{ color: stageIndicatorStyle.background }}>
-              {this.state.points}
+              {displayedPoints}
             </h1>
           </div>
           <div className="buttons-row">
-            <button
-              aria-label="Suma"
-              className="counter-button"
-              onClick={this.addPoint}
-            >
-              <PlusIcon />
-            </button>
             <button
               aria-label="Resta"
               className="counter-button"
               onClick={this.subtractPoint}
             >
-              <MinusIcon />
+              <i class='bx bx-minus bx-md'></i>
+            </button>
+  
+            <button
+              aria-label="Suma"
+              className="counter-button"
+              onClick={this.addPoint}
+            >
+              <i class='bx bx-plus bx-md '></i>
             </button>
           </div>
         </div>
       </div>
     );
   }
+  
 }
 
 export default Counter;

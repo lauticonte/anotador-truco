@@ -44,6 +44,12 @@
   margin: 0 0.7em 0 0.7em;
   color: #ecdbba;
   font-size: 1em;
+  line-height: 0;
+  cursor: pointer;
+  font-weight: bold;
+  justify-content: center;
+  display: flex;
+
 }
 
 .counter-points {
@@ -70,51 +76,20 @@
   font-weight: 400;
 }
 
-
-
-.points-container{
-  display: inline-block; /* Asegura que no ocupe todo el ancho */
-  padding: 2.5px; /* Margen entre el borde negro y la carta */
-  background-color: #ecdbba; /* Color del borde negro */
-  border-radius: 10px; /* Bordes redondeados */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Sombra para darle realismo */
-  color: #191919;
+.board {
+  flex: 1; /* El contenido ocupa el espacio restante */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
   
 }
 
-.points-button {
-  
-  background-color: #ecdbba; /* Color claro del fondo */
-  color: #191919;
-  height: 30px;
-  width: 55px;
-  padding: 0 12px;
-  font-weight: bold;
-  font-size: 0.8em;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid #191919;
-}
 
-.points-button:hover {
-  
-  color: #191919; /* Cambia el color del texto al hacer hover */
-
-  transform: scale(1.03); /* Efecto de agrandamiento leve */
-}
 
 .buttons-row {
   display: flex;
   flex-direction: row; /* Mantiene los botones en una fila horizontal */
   gap: 0.5rem; /* Espacio entre los botones */
-}
-
-.svg-icon {
-  width: 22px;
-  height: 24px;
-  fill: currentColor; /* Hereda el color del texto */
-  vertical-align: middle; /* Alineación vertical */
 }
 
 .stage-indicator {
