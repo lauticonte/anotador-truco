@@ -148,7 +148,7 @@ main {
   position: fixed;
   top: 0;
   right: -300px;
-  width: 300px;
+  width: 270px;
   height: 100%;
   background: #191919; /* Fondo azul oscuro */
   box-shadow: -4px 0 10px rgba(0, 0, 0, 0.2); /* Sombra para separación */
@@ -225,24 +225,21 @@ main {
   color: inherit;
 }
 
-/* Responsividad */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 270px;
-  }
-
-  .sidebar-content img.sidebar-icon {
-    width: 28px;
-    height: 28px;
-  }
-
-  .sidebar-content span {
-    font-size: 0.9rem;
-  }
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 1rem;
+  background-color: #2d4263;
+  border-top: 3px solid #ecdbba; /* Borde superior */
+  box-sizing: border-box; /* Asegura que el padding no afecte al ancho */
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: .4rem;
+  font-size: .8rem;
 }
-
-
-
 
 
 .history-button {
@@ -339,16 +336,7 @@ main {
 
 
 
-.footer {
-  display: flex;
-  flex-direction: column;
 
-  align-items: center;
-
-  padding: 0.5em;
-
-  font-size: 0.7em;
-}
 
 .finished-message {
   display: flex;
@@ -452,13 +440,18 @@ a {
 
 .footer {
   display: flex;
-  justify-content: space-between; /* Espacio entre los elementos */
+  justify-content: center; /* Espacio entre los elementos */
   align-items: center; /* Centra verticalmente */
   padding: 0em 20px; /* Espacio interno */
   width: 100%; /* Ocupa todo el ancho del contenedor */
   background-color: #2d4263; /* Color de fondo */
   border-top: 3px solid #ecdbba; /* Borde superior */
   box-sizing: border-box; /* Asegura que el padding no afecte al ancho */
+  font-size: 0.9rem;
+  gap: 1rem; /* Espacio entre los elementos */
+  height: 35px;
+  flex-direction: row;
+  line-height: 1;
 }
 
 .footer__copy,
@@ -467,14 +460,7 @@ a {
   align-items: center; /* Centra verticalmente */
   color: #ecdbba; /* Color de texto */
   margin: 0; /* Elimina márgenes innecesarios */
-  font-size: 0.9rem;
-  gap: 1rem; /* Espacio entre los elementos */
-  height: 35px;
-}
 
-.footer__version {
-  margin-left: auto; /* Empuja la versión al extremo derecho */
-  font-size: 1rem; /* Tamaño de fuente */
 }
 
 h1,
@@ -488,6 +474,8 @@ h3 {
   font-family: "MBF";
   text-align: center;
   font-weight: bold;
+  font-size: 1.1rem;
+  margin: 0 .4rem 0 .2rem;
   /* margin-bottom: 2rem; */
 }
 
@@ -506,3 +494,7 @@ a:link,
   text-decoration: none;
   color: #ecdbba;
 }
+
+
+
+
