@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from "react";
-import "./App.css";
-import Header from "./Components/Header.js";
-import Footer from "./Components/Footer.js";
-import Board from "./Components/Board.js";
-import AdComponent from "./Components/Ads.js";
-import History from "./Components/History.js";
+import "./styles/App.css";
+import Header from "./components/Header.js";
+import Footer from "./components/Footer.js";
+import Board from "./components/Board.js";
+import AdComponent from "./components/Ads.js";
+import History from "./components/History.js";
+import { AuthProvider } from "./context/AuthContext.js";
 
 const App = () => {
   const [finished, setFinished] = useState(false);
@@ -99,6 +100,7 @@ const App = () => {
   
 
   return (
+    <AuthProvider>
     <div className="app">
       <Header
         toggleMaxPoints={toggleMaxPoints}
@@ -117,6 +119,7 @@ const App = () => {
       <AdComponent adId="127560-15" type="15" siteId="127560" formatId="15" />
       <AdComponent adId="127560-6" type="6" siteId="127560" formatId="6" />
     </div>
+    </AuthProvider>
   );
 };
 

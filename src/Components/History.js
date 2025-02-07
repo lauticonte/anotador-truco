@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "./History.css";
+import "../styles/History.css";
 
 const History = ({ isVisible, onClose }) => {
   const [history, setHistory] = useState([]);
