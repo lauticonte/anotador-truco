@@ -160,6 +160,90 @@ main {
 
 }
 
+
+/* Overlay para perfil */
+.profile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  
+  
+}
+
+.profile {
+  background-color: #191919;
+  color: #ecdbba;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 275px;
+  height: 500px;
+  text-align: center;
+  position: relative;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.profile-header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.close-profile {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  cursor: pointer;
+}
+
+.user-avatar-large {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  margin: 0 10px;
+  display: block;
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  
+}
+
+.logout-button {
+  background-color: #c84b31;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  position: relative;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  top: 300px;
+}
+
+.logout-button:hover {
+  background-color: #a33e28;
+}
+
 .sidebar.open {
   right: 0;
 }
@@ -214,10 +298,21 @@ main {
   
 }
 
+.user-avatar {
+  padding: 0;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 25%;
+  object-fit: cover;
+}
+
 .sidebar-icon img {
   width: 25px;
   height: 25px;
 }
+
+
+
 
 .sidebar-content span {
   font-size: 1rem;
@@ -495,6 +590,17 @@ a:link,
   color: #ecdbba;
 }
 
+
+
+
+/* media screen */
+@media screen and (max-height: 700px) {
+  .app {
+    overflow-x: hidden;
+    overflow-y: scroll;
+
+  }
+}
 
 
 
