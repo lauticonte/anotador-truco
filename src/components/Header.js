@@ -115,22 +115,41 @@ const Header = React.memo(
               </div>
             </li>
           </ul>
+          <div className="sidebar-footer">
+            <span>¡Ayudanos a mantener la app!</span>
+            <a
+              href="https://cafecito.app/truqito"
+              rel="noreferrer"
+              target="_blank"
+            >
+              <img
+                srcset="https://cdn.cafecito.app/imgs/buttons/button_5.png 1x, https://cdn.cafecito.app/imgs/buttons/button_5_2x.png 2x, https://cdn.cafecito.app/imgs/buttons/button_5_3.75x.png 3.75x"
+                src="https://cdn.cafecito.app/imgs/buttons/button_5.png"
+                alt="Invitame un café en cafecito.app"
+              />
+            </a>
+          </div>
         </div>
 
         {/* PERFIL DEL USUARIO */}
         {isProfileOpen && (
-          <div className="overlay visible profile-overlay" onClick={toggleProfile}>
+          <div
+            className="overlay visible profile-overlay"
+            onClick={toggleProfile}
+          >
             <div className="profile" onClick={(e) => e.stopPropagation()}>
               <span className="close-profile" onClick={toggleProfile}>
                 <i className="bx bx-x"></i>
               </span>
-              
-              <div className="profile-header">
-              <img src={user.user_metadata.picture} alt="Avatar" className="user-avatar-large" />
-              <h3>Hola, {user.user_metadata.name} 👋</h3>
-              </div>
 
-              
+              <div className="profile-header">
+                <img
+                  src={user.user_metadata.picture}
+                  alt="Avatar"
+                  className="user-avatar-large"
+                />
+                <h3>Hola, {user.user_metadata.name} 👋</h3>
+              </div>
 
               <button className="logout-button" onClick={handleLogout}>
                 CERRAR SESIÓN
