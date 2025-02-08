@@ -330,10 +330,11 @@ main {
   box-sizing: border-box; /* Asegura que el padding no afecte al ancho */
   align-items: center;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   flex-direction: column;
   gap: .4rem;
   font-size: .8rem;
+  height: 200px;
 }
 
 
