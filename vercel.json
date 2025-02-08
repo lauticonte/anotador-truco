@@ -1,42 +1,23 @@
 {
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "buildCommand": "npm run build:dev",
-        "devCommand": "npm start"
+    "headers": [
+      {
+        "source": "/static/(.*)",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "source": "/images/(.*)", 
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "source": "/favicon.ico", 
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=86400, must-revalidate" }
+        ]
       }
-    }
-  ],
-  "routes": [],
-  "functions": {},
-  "env": {
-    "NEXT_PUBLIC_SUPABASE_URL": "@supabase-url",
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase-anon-key"
-  },
-  "overrides": {
-    "dev": {
-      "builds": [
-        {
-          "src": "package.json",
-          "use": "@vercel/static-build",
-          "config": {
-            "buildCommand": "npm run build:dev"
-          }
-        }
-      ]
-    },
-    "master": {
-      "builds": [
-        {
-          "src": "package.json",
-          "use": "@vercel/static-build",
-          "config": {
-            "buildCommand": "npm run build:prod"
-          }
-        }
-      ]
-    }
+    ]
   }
-}
+  
