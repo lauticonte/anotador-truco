@@ -69,7 +69,7 @@ const Header = React.memo(
 
         <div id="sidebar" className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
           <ul className="sidebar-list">
-            <li className="sidebar-item" onClick={toggleProfile}>
+            {/* <li className="sidebar-item" onClick={toggleProfile}>
               <div className="sidebar-content">
                 <div className="sidebar-icon">
                   {user && user.user_metadata.picture ? (
@@ -96,7 +96,7 @@ const Header = React.memo(
                   )}
                 </div>
               </div>
-            </li>
+            </li> */}
 
             <li className="sidebar-item" onClick={toggleMenu}>
               <div className="sidebar-content" onClick={toggleHistory}>
