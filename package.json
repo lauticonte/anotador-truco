@@ -18,9 +18,9 @@
   "sideEffects": false,
 "scripts": {
   "start": "react-scripts start",
-  "build:dev": "react-scripts build",
-  "build:prod": "react-scripts build",
-  "build": "if [ \"$BUILD_ENV\" = \"development\" ]; then npm run build:dev; else npm run build:prod; fi"
+  "build": "react-scripts build",
+  "build:dev": "BUILD_ENV=development react-scripts build",
+  "build:prod": "BUILD_ENV=production react-scripts build"
 },
   "eslintConfig": {
     "extends": [
