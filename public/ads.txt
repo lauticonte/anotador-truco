@@ -716,3 +716,10 @@ iqzone.com,IQ326,RESELLER
 smartadserver.com,4343,RESELLER
 richaudience.com,q3KyMB36ue,RESELLER
 contextweb.com,562726,RESELLER,89ff185a4c4e857c
+vlyby.com,xtQgfhpGOB6rFMcECZAWHp,DIRECT
+rubiconproject.com,25342,RESELLER,0bfd66d529a55807
+yieldlab.net,14311674,RESELLER
+smartstream.tv,585,RESELLER
+yieldlab.net,2172218,RESELLER
+pubmatic.com,164562,RESELLER
+yieldlab.net,15465081,RESELLER
