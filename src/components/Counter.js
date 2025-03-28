@@ -5,15 +5,25 @@ import "../styles/Counter.css";
 class Counter extends Component {
   constructor(props) {
     super(props);
-  const savedPoints =
-    parseInt(localStorage.getItem(`points-${props.title}`), 10) || 0;
-  this.state = {
-    points: savedPoints,
-    stage: this.props.maxPoints === 15 ? "a 15" : "Malas",
-  };
+    const savedPoints = parseInt(localStorage.getItem(`points-${props.title}`), 10) || 0;
+    const defaultStage = props.maxPoints === 15 ? "a 15" : "Malas";
+    const savedStage = localStorage.getItem(`stage-${props.title}`);
+    
+    // Si no hay stage guardado o si cambiamos de modo de juego, usar el default
+    // También asegurarnos que en modo 30, si los puntos son 0, el estado sea "Malas"
+    const initialStage = !savedStage || 
+      (props.maxPoints === 15 && savedStage !== "a 15") || 
+      (props.maxPoints === 30 && savedStage === "a 15") ||
+      (props.maxPoints === 30 && savedPoints === 0 && savedStage === "Buenas")
+      ? defaultStage 
+      : savedStage;
+    
+    this.state = {
+      points: savedPoints,
+      stage: initialStage,
+    };
 
-
-    this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas";
+    this.stage = initialStage;
     this.lineLength = 90;
     this.offsetX = 5;
     this.offsetY = 7;
@@ -29,8 +39,9 @@ class Counter extends Component {
   }
 
   updatePoints = (newPoints, stage) => {
-    this.setState({ points: newPoints });
+    this.setState({ points: newPoints, stage: stage });
     this.stage = stage;
+    localStorage.setItem(`stage-${this.props.title}`, stage);
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -39,9 +50,15 @@ class Counter extends Component {
     }
   
     if (prevProps.maxPoints !== this.props.maxPoints) {
+      const newStage = this.props.maxPoints === 15 ? "a 15" : "Malas";
+      
+      // Limpiar el localStorage para este equipo
+      localStorage.removeItem(`points-${this.props.title}`);
+      localStorage.removeItem(`stage-${this.props.title}`);
+      
       this.setState({
         points: 0,
-        stage: this.props.maxPoints === 15 ? "a 15" : "Malas",
+        stage: newStage,
       });
     }
   }
@@ -49,53 +66,59 @@ class Counter extends Component {
 
   // Nueva función para reiniciar puntos desde el componente padre
   resetPoints = () => {
-    this.setState({ points: 0 });
-    this.stage = this.props.maxPoints === 15 ? "a 15" : "Malas";
-    localStorage.setItem(`points-${this.props.title}`, 0);
+    const newStage = this.props.maxPoints === 15 ? "a 15" : "Malas";
+    
+    // Limpiar el localStorage para este equipo
+    localStorage.removeItem(`points-${this.props.title}`);
+    localStorage.removeItem(`stage-${this.props.title}`);
+    
+    // Asegurarnos que el estado sea "Malas" en modo 30
+    const finalStage = this.props.maxPoints === 30 ? "Malas" : newStage;
+    
+    this.setState({ 
+      points: 0,
+      stage: finalStage
+    });
+    this.stage = finalStage;
   };
 
   addPoint = () => {
-    if (this.props.finished) return; // Bloquear acción si el juego terminó
+    if (this.props.finished) return;
   
     this.setState(
       (prevState) => {
         let nextPoints = prevState.points + 1;
         let nextStage = prevState.stage;
   
-        // Manejar transición a "Buenas" para 30 puntos
         if (this.props.maxPoints === 30) {
           if (nextPoints === 16 && prevState.stage === "Malas") {
             nextStage = "Buenas";
-            nextPoints = 1; // Reiniciar puntos en "Buenas"
+            nextPoints = 1;
+            localStorage.setItem(`stage-${this.props.title}`, nextStage);
           } else if (nextPoints === 15 && nextStage === "Buenas") {
-            this.props.onWin(this.props.title); // Llamar al evento de victoria
-            return prevState; // No registrar el último punto
+            this.props.onWin(this.props.title);
+            return prevState;
           }
         } else if (nextPoints === 15) {
-          this.props.onWin(this.props.title); // Llamar al evento de victoria
-          return prevState; // No registrar el último punto
+          this.props.onWin(this.props.title);
+          return prevState;
         }
   
-        return { points: nextPoints, stage: nextStage }; // Actualizar estado
+        return { points: nextPoints, stage: nextStage };
       },
       () => {
         if (!this.props.finished) {
-          this.registerHistory("SUMA", 1); // Registrar solo si el juego no terminó
+          this.registerHistory("SUMA", 1);
+          localStorage.setItem(`stage-${this.props.title}`, this.state.stage);
         }
       }
     );
   };
   
-  
-  
-  
-  
-  
   subtractPoint = () => {
-    if (this.props.finished) return; // Evitar restar puntos si el juego terminó
+    if (this.props.finished) return;
   
     this.setState((prevState) => {
-      // Evitar valores negativos
       if (prevState.points <= 0) {
         return null;
       }
@@ -103,24 +126,20 @@ class Counter extends Component {
       let nextPoints = prevState.points - 1;
       let nextStage = prevState.stage;
   
-      // Manejar transiciones entre "Buenas" y "Malas" para 30 puntos
       if (this.props.maxPoints === 30) {
         if (nextPoints === 0 && prevState.stage === "Buenas") {
           nextStage = "Malas";
-          nextPoints = 15; // Volver a "Malas" con 15 puntos
+          nextPoints = 15;
+          localStorage.setItem(`stage-${this.props.title}`, nextStage);
         }
       }
   
-      return { points: nextPoints, stage: nextStage }; // Actualizamos tanto puntos como stage
+      return { points: nextPoints, stage: nextStage };
     }, () => {
-      // Registrar el historial después de actualizar el estado
       this.registerHistory("RESTA", -1);
+      localStorage.setItem(`stage-${this.props.title}`, this.state.stage);
     });
   };
-  
-  
-
-  
   
 
   registerHistory = (action, points) => {
@@ -145,9 +164,6 @@ class Counter extends Component {
     history.push(entry);
     localStorage.setItem("history", JSON.stringify(history));
   };
-  
-  
-  
   
 
   renderLines = () => {

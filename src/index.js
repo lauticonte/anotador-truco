@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client'; // Importar la nueva API
+import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './App.js';
 
@@ -12,6 +13,8 @@ const root = createRoot(rootElement);
 // Renderizar la aplicación
 root.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>
 );

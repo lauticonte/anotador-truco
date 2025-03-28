@@ -10,6 +10,10 @@ export const AuthProvider = ({ children }) => {
     // Revisar si hay una sesión activa
     const getSession = async () => {
       const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error("Error al obtener la sesión:", error.message);
+        return;
+      }
       if (data?.session) {
         setUser(data.session.user);
       }
