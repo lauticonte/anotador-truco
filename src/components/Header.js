@@ -24,12 +24,13 @@ const Header = React.memo(
       setIsProfileOpen(!isProfileOpen);
     };
 
-    const handleLogin = async () => {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-      });
-      if (error) console.error("Error en login:", error.message);
-    };
+    // INICIAR SESION
+    // const handleLogin = async () => {
+    //   const { error } = await supabase.auth.signInWithOAuth({
+    //     provider: "google",
+    //   });
+    //   if (error) console.error("Error en login:", error.message);
+    // };
 
     const handleLogout = async () => {
       const { error } = await supabase.auth.signOut();
@@ -69,7 +70,8 @@ const Header = React.memo(
 
         <div id="sidebar" className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
           <ul className="sidebar-list">
-            <li className="sidebar-item" onClick={toggleProfile}>
+            {/* INICIAR SESION JEJOX */}
+            {/* <li className="sidebar-item" onClick={toggleProfile}>
               <div className="sidebar-content">
                 <div className="sidebar-icon">
                   {user && user.user_metadata.picture ? (
@@ -96,7 +98,7 @@ const Header = React.memo(
                   )}
                 </div>
               </div>
-            </li>
+            </li> */}
 
             <li className="sidebar-item" onClick={toggleMenu}>
               <div className="sidebar-content" onClick={toggleHistory}>
