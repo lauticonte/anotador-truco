@@ -53,11 +53,11 @@ const ResultPage = ({ resetGame }) => {
     <div className="finished-message">
       <h3>
         <div className="winner">
-          <p>{winner === "NOSOTROS" ? "GANAMOS NOSOTROS" : "GANARON ELLOS"}</p>
+          <p>{winner.toUpperCase() === "NOSOTROS" ? "GANAMOS NOSOTROS" : "GANARON ELLOS"}</p>
           <img
             className="img-lost"
-            src={winner === "NOSOTROS" ? "/images/happy.png" : "/images/sadge.png"}
-            alt={winner === "NOSOTROS" ? "happy" : "sadge"}
+            src={winner.toUpperCase() === "NOSOTROS" ? "/images/happy.png" : "/images/sadge.png"}
+            alt={winner.toUpperCase() === "NOSOTROS" ? "happy" : "sadge"}
             loading="lazy"
           />
         </div>
