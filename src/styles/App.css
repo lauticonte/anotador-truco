@@ -60,11 +60,17 @@ main {
 
 .logo-container {
   text-align: center;
-  width: 100%; /* Asegura que ocupe todo el ancho */
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.2em 0; /* Espaciado interno */
+  padding: 0.2em 0;
+  transition: transform 0.8s ease;
+  position: relative;
+}
+
+.logo-container.slide {
+  transform: translateX(-25%);
 }
 
 .logo {
@@ -76,7 +82,83 @@ main {
   position: absolute;
   top: 1.2rem;
   right: 1rem;
-  z-index: 100; /* Asegúrate de que esté por encima de otros elementos */
+  z-index: 100;
+}
+
+.menu-tooltip {
+  position: absolute;
+  left: 81.5%;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(236, 219, 186);
+  color: #042d4f;
+  padding: 0.4rem 0.8rem;
+  border-radius: 13px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  animation: tooltipPulse 2s ease-in-out infinite;
+  border: 2px solid #2d4263;
+  z-index: 99;
+  font-family: "Outfit", sans-serif;
+}
+
+.menu-tooltip.show {
+  animation: tooltipAppear 0.5s ease forwards, tooltipPulse 2s ease-in-out infinite;
+}
+
+.menu-tooltip.hide {
+  animation: tooltipDisappear 0.5s ease forwards;
+}
+
+.menu-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -8px;
+  width: 12px;
+  height: 12px;
+  background-color: rgba(236, 219, 186);
+  transform: translateY(-50%) rotate(45deg);
+  border-right: 2px solid #2d4263;
+  border-top: 2px solid #2d4263;
+}
+
+@keyframes tooltipAppear {
+  0% {
+    opacity: 0;
+    transform: translate(-20px, -50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+}
+
+@keyframes tooltipDisappear {
+  0% {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-20px, -50%);
+  }
+}
+
+@keyframes tooltipPulse {
+  0% {
+    transform: translate(0, -50%) scale(1);
+  }
+  50% {
+    transform: translate(0, -50%) scale(1.02);
+  }
+  100% {
+    transform: translate(0, -50%) scale(1);
+  }
 }
 
 .btn {

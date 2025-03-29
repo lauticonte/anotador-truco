@@ -6,7 +6,32 @@ const Header = React.memo(
   ({ toggleMaxPoints, maxPoints, toggleHistory }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [showTooltip, setShowTooltip] = useState(false);
+    const [logoSlide, setLogoSlide] = useState(false);
     const { user } = useAuth();
+
+    useEffect(() => {
+      // Secuencia de animación
+      const slideTimer = setTimeout(() => {
+        setLogoSlide(true);
+      }, 2000);
+
+      const tooltipTimer = setTimeout(() => {
+        setShowTooltip(true);
+      }, 2500);
+
+      // Revertir la animación
+      const hideTimer = setTimeout(() => {
+        setShowTooltip(false);
+        setTimeout(() => setLogoSlide(false), 100);
+      }, 60000);
+
+      return () => {
+        clearTimeout(slideTimer);
+        clearTimeout(tooltipTimer);
+        clearTimeout(hideTimer);
+      };
+    }, []);
 
     useEffect(() => {
       // Prioridad alta para la imagen
@@ -18,6 +43,8 @@ const Header = React.memo(
 
     const toggleMenu = () => {
       setIsSidebarOpen(!isSidebarOpen);
+      setShowTooltip(false);
+      setLogoSlide(false);
     };
 
     const toggleProfile = () => {
@@ -40,7 +67,7 @@ const Header = React.memo(
 
     return (
       <div className="header">
-        <div className="logo-container">
+        <div className={`logo-container ${logoSlide ? 'slide' : ''}`}>
           <img
             src="./images/main_logo.webp"
             alt="Main Logo"
@@ -50,6 +77,11 @@ const Header = React.memo(
             decoding="async"
             loading="eager"
           />
+          {showTooltip && (
+            <div className={`menu-tooltip ${isSidebarOpen ? 'hide' : 'show'}`}>
+            <img src="./images/var.svg" alt="VAR Icon" style={{ width: '30px', height: '20px', verticalAlign: 'top', marginRight: '1px' }}  /> REVISÁ 
+            </div>
+          )}
         </div>
 
         <div className="menu-container">
@@ -70,36 +102,6 @@ const Header = React.memo(
 
         <div id="sidebar" className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
           <ul className="sidebar-list">
-            {/* INICIAR SESION JEJOX */}
-            {/* <li className="sidebar-item" onClick={toggleProfile}>
-              <div className="sidebar-content">
-                <div className="sidebar-icon">
-                  {user && user.user_metadata.picture ? (
-                    <img
-                      src={user.user_metadata.picture}
-                      alt="Avatar"
-                      className="user-avatar"
-                    />
-                  ) : (
-                    <i className="bx bx-user bx-sm"></i>
-                  )}
-                </div>
-                <div className="auth-section">
-                  {user ? (
-                    <div className="user-info">
-                      <span onClick={toggleProfile}>
-                        VER MI PERFIL
-                      </span>
-                    </div>
-                  ) : (
-                    <span className="login" onClick={handleLogin}>
-                      INICIAR SESION
-                    </span>
-                  )}
-                </div>
-              </div>
-            </li> */}
-
             <li className="sidebar-item" onClick={toggleMenu}>
               <div className="sidebar-content" onClick={toggleHistory}>
                 <div className="sidebar-icon">
@@ -120,10 +122,9 @@ const Header = React.memo(
           <div className="sidebar-footer">
             <span>¡Ayudanos a mantener la app!</span>
             <a href='https://cafecito.app/truqito' rel='noreferrer' target='_blank'><img srcset='https://cdn.cafecito.app/imgs/buttons/button_5.png 1x, https://cdn.cafecito.app/imgs/buttons/button_5_2x.png 2x, https://cdn.cafecito.app/imgs/buttons/button_5_3.75x.png 3.75x' src='https://cdn.cafecito.app/imgs/buttons/button_5.png' alt='Invitame un café en cafecito.app' /></a>
-          </ div>      
+          </div>      
         </div>
 
-        {/* PERFIL DEL USUARIO */}
         {isProfileOpen && (
           <div className="overlay visible profile-overlay" onClick={toggleProfile}>
             <div className="profile" onClick={(e) => e.stopPropagation()}>
@@ -132,11 +133,9 @@ const Header = React.memo(
               </span>
               
               <div className="profile-header">
-              <img src={user.user_metadata.picture} alt="Avatar" className="user-avatar-large" />
-              <h3>Hola, {user.user_metadata.name} 👋</h3>
+                <img src={user.user_metadata.picture} alt="Avatar" className="user-avatar-large" />
+                <h3>Hola, {user.user_metadata.name} 👋</h3>
               </div>
-
-              
 
               <button className="logout-button" onClick={handleLogout}>
                 CERRAR SESIÓN
