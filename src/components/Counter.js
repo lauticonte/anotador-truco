@@ -143,7 +143,7 @@ class Counter extends Component {
   
 
   registerHistory = (action, points) => {
-    if (this.props.finished) return; // No registrar si el juego terminó
+    if (this.props.finished) return;
   
     const currentTime = new Date();
     const formattedTime = currentTime.toLocaleTimeString("es-AR", {
@@ -159,6 +159,9 @@ class Counter extends Component {
       points,
       team: this.props.title,
       timestamp: formattedTime,
+      currentPoints: this.state.points,
+      stage: this.state.stage,
+      maxPoints: this.props.maxPoints
     };
   
     history.push(entry);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 async function enviarFeedback(feedback) {
@@ -28,10 +28,13 @@ async function enviarFeedback(feedback) {
 const ResultPage = ({ resetGame }) => {
   const { winner } = useParams();
   const navigate = useNavigate();
+  const [selectedPoints, setSelectedPoints] = useState(null);
 
-  const handleRevancha = (points) => {
-    resetGame(points);
-    navigate('/');
+  const handleStartGame = () => {
+    if (selectedPoints) {
+      resetGame(selectedPoints);
+      navigate('/');
+    }
   };
 
   const handleSubmit = () => {
@@ -59,14 +62,35 @@ const ResultPage = ({ resetGame }) => {
           />
         </div>
       </h3>
-      <div className="revancha-buttons">
-        <button className="restart-button" onClick={() => handleRevancha(15)}>
-          REVANCHA 1️⃣5️⃣
+
+      <section className="next-game-section">
+        <h4 className="next-game-title">¿A cuánto la revancha?</h4>
+        <div className="game-options">
+          <div 
+            className={`game-option ${selectedPoints === 15 ? 'selected' : ''}`}
+            onClick={() => setSelectedPoints(15)}
+          >
+            <span className="game-option-points">15</span>
+            <span className="game-option-text">Puntos</span>
+          </div>
+          <div 
+            className={`game-option ${selectedPoints === 30 ? 'selected' : ''}`}
+            onClick={() => setSelectedPoints(30)}
+          >
+            <span className="game-option-points">30</span>
+            <span className="game-option-text">Puntos</span>
+          </div>
+        </div>
+        <button 
+          className="start-game-button"
+          onClick={handleStartGame}
+          disabled={!selectedPoints}
+        >
+          <i className='bx bx-play'></i>
+          Comenzar Juego
         </button>
-        <button className="restart-button" onClick={() => handleRevancha(30)}>
-          REVANCHA 3️⃣0️⃣
-        </button>
-      </div>
+      </section>
+
       <div className="feedback-section">
         <h4>¡Dejanos tus sugerencias!</h4>
         <textarea

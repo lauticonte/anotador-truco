@@ -49,8 +49,40 @@
   font-weight: bold;
   justify-content: center;
   display: flex;
-
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
 }
+
+@keyframes buttonPress {
+  0% {
+    transform: scale(1);
+    background-color: #2d4263;
+  }
+  50% {
+    transform: scale(0.94);
+    background-color: #2d4263;
+  }
+  100% {
+    transform: scale(1);
+    background-color: #2d4263;
+  }
+}
+
+.counter-button:active {
+  animation: buttonPress 0.15s ease forwards;
+  -webkit-animation: buttonPress 0.15s ease forwards;
+}
+
+/* Prevenir que el estado active se quede pegado en iOS */
+.counter-button:active:after {
+  content: "";
+  display: none;
+}
+
+
 
 .counter-points {
   margin-top: 2dvh;

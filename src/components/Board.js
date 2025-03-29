@@ -25,7 +25,7 @@ const Board = ({
   // Redirigir a la página de resultado cuando termine la partida
   useEffect(() => {
     if (finished && winner) {
-      navigate(`/result/${winner}`);
+      navigate(`/resultado/${winner.toLowerCase()}`);
     }
   }, [finished, winner, navigate]);
 
@@ -44,14 +44,6 @@ const Board = ({
               />
             </div>
           </h3>
-          <div className="revancha-buttons">
-            <button className="restart-button" onClick={() => resetGame(15)}>
-              REVANCHA 1️⃣5️⃣
-            </button>
-            <button className="restart-button" onClick={() => resetGame(30)}>
-              REVANCHA 3️⃣0️⃣
-            </button>
-          </div>
         </div>
       ) : (
         <>

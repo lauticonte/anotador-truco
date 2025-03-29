@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import "./styles/App.css";
 import Header from "./components/Header.js";
 import Footer from "./components/Footer.js";
@@ -7,6 +7,7 @@ import Board from "./components/Board.js";
 import ResultPage from "./components/ResultPage.js";
 import AdComponent from "./components/Ads.js";
 import History from "./components/History.js";
+import NotFound from "./components/NotFound.js";
 import { AuthProvider } from "./context/AuthContext.js";
 
 const App = () => {
@@ -77,9 +78,12 @@ const App = () => {
               }
             />
             <Route
-              path="/result/:winner"
+              path="/resultado/:winner"
               element={<ResultPage resetGame={resetGame} />}
             />
+            <Route path="/result" element={<Navigate to="/" replace />} />
+            <Route path="/result/:winner" element={<Navigate to="/resultado/:winner" replace />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
         <Footer />
