@@ -131,7 +131,7 @@ const History = ({ isVisible, onClose }) => {
     <div className={`history-overlay ${isVisible ? "visible" : ""}`}>
       <div className="history-modal">
         <div className="history-header">
-          <h2>{showSummary ? "Resumen" : "Historial"}</h2>
+          <h2>{showSummary ? "RESUMEN" : "HISTORIAL"}</h2>
           <div className="history-actions">
             <button 
               className="summary-button"

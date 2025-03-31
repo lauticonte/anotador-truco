@@ -199,7 +199,7 @@ class Counter extends Component {
   );
 
   render() {
-    const { title } = this.props;
+    const { title, displayName } = this.props;
   
     // Calculamos el puntaje a mostrar, asegurándonos de que no sea negativo
     const displayedPoints = Math.max(this.state.points, 0);
@@ -221,7 +221,7 @@ class Counter extends Component {
     return (
       <div className={titleClassName}>
         <div className="counter-title">
-          <h2>{title}</h2>
+          <h2>{displayName || title}</h2>
         </div>
         <div className="stage-indicator">
           <h3 style={stageIndicatorStyle}>{stageText}</h3>
@@ -241,7 +241,7 @@ class Counter extends Component {
               className="counter-button"
               onClick={this.subtractPoint}
             >
-              <i class='bx bx-minus bx-md'></i>
+              <i className='bx bx-minus bx-md'></i>
             </button>
   
             <button
@@ -249,7 +249,7 @@ class Counter extends Component {
               className="counter-button"
               onClick={this.addPoint}
             >
-              <i class='bx bx-plus bx-md '></i>
+              <i className='bx bx-plus bx-md'></i>
             </button>
           </div>
         </div>

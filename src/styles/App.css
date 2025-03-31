@@ -344,8 +344,8 @@ main {
 
 
 .sidebar-content:hover {
-  background-color: #ecdbba; /* Color de hover */
-  transform: scale(1.02); /* Ligera ampliación */
+  background-color: #2d4263;
+  transform: scale(1.04); /* Ligera ampliación */
 }
 
 .sidebar-content {
@@ -368,11 +368,11 @@ main {
 .sidebar-content .sidebar-icon {
   width: 32px;
   height: 32px;
-  margin-right: 1rem;
+  margin-right: .5rem;
   background-color: #ecdbba;
   padding: .2em;
   border-radius: 25%;
-  color: #2d4263;
+  color: #042d4f;
   align-items: center;
   display: flex;
   justify-content: center;
@@ -417,6 +417,7 @@ main {
   gap: .4rem;
   font-size: .8rem;
   height: 200px;
+  font-weight: 400;
 }
 
 
@@ -582,6 +583,7 @@ a {
   display: flex;
   flex-direction: column-reverse;
   padding-bottom: .2em;
+  font-size: .8em;
  
 }
 
@@ -624,6 +626,7 @@ a {
   padding: 0.5em;
   font-size: 1em;
   font-family: "Outfit", sans-serif;
+  font-weight: 200;
 }
 
 .submit-feedback-button {
@@ -778,7 +781,7 @@ a:link,
   border: none;
   border-radius: 12px;
   padding: 1rem 0;
-  width: calc(260px + 2.4rem + 0.6rem + 4px); /* Dos game-options (130px cada uno) + padding total (2.4rem) + gap (0.6rem) */
+  width: calc(130px * 2 + 2.4rem + .6rem + 8px); /* Dos game-options (130px cada uno) + padding total (2.4rem) + gap (0.6rem) + bordes totales (8px) */
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
@@ -786,7 +789,6 @@ a:link,
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -803,6 +805,7 @@ a:link,
 
 .start-game-button i {
   font-size: 2rem;
+  line-height: 0;
 }
 
 

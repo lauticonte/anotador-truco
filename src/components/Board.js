@@ -10,6 +10,7 @@ const Board = ({
   handleWin,
   toggleMaxPoints,
   resetGame,
+  teamNames,
 }) => {
   const navigate = useNavigate();
 
@@ -35,7 +36,7 @@ const Board = ({
         <div className="finished-message">
           <h3>
             <div className="winner">
-              <p>{winner === "NOSOTROS" ? "GANAMOS NOSOTROS" : "GANARON ELLOS"}</p>
+              <p>{winner === "NOSOTROS" ? `GANAMOS ${teamNames.NOSOTROS}` : `GANARON ${teamNames.ELLOS}`}</p>
               <img
                 className="img-lost"
                 src={winner === "NOSOTROS" ? "/images/happy.png" : "/images/sadge.png"}
@@ -50,11 +51,13 @@ const Board = ({
           <Analytics />
           <Counter
             title="NOSOTROS"
+            displayName={teamNames.NOSOTROS}
             maxPoints={maxPoints}
             onWin={() => handleWin("NOSOTROS")}
           />
           <Counter
             title="ELLOS"
+            displayName={teamNames.ELLOS}
             maxPoints={maxPoints}
             onWin={() => handleWin("ELLOS")}
           />

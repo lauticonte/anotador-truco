@@ -12,3 +12,200 @@
     transition: transform 200ms ease-in-out;
   }
   
+  .edit-names-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    backdrop-filter: blur(5px);
+  }
+  
+  .edit-names-modal.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .edit-names-content {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80vh;
+    background-color: #191919;
+    border-radius: 20px 20px 0 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #ecdbba;
+    border-bottom: none;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    box-sizing: border-box;
+  }
+  
+  .edit-names-modal.visible .edit-names-content {
+    transform: translateY(0);
+  }
+  
+  @media (min-width: 768px) {
+    .edit-names-content {
+      width: 100%;
+      max-width: 600px;
+      left: 50%;
+      transform: translate(-50%, 100%);
+      border: 2px solid #ecdbba;
+      border-bottom: none;
+    }
+    
+    .edit-names-modal.visible .edit-names-content {
+      transform: translate(-50%, 0);
+    }
+
+    .edit-names-header {
+      padding: 1.5rem;
+    }
+
+    .edit-names-header h3 {
+      font-size: 1.75rem;
+    }
+
+    .edit-names-actions {
+      gap: 0.75rem;
+    }
+
+    .edit-names-actions .close-button {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      min-height: 40px;
+    }
+
+    .bx {
+      font-size: 20px;
+    }
+  }
+  
+  .edit-names-header {
+    padding: 1.25rem 1rem;
+    border-bottom: 2px solid #ecdbba;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #191919;
+    position: relative;
+  }
+  
+  .edit-names-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #ecdbba;
+    flex: 1;
+    padding-left: 0.5rem;
+  }
+  
+  .edit-names-header::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    background-color: #ecdbba;
+    border-radius: 2px;
+    opacity: 0.3;
+  }
+  
+  .edit-names-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .edit-names-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid #ecdbba;
+    color: #ecdbba;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  
+  .edit-names-actions .close-button {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .edit-names-actions .close-button:active {
+    background-color: rgba(236, 219, 186, 0.15);
+    transform: scale(0.97);
+  }
+  
+  .bx {
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 900;
+  }
+  
+  @media (hover: hover) {
+    .edit-names-actions .close-button:hover {
+      background-color: rgba(236, 219, 186, 0.1);
+    }
+  }
+  
+  .edit-names-form {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .edit-name-input {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  
+  .edit-name-input label {
+    color: #ecdbba;
+    font-size: 1rem;
+    opacity: 0.8;
+  }
+  
+  .edit-name-input input {
+    background-color: #2a2a2a;
+    border: 1px solid #ecdbba;
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: #ecdbba;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .edit-name-input input:focus {
+    outline: none;
+    border-color: #4287f5;
+    box-shadow: 0 0 0 2px rgba(66, 135, 245, 0.2);
+  }
+  
+  
+  

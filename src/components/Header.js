@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext.js";
 import { supabase } from "../config/supabaseClient.js";
 
 const Header = React.memo(
-  ({ toggleMaxPoints, maxPoints, toggleHistory }) => {
+  ({ toggleMaxPoints, maxPoints, toggleHistory, toggleEditNames }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
@@ -118,10 +118,18 @@ const Header = React.memo(
                 <span>JUGAR A {maxPoints === 30 ? "15" : "30"}</span>
               </div>
             </li>
+            <li className="sidebar-item" onClick={toggleMenu}>
+              <div className="sidebar-content" onClick={toggleEditNames}>
+                <div className="sidebar-icon">
+                  <i className="bx bx-edit-alt bx-sm"></i>
+                </div>
+                <span>EDITAR NOMBRES</span>
+              </div>
+            </li>
           </ul>
           <div className="sidebar-footer">
-            <span>¡Ayudanos a mantener la app!</span>
-            <a href='https://cafecito.app/truqito' rel='noreferrer' target='_blank'><img srcset='https://cdn.cafecito.app/imgs/buttons/button_5.png 1x, https://cdn.cafecito.app/imgs/buttons/button_5_2x.png 2x, https://cdn.cafecito.app/imgs/buttons/button_5_3.75x.png 3.75x' src='https://cdn.cafecito.app/imgs/buttons/button_5.png' alt='Invitame un café en cafecito.app' /></a>
+            <span>¡Ayudame a mantener la app!</span>
+            <a href='https://cafecito.app/truqito' rel='noreferrer' target='_blank'><img srcSet='https://cdn.cafecito.app/imgs/buttons/button_5.png 1x, https://cdn.cafecito.app/imgs/buttons/button_5_2x.png 2x, https://cdn.cafecito.app/imgs/buttons/button_5_3.75x.png 3.75x' src='https://cdn.cafecito.app/imgs/buttons/button_5.png' alt='Invitame un café en cafecito.app' /></a>
           </div>      
         </div>
 

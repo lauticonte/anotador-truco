@@ -25,7 +25,7 @@ async function enviarFeedback(feedback) {
   }
 }
 
-const ResultPage = ({ resetGame }) => {
+const ResultPage = ({ resetGame, teamNames }) => {
   const { winner } = useParams();
   const navigate = useNavigate();
   const [selectedPoints, setSelectedPoints] = useState(null);
@@ -49,11 +49,17 @@ const ResultPage = ({ resetGame }) => {
     }
   };
 
+  const winnerName = winner.toUpperCase() === "NOSOTROS" ? teamNames.NOSOTROS : teamNames.ELLOS;
+  const isDefaultName = winnerName === "NOSOTROS" || winnerName === "ELLOS" || !winnerName.trim();
+  const winnerMessage = isDefaultName 
+    ? (winner.toUpperCase() === "NOSOTROS" ? "GANAMOS NOSOTROS" : "GANARON ELLOS")
+    : `¡${winnerName} HA GANADO!`;
+
   return (
     <div className="finished-message">
       <h3>
         <div className="winner">
-          <p>{winner.toUpperCase() === "NOSOTROS" ? "GANAMOS NOSOTROS" : "GANARON ELLOS"}</p>
+          <p>{winnerMessage}</p>
           <img
             className="img-lost"
             src={winner.toUpperCase() === "NOSOTROS" ? "/images/happy.png" : "/images/sadge.png"}
@@ -92,7 +98,7 @@ const ResultPage = ({ resetGame }) => {
       </section>
 
       <div className="feedback-section">
-        <h4>¡Dejanos tus sugerencias!</h4>
+        <h4>Dejá tus sugerencias:</h4>
         <textarea
           placeholder="Escribí tus comentarios acá..."
           rows="4"

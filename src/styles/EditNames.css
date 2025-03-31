@@ -1,0 +1,303 @@
+.edit-names-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.edit-names-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.edit-names-modal {
+  position: relative;
+  width: 100%;
+  height: 80vh;
+  background-color: #191919;
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #ecdbba;
+  border-bottom: none;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+  box-sizing: border-box;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.edit-names-overlay.visible .edit-names-modal {
+  transform: translateY(0);
+}
+
+.edit-names-header {
+  padding: 1.25rem 1rem;
+  border-bottom: 2px solid #ecdbba;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #191919;
+  position: relative;
+}
+
+.edit-names-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #ecdbba;
+  flex: 1;
+  padding-left: 0.5rem;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.edit-names-header::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 4px;
+  background-color: #ecdbba;
+  border-radius: 2px;
+  opacity: 0.3;
+}
+
+.edit-names-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.edit-names-actions button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid #ecdbba;
+    color: #ecdbba;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.edit-names-actions .close-button {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-names-actions button:active {
+  background-color: rgba(236, 219, 186, 0.15);
+  transform: scale(0.95);
+}
+
+.edit-names-actions button:active .svg-history-icon {
+  fill: rgba(236, 219, 186, 0.8);
+}
+
+@media (hover: hover) {
+  .edit-names-actions button:hover {
+    background-color: rgba(236, 219, 186, 0.1);
+    border-color: rgba(236, 219, 186, 0.3);
+  }
+}
+
+.edit-names-form {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(236, 219, 186, 0.2) transparent;
+}
+
+.edit-names-form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.edit-names-form::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.edit-names-form::-webkit-scrollbar-thumb {
+  background-color: rgba(236, 219, 186, 0.2);
+  border-radius: 3px;
+}
+
+.edit-name-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.edit-name-input label {
+  color: rgba(236, 219, 186, 0.5);
+  font-size: 1rem;
+  opacity: 0.8;
+  font-weight: 200;
+  letter-spacing: 0.3px;
+  line-height: 0;
+  margin-left: 0.5rem;
+  
+}
+
+.edit-name-input input {
+  background-color: #2a2a2a;
+  
+  border-radius: 12px;
+  padding: 1rem;
+  color: #ecdbba;
+  font-size: 1.125rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+
+}
+
+#ellos-input {
+  border-left: 4px solid #C84B31;
+}
+
+#nosotros-input {
+  border-left: 4px solid #4287f5;
+}
+
+.edit-name-input input:focus {
+  outline: none;
+  border-color: #2d4263;
+  background-color: #2f2f2f;
+}
+
+.edit-name-input input::placeholder {
+  color: rgba(236, 219, 186, 0.4);
+  font-weight: normal;
+}
+
+.edit-name-input .character-count {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  font-size: 0.875rem;
+  color: rgba(236, 219, 186, 0.5);
+  transition: color 0.2s ease;
+}
+
+.edit-name-input input:focus + .character-count {
+  color: rgba(236, 219, 186, 0.8);
+}
+
+.edit-names-buttons {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid rgba(236, 219, 186, 0.1);
+  background-color: #191919;
+  position: sticky;
+  bottom: 28vh;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  flex-direction: row-reverse;
+  
+}
+
+.edit-names-buttons button {
+  flex: 1;
+  font-family: "Outfit", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  height: 48px;
+  padding: 0 1.5rem;
+  border-radius: 12px;
+  white-space: nowrap;
+  background: transparent;
+  border: 2px solid rgba(236, 219, 186, 0.2);
+  color: #ecdbba;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.5px;
+}
+
+.edit-names-buttons .save-button {
+  background-color: #2d4263;
+  border-color: #2d4263;
+}
+
+.edit-names-buttons button:active {
+  transform: scale(0.98);
+}
+
+@media (hover: hover) {
+  .edit-names-buttons button:hover {
+    background-color: rgba(236, 219, 186, 0.1);
+    border-color: rgba(236, 219, 186, 0.3);
+  }
+  
+  .edit-names-buttons .save-button:hover {
+    background-color: #3476e4;
+    border-color: #3476e4;
+  }
+}
+
+@media (min-width: 768px) {
+  .edit-names-modal {
+    width: 100%;
+    max-width: 600px;
+    height: 80vh;
+    border-radius: 24px;
+    margin: 2rem auto;
+  }
+  
+  .edit-names-overlay.visible .edit-names-modal {
+    transform: translateY(0);
+  }
+
+  .edit-names-header {
+    padding: 2rem;
+  }
+
+  .edit-names-header h2 {
+    font-size: 2rem;
+  }
+
+  .edit-names-actions {
+    gap: 1rem;
+  }
+
+  .edit-names-actions .close-button {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .svg-history-icon {
+    width: 28px;
+    height: 28px;
+    min-width: 20px;
+    min-height: 20px;
+    fill: #ecdbba;
+    transition: fill 0.2s ease;
+  }
+} 

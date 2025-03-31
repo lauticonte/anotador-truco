@@ -6,7 +6,7 @@ const AdComponent = ({ adId, type, siteId, formatId }) => {
       const adContainer = document.getElementById(adId);
 
       if (!adContainer) {
-        console.error(`Contenedor del anuncio no encontrado: ${adId}`);
+        console.warn(`El contenedor del anuncio con ID "${adId}" no fue encontrado en el DOM. Asegúrate de que el elemento existe antes de cargar los anuncios.`);
         return; // Detener si el contenedor no existe
       }
 
