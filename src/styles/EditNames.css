@@ -165,14 +165,13 @@
 
 .edit-name-input input {
   background-color: #2a2a2a;
-  
   border-radius: 12px;
   padding: 1rem;
   color: #ecdbba;
   font-size: 1.125rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 500;
-
+  border: 1px solid transparent;
 }
 
 #ellos-input {
@@ -185,8 +184,15 @@
 
 .edit-name-input input:focus {
   outline: none;
-  border-color: #2d4263;
   background-color: #2f2f2f;
+}
+
+#ellos-input:focus {
+  border-color: #C84B31;
+}
+
+#nosotros-input:focus {
+  border-color: #4287f5;
 }
 
 .edit-name-input input::placeholder {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/History.css";
 
-const History = ({ isVisible, onClose }) => {
+const History = ({ isVisible, onClose, teamNames }) => {
   const [history, setHistory] = useState([]);
   const [showSummary, setShowSummary] = useState(false);
 
@@ -102,7 +102,7 @@ const History = ({ isVisible, onClose }) => {
       <div className="summary-container">
         {Object.entries(summary).map(([team, stats]) => (
           <div key={team} className={`summary-team ${team.toLowerCase()}`}>
-            <h3>{team}</h3>
+            <h3>{team === "NOSOTROS" ? teamNames.NOSOTROS : teamNames.ELLOS}</h3>
             <p>
               <span>Sumas</span>
               <span>{stats.sumas}</span>
