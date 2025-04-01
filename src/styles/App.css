@@ -793,6 +793,13 @@ a:link,
   letter-spacing: 0.5px;
 }
 
+.start-game-button:disabled {
+  background-color: #2d2d2d;
+  color: #ecdbba;
+  cursor: not-allowed;
+}
+
+
 .start-game-button:hover {
   background-color: #a33e28;
   transform: translateY(-2px);

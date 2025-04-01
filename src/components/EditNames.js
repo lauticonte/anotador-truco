@@ -49,6 +49,24 @@ const EditNames = ({ isVisible, onClose, teamNames, onSave }) => {
     }
   };
 
+  const handleReset = async () => {
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
+    
+    // Establecer nombres por defecto
+    const defaultNames = {
+      NOSOTROS: "NOSOTROS",
+      ELLOS: "ELLOS"
+    };
+
+    // Simular un pequeño delay para la animación
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    onSave(defaultNames);
+    onClose();
+  };
+
   const CloseIcon = () => (
     <svg
       className="svg-history-icon"
@@ -126,10 +144,10 @@ const EditNames = ({ isVisible, onClose, teamNames, onSave }) => {
             {isSubmitting ? "GUARDANDO..." : "GUARDAR"}
           </button>
           <button 
-            onClick={onClose}
+            onClick={handleReset}
             disabled={isSubmitting}
           >
-            CANCELAR
+            RESTAURAR
           </button>
         </div>
       </div>

@@ -8,6 +8,7 @@ import ResultPage from "./components/ResultPage.js";
 import AdComponent from "./components/Ads.js";
 import History from "./components/History.js";
 import EditNames from "./components/EditNames.js";
+import Changelog from "./components/Changelog.js";
 import NotFound from "./components/NotFound.js";
 import { AuthProvider } from "./context/AuthContext.js";
 
@@ -20,6 +21,7 @@ const App = () => {
   });
   const [isHistoryVisible, setIsHistoryVisible] = useState(false);
   const [isEditNamesVisible, setIsEditNamesVisible] = useState(false);
+  const [isChangelogVisible, setIsChangelogVisible] = useState(false);
   const [teamNames, setTeamNames] = useState(() => {
     const savedNames = localStorage.getItem("teamNames");
     return savedNames ? JSON.parse(savedNames) : { NOSOTROS: "NOSOTROS", ELLOS: "ELLOS" };
@@ -32,6 +34,10 @@ const App = () => {
 
   const toggleEditNames = () => {
     setIsEditNamesVisible((prev) => !prev);
+  };
+
+  const toggleChangelog = () => {
+    setIsChangelogVisible((prev) => !prev);
   };
 
   const toggleMaxPoints = useCallback(() => {
@@ -78,6 +84,7 @@ const App = () => {
           maxPoints={maxPoints}
           toggleHistory={toggleHistory}
           toggleEditNames={toggleEditNames}
+          toggleChangelog={toggleChangelog}
         />
         <main>
           <Routes>
@@ -111,6 +118,10 @@ const App = () => {
           onClose={toggleEditNames}
           teamNames={teamNames}
           onSave={handleNameChange}
+        />
+        <Changelog
+          isVisible={isChangelogVisible}
+          onClose={toggleChangelog}
         />
       </div>
     </AuthProvider>

@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext.js";
 import { supabase } from "../config/supabaseClient.js";
 
 const Header = React.memo(
-  ({ toggleMaxPoints, maxPoints, toggleHistory, toggleEditNames }) => {
+  ({ toggleMaxPoints, maxPoints, toggleHistory, toggleEditNames, toggleChangelog }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
@@ -124,6 +124,14 @@ const Header = React.memo(
                   <i className="bx bx-edit-alt bx-sm"></i>
                 </div>
                 <span>EDITAR NOMBRES</span>
+              </div>
+            </li>
+            <li className="sidebar-item" onClick={toggleMenu}>
+              <div className="sidebar-content" onClick={toggleChangelog}>
+                <div className="sidebar-icon">
+                  <i className='bx bx-info-circle bx-sm' ></i>
+                </div>
+                <span>NOVEDADES</span>
               </div>
             </li>
           </ul>

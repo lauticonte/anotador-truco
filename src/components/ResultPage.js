@@ -52,7 +52,7 @@ const ResultPage = ({ resetGame, teamNames }) => {
   const winnerName = winner.toUpperCase() === "NOSOTROS" ? teamNames.NOSOTROS : teamNames.ELLOS;
   const isDefaultName = winnerName === "NOSOTROS" || winnerName === "ELLOS" || !winnerName.trim();
   const winnerMessage = isDefaultName 
-    ? (winner.toUpperCase() === "NOSOTROS" ? "GANAMOS NOSOTROS" : "GANARON ELLOS")
+    ? (winner.toUpperCase() === "NOSOTROS" ? "¡GANAMOS NOSOTROS!" : "¡GANARON ELLOS!")
     : `¡${winnerName} HA GANADO!`;
 
   return (
