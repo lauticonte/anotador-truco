@@ -45,6 +45,15 @@ const Header = React.memo(
       setIsSidebarOpen(!isSidebarOpen);
       setShowTooltip(false);
       setLogoSlide(false);
+      
+      // Agregar tracking para Clarity
+      if (!isSidebarOpen) {
+        // Cuando se abre el menú
+        window.history.pushState({}, '', window.location.pathname + '?menu=open');
+      } else {
+        // Cuando se cierra el menú
+        window.history.pushState({}, '', window.location.pathname);
+      }
     };
 
     const toggleProfile = () => {
@@ -88,6 +97,7 @@ const Header = React.memo(
           <div
             className={`btn ${isSidebarOpen ? "active" : "not-active"}`}
             onClick={toggleMenu}
+            data-clarity-tag="menu-toggle"
           >
             <span className="btn-line"></span>
             <span className="btn-line"></span>
@@ -98,11 +108,12 @@ const Header = React.memo(
         <div
           className={`overlay ${isSidebarOpen ? "visible" : ""}`}
           onClick={toggleMenu}
+          data-clarity-tag="menu-overlay"
         ></div>
 
         <div id="sidebar" className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
           <ul className="sidebar-list">
-            <li className="sidebar-item" onClick={toggleMenu}>
+            <li className="sidebar-item" onClick={toggleMenu} data-clarity-tag="menu-history">
               <div className="sidebar-content" onClick={toggleHistory}>
                 <div className="sidebar-icon">
                   <img src="./images/var.svg" alt="History Icon" />
@@ -110,7 +121,7 @@ const Header = React.memo(
                 <span>IR AL VAR</span>
               </div>
             </li>
-            <li className="sidebar-item" onClick={toggleMenu}>
+            <li className="sidebar-item" onClick={toggleMenu} data-clarity-tag="menu-points">
               <div className="sidebar-content" onClick={toggleMaxPoints}>
                 <div className="sidebar-icon">
                   <i className="bx bx-transfer-alt bx-sm"></i>
@@ -118,7 +129,7 @@ const Header = React.memo(
                 <span>JUGAR A {maxPoints === 30 ? "15" : "30"}</span>
               </div>
             </li>
-            <li className="sidebar-item" onClick={toggleMenu}>
+            <li className="sidebar-item" onClick={toggleMenu} data-clarity-tag="menu-edit-names">
               <div className="sidebar-content" onClick={toggleEditNames}>
                 <div className="sidebar-icon">
                   <i className="bx bx-edit-alt bx-sm"></i>
@@ -126,7 +137,7 @@ const Header = React.memo(
                 <span>EDITAR NOMBRES</span>
               </div>
             </li>
-            <li className="sidebar-item" onClick={toggleMenu}>
+            <li className="sidebar-item" onClick={toggleMenu} data-clarity-tag="menu-changelog">
               <div className="sidebar-content" onClick={toggleChangelog}>
                 <div className="sidebar-icon">
                   <i className='bx bx-info-circle bx-sm' ></i>
