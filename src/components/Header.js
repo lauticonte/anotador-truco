@@ -14,11 +14,11 @@ const Header = React.memo(
       // Secuencia de animación
       const slideTimer = setTimeout(() => {
         setLogoSlide(true);
-      }, 2000);
+      }, 6500);
 
       const tooltipTimer = setTimeout(() => {
         setShowTooltip(true);
-      }, 2500);
+      }, 6500);
 
       // Revertir la animación
       const hideTimer = setTimeout(() => {
