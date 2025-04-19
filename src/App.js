@@ -110,7 +110,7 @@ const App = () => {
           </Routes>
         </main>
         <Footer />
-        <AdComponent adId="127560-15" type="15" siteId="127560" formatId="15" />
+        {/* Oculto Intersitial <AdComponent adId="127560-15" type="15" siteId="127560" formatId="15" /> */}
         <AdComponent adId="127560-6" type="6" siteId="127560" formatId="6" />
         <History isVisible={isHistoryVisible} onClose={toggleHistory} teamNames={teamNames} />
         <EditNames
