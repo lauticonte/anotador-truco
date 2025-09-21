@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import "./styles/App.css";
 import Header from "./components/Header.js";
@@ -6,11 +6,13 @@ import Footer from "./components/Footer.js";
 import Board from "./components/Board.js";
 import ResultPage from "./components/ResultPage.js";
 import AdComponent from "./components/Ads.js";
-import History from "./components/History.js";
-import EditNames from "./components/EditNames.js";
-import Changelog from "./components/Changelog.js";
 import NotFound from "./components/NotFound.js";
 import { AuthProvider } from "./context/AuthContext.js";
+
+// 🚀 LAZY LOADING - Solo cargan cuando se necesitan
+const History = lazy(() => import("./components/History.js"));
+const EditNames = lazy(() => import("./components/EditNames.js"));
+const Changelog = lazy(() => import("./components/Changelog.js"));
 
 const App = () => {
   const [finished, setFinished] = useState(false);
@@ -42,6 +44,16 @@ const App = () => {
 
   const toggleMaxPoints = useCallback(() => {
     const newMaxPoints = maxPoints === 30 ? 15 : 30;
+    // 1) Forzar flush del historial buffered antes de limpiar
+    try {
+      window.dispatchEvent(new Event("flushHistory"));
+    } catch (_) {}
+
+    // 2) Resetear historial VAR completamente al cambiar el modo
+    try {
+      localStorage.setItem("history", JSON.stringify([]));
+    } catch (_) {}
+
     setMaxPoints(newMaxPoints);
     localStorage.setItem("maxPoints", newMaxPoints);
     setFinished(false);
@@ -112,17 +124,21 @@ const App = () => {
         <Footer />
         {/* Oculto Intersitial <AdComponent adId="127560-15" type="15" siteId="127560" formatId="15" /> */}
         <AdComponent adId="127560-6" type="6" siteId="127560" formatId="6" />
-        <History isVisible={isHistoryVisible} onClose={toggleHistory} teamNames={teamNames} />
-        <EditNames
-          isVisible={isEditNamesVisible}
-          onClose={toggleEditNames}
-          teamNames={teamNames}
-          onSave={handleNameChange}
-        />
-        <Changelog
-          isVisible={isChangelogVisible}
-          onClose={toggleChangelog}
-        />
+        
+        {/* 🎯 SUSPENSE - Carga modales solo cuando se necesitan */}
+        <Suspense fallback={null}>
+          <History isVisible={isHistoryVisible} onClose={toggleHistory} teamNames={teamNames} />
+          <EditNames
+            isVisible={isEditNamesVisible}
+            onClose={toggleEditNames}
+            teamNames={teamNames}
+            onSave={handleNameChange}
+          />
+          <Changelog
+            isVisible={isChangelogVisible}
+            onClose={toggleChangelog}
+          />
+        </Suspense>
       </div>
     </AuthProvider>
   );

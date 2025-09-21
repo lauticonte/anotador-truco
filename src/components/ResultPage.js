@@ -62,7 +62,7 @@ const ResultPage = ({ resetGame, teamNames }) => {
           <p>{winnerMessage}</p>
           <img
             className="img-lost"
-            src={winner.toUpperCase() === "NOSOTROS" ? "/images/happy.png" : "/images/sadge.png"}
+            src={winner.toUpperCase() === "NOSOTROS" ? "/images/happy.webp" : "/images/sadge.webp"}
             alt={winner.toUpperCase() === "NOSOTROS" ? "happy" : "sadge"}
             loading="lazy"
           />

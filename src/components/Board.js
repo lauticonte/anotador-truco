@@ -14,9 +14,9 @@ const Board = ({
 }) => {
   const navigate = useNavigate();
 
-  // Pre-cargar imágenes
+  // Pre-cargar imágenes para ResultPage
   useEffect(() => {
-    const preloadImages = ["/images/happy.png", "/images/sadge.png"];
+    const preloadImages = ["/images/happy.webp", "/images/sadge.webp"];
     preloadImages.forEach((src) => {
       const img = new Image();
       img.src = src;
@@ -37,12 +37,7 @@ const Board = ({
           <h3>
             <div className="winner">
               <p>{winner === "NOSOTROS" ? `GANAMOS ${teamNames.NOSOTROS}` : `GANARON ${teamNames.ELLOS}`}</p>
-              <img
-                className="img-lost"
-                src={winner === "NOSOTROS" ? "/images/happy.png" : "/images/sadge.png"}
-                alt={winner === "NOSOTROS" ? "happy" : "sadge"}
-                loading="lazy"
-              />
+              {/* Imagen eliminada - se muestra solo en ResultPage */}
             </div>
           </h3>
         </div>

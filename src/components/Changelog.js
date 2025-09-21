@@ -21,6 +21,16 @@ const Changelog = ({ isVisible, onClose }) => {
 
   const changelog = [
     {
+      version: "1.4.1",
+      date: "21/09/2025",
+      changes: [
+        "Optimización de carga inicial con carga diferida.",
+        "Imágenes optimizadas y eliminación de duplicados.",
+        "VAR guardado en lote.",
+        "Ajustes menores de rendimiento y estabilidad."
+      ]
+    },
+    {
         version: "1.4.0",
         date: "31/03/2025",
         changes: [

@@ -2,6 +2,30 @@ import React, { Component } from "react";
 import "../styles/Counter.css";
 
 
+// Utilidad simple de debounce para evitar escrituras síncronas frecuentes en localStorage
+// Mantiene los últimos argumentos para permitir un flush inmediato antes de desmontar
+const debounce = (fn, delay) => {
+  let timerId = null;
+  let lastArgs = [];
+  const debounced = (...args) => {
+    lastArgs = args;
+    if (timerId) clearTimeout(timerId);
+    timerId = setTimeout(() => {
+      timerId = null;
+      fn(...lastArgs);
+    }, delay);
+  };
+  debounced.flush = () => {
+    if (timerId) {
+      clearTimeout(timerId);
+      timerId = null;
+      fn(...lastArgs);
+    }
+  };
+  return debounced;
+};
+
+
 class Counter extends Component {
   constructor(props) {
     super(props);
@@ -36,17 +60,51 @@ class Counter extends Component {
       { x1: this.lineLength, y1: 0, x2: this.lineLength, y2: this.lineLength },
       { x1: 0, y1: 0, x2: this.lineLength, y2: this.lineLength },
     ];
+
+    // Escritores debounced para evitar bloquear la UI en cada click
+    this.debouncedSavePoints = debounce((points) => {
+      try {
+        localStorage.setItem(`points-${this.props.title}`, points);
+      } catch (_) {}
+    }, 300);
+
+    this.debouncedSaveStage = debounce((stage) => {
+      try {
+        localStorage.setItem(`stage-${this.props.title}`, stage);
+      } catch (_) {}
+    }, 300);
+
+    // Buffer para historial: preserva todas las entradas y reduce escrituras
+    this.historyBuffer = [];
+    this.flushHistoryBuffer = () => {
+      if (!this.historyBuffer.length) return;
+      try {
+        const history = JSON.parse(localStorage.getItem("history")) || [];
+        history.push(...this.historyBuffer);
+        localStorage.setItem("history", JSON.stringify(history));
+        this.historyBuffer = [];
+      } catch (_) {
+        // En caso de error, intentar al menos limpiar el buffer para evitar crecimiento infinito
+        this.historyBuffer = [];
+      }
+    };
+    this.debouncedFlushHistory = debounce(this.flushHistoryBuffer, 300);
+
+    // Asegurar que el buffer se persista si se cierra/recarga la página
+    window.addEventListener("beforeunload", this.flushHistoryBuffer);
+    // Permitir a otros componentes forzar un flush inmediato del historial
+    window.addEventListener("flushHistory", this.flushHistoryBuffer);
   }
 
   updatePoints = (newPoints, stage) => {
     this.setState({ points: newPoints, stage: stage });
     this.stage = stage;
-    localStorage.setItem(`stage-${this.props.title}`, stage);
+    this.debouncedSaveStage(stage);
   };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.points !== this.state.points) {
-      localStorage.setItem(`points-${this.props.title}`, this.state.points);
+      this.debouncedSavePoints(this.state.points);
     }
   
     if (prevProps.maxPoints !== this.props.maxPoints) {
@@ -63,6 +121,17 @@ class Counter extends Component {
     }
   }
   
+  componentWillUnmount() {
+    // Forzar escritura de cualquier cambio pendiente
+    try {
+      this.debouncedSavePoints.flush();
+      this.debouncedSaveStage.flush();
+      this.flushHistoryBuffer();
+    } catch (_) {}
+    window.removeEventListener("beforeunload", this.flushHistoryBuffer);
+    window.removeEventListener("flushHistory", this.flushHistoryBuffer);
+  }
+
 
   // Nueva función para reiniciar puntos desde el componente padre
   resetPoints = () => {
@@ -94,7 +163,6 @@ class Counter extends Component {
           if (nextPoints === 16 && prevState.stage === "Malas") {
             nextStage = "Buenas";
             nextPoints = 1;
-            localStorage.setItem(`stage-${this.props.title}`, nextStage);
           } else if (nextPoints === 15 && nextStage === "Buenas") {
             this.props.onWin(this.props.title);
             return prevState;
@@ -109,7 +177,7 @@ class Counter extends Component {
       () => {
         if (!this.props.finished) {
           this.registerHistory("SUMA", 1);
-          localStorage.setItem(`stage-${this.props.title}`, this.state.stage);
+          this.debouncedSaveStage(this.state.stage);
         }
       }
     );
@@ -130,14 +198,13 @@ class Counter extends Component {
         if (nextPoints === 0 && prevState.stage === "Buenas") {
           nextStage = "Malas";
           nextPoints = 15;
-          localStorage.setItem(`stage-${this.props.title}`, nextStage);
         }
       }
   
       return { points: nextPoints, stage: nextStage };
     }, () => {
       this.registerHistory("RESTA", -1);
-      localStorage.setItem(`stage-${this.props.title}`, this.state.stage);
+      this.debouncedSaveStage(this.state.stage);
     });
   };
   
@@ -153,7 +220,6 @@ class Counter extends Component {
       hour12: false,
     });
   
-    const history = JSON.parse(localStorage.getItem("history")) || [];
     const entry = {
       action,
       points,
@@ -163,9 +229,9 @@ class Counter extends Component {
       stage: this.state.stage,
       maxPoints: this.props.maxPoints
     };
-  
-    history.push(entry);
-    localStorage.setItem("history", JSON.stringify(history));
+    // Acumular en buffer y escribir de forma debounced
+    this.historyBuffer.push(entry);
+    this.debouncedFlushHistory();
   };
   
 
