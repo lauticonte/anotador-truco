@@ -1,6 +1,6 @@
 {
   "name": "anotador-truco",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "private": true,
   "type": "module",
   "dependencies": {
@@ -20,8 +20,20 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "postbuild": "react-snap",
     "build:dev": "BUILD_ENV=development react-scripts build",
     "build:prod": "BUILD_ENV=production react-scripts build"
+  },
+  "reactSnap": {
+    "include": [
+      "/",
+      "/guia-truco"
+    ],
+    "inlineCss": true,
+    "minifyHtml": {
+      "collapseWhitespace": true,
+      "removeComments": true
+    }
   },
   "eslintConfig": {
     "extends": [
@@ -42,6 +54,7 @@
     ]
   },
   "devDependencies": {
+    "react-snap": "^1.23.0",
     "source-map-explorer": "^2.5.3"
   }
 }

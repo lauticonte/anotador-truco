@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.js";
 import { supabase } from "../config/supabaseClient.js";
 
@@ -136,6 +137,14 @@ const Header = React.memo(
                 </div>
                 <span>EDITAR NOMBRES</span>
               </div>
+            </li>
+            <li className="sidebar-item" onClick={toggleMenu} data-clarity-tag="menu-guia">
+              <Link to="/guia-truco" className="sidebar-content">
+                <div className="sidebar-icon">
+                  <i className="bx bx-book-open bx-sm"></i>
+                </div>
+                <span>GUÍA DEL TRUCO</span>
+              </Link>
             </li>
             <li className="sidebar-item" onClick={toggleMenu} data-clarity-tag="menu-changelog">
               <div className="sidebar-content" onClick={toggleChangelog}>

@@ -13,6 +13,7 @@ import { AuthProvider } from "./context/AuthContext.js";
 const History = lazy(() => import("./components/History.js"));
 const EditNames = lazy(() => import("./components/EditNames.js"));
 const Changelog = lazy(() => import("./components/Changelog.js"));
+const GuiaTruco = lazy(() => import("./components/pages/GuiaTruco.js"));
 
 const App = () => {
   const [finished, setFinished] = useState(false);
@@ -117,6 +118,14 @@ const App = () => {
             <Route
               path="/resultado/:winner"
               element={<ResultPage resetGame={resetGame} teamNames={teamNames} />}
+            />
+            <Route 
+              path="/guia-truco" 
+              element={
+                <Suspense fallback={<div>Cargando...</div>}>
+                  <GuiaTruco />
+                </Suspense>
+              } 
             />
             <Route path="*" element={<NotFound />} />
           </Routes>

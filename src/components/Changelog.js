@@ -21,6 +21,18 @@ const Changelog = ({ isVisible, onClose }) => {
 
   const changelog = [
     {
+      version: "1.4.2",
+      date: "28/10/2025",
+      changes: [
+        "Nueva Guía del Truco: valores de cartas, reglas y tutorial completo.",
+        "Diseño profesional UX/UI con gradientes y micro-interacciones.",
+        "Sección de preguntas frecuentes (FAQ) interactiva.",
+        "Tabla completa de valores del truco argentino.",
+        "Tutoriales sobre envido, flor y cómo usar el contador.",
+        "Mejoras en SEO y navegación interna."
+      ]
+    },
+    {
       version: "1.4.1",
       date: "21/09/2025",
       changes: [
