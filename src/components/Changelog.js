@@ -21,6 +21,14 @@ const Changelog = ({ isVisible, onClose }) => {
 
   const changelog = [
     {
+      version: "1.4.3",
+      date: "09/12/2025",
+      changes: [
+        "Tocá los palitos para sumar puntos directamente.",
+        "Mejoras en la interacción táctil del marcador."
+      ]
+    },
+    {
       version: "1.4.2",
       date: "28/10/2025",
       changes: [

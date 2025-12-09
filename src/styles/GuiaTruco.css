@@ -15,7 +15,7 @@
   text-align: center;
   margin-bottom: 40px;
   padding: 48px 24px;
-  background: linear-gradient(135deg, rgba(45, 66, 99, 0.5) 0%, rgba(45, 66, 99, 0.2) 100%);
+  background: rgba(45, 66, 99, 0.4);
   border: 1px solid rgba(236, 219, 186, 0.15);
   border-radius: 16px;
   position: relative;
@@ -60,7 +60,7 @@
   background: #c84b31;
   margin: 0 auto;
   border-radius: 3px;
-  box-shadow: 0 2px 8px rgba(200, 75, 49, 0.4);
+  
 }
 
 /* Sticky back button */

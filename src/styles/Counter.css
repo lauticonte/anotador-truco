@@ -129,10 +129,88 @@
   text-align: center;
 }
 
+.svg-canvas-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .svg-canvas {
   width: 100px;
   height: 310px;
   gap: 2rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.svg-canvas.hint-active {
+  animation: subtleGlow 2s ease-in-out infinite;
+}
+
+@keyframes subtleGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(236, 219, 186, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 14px rgba(236, 219, 186, 0.8));
+  }
+}
+
+/* Overlay profesional */
+.tap-hint-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  cursor: pointer;
+  animation: overlayFadeIn 0.5s ease-out forwards;
+}
+
+@keyframes overlayFadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.tap-hint-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.2rem;
+  background: rgba(25, 25, 25, 0.92);
+  border: 2px solid rgba(236, 219, 186, 0.6);
+  border-radius: 16px;
+  backdrop-filter: blur(4px);
+}
+
+.tap-hint-hand {
+  font-size: 2rem;
+  animation: handTap 1.2s ease-in-out infinite;
+}
+
+@keyframes handTap {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.1);
+  }
+}
+
+.tap-hint-text {
+  color: #ecdbba;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: "Outfit", sans-serif;
+  text-align: center;
+  letter-spacing: 0.3px;
 }
 
 @media screen and (max-height: 600px) {

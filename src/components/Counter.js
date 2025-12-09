@@ -42,9 +42,15 @@ class Counter extends Component {
       ? defaultStage 
       : savedStage;
     
+    // Verificar contador de sesiones del tap hint (se muestra hasta 10 sesiones)
+    const tapHintSessions = parseInt(localStorage.getItem("tapHintSessions"), 10) || 0;
+    const tapHintCompleted = tapHintSessions >= 10;
+    
     this.state = {
       points: savedPoints,
       stage: initialStage,
+      showTapHint: false,
+      tapHintCompleted: tapHintCompleted,
     };
 
     this.stage = initialStage;
@@ -96,6 +102,30 @@ class Counter extends Component {
     window.addEventListener("flushHistory", this.flushHistoryBuffer);
   }
 
+  componentDidMount() {
+    // Reset hint si la URL tiene ?reset-hint (útil para testing en mobile)
+    if (window.location.search.includes("reset-hint")) {
+      localStorage.removeItem("tapHintSessions");
+      // Limpiar el parámetro de la URL sin recargar
+      window.history.replaceState({}, "", window.location.pathname);
+      this.setState({ tapHintCompleted: false });
+    }
+    
+    // Mostrar tap hint solo si no se completaron las 10 sesiones y es el primer counter (NOSOTROS)
+    const tapHintCompleted = parseInt(localStorage.getItem("tapHintSessions"), 10) >= 10;
+    
+    if (!tapHintCompleted && this.props.title === "NOSOTROS") {
+      // Incrementar contador de sesiones
+      const sessions = parseInt(localStorage.getItem("tapHintSessions"), 10) || 0;
+      localStorage.setItem("tapHintSessions", sessions + 1);
+      
+      // Mostrar hint después de un breve delay
+      this.showHintTimer = setTimeout(() => {
+        this.setState({ showTapHint: true });
+      }, 600);
+    }
+  }
+
   updatePoints = (newPoints, stage) => {
     this.setState({ points: newPoints, stage: stage });
     this.stage = stage;
@@ -130,7 +160,14 @@ class Counter extends Component {
     } catch (_) {}
     window.removeEventListener("beforeunload", this.flushHistoryBuffer);
     window.removeEventListener("flushHistory", this.flushHistoryBuffer);
+    
+    // Limpiar timer del tap hint
+    if (this.showHintTimer) clearTimeout(this.showHintTimer);
   }
+
+  dismissTapHint = () => {
+    this.setState({ showTapHint: false });
+  };
 
 
   // Nueva función para reiniciar puntos desde el componente padre
@@ -153,6 +190,11 @@ class Counter extends Component {
 
   addPoint = () => {
     if (this.props.finished) return;
+    
+    // Ocultar el tap hint cuando el usuario toca
+    if (this.state.showTapHint) {
+      this.dismissTapHint();
+    }
   
     this.setState(
       (prevState) => {
@@ -292,9 +334,25 @@ class Counter extends Component {
         <div className="stage-indicator">
           <h3 style={stageIndicatorStyle}>{stageText}</h3>
         </div>
-        <svg className="svg-canvas" viewBox="0 0 100 300">
-          {this.renderLines()}
-        </svg>
+        <div className="svg-canvas-wrapper">
+          {this.state.showTapHint && (
+            <div className="tap-hint-overlay" onClick={this.addPoint}>
+              <div className="tap-hint-content">
+                <div className="tap-hint-hand">👆</div>
+                <div className="tap-hint-text">Tocá para sumar</div>
+              </div>
+            </div>
+          )}
+          <svg 
+            className={`svg-canvas ${this.state.showTapHint ? "hint-active" : ""}`}
+            viewBox="0 0 100 300"
+            onClick={this.addPoint}
+            role="button"
+            aria-label={`Sumar punto a ${displayName || title}`}
+          >
+            {this.renderLines()}
+          </svg>
+        </div>
         <div className="counter-buttons-container">
           <div className="counter-points">
             <h1 style={{ color: stageIndicatorStyle.background }}>
