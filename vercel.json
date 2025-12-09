@@ -1,5 +1,8 @@
 {
-  "rewrites": [{ "source": "/ads.txt", "destination": "/api/ads-text.js" }],
+  "rewrites": [
+    { "source": "/ads.txt", "destination": "/api/ads-text.js" },
+    { "source": "/((?!api|static|images|favicon|fonts|meta|sitemap.xml|robots.txt).*)", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/static/(.*)",
