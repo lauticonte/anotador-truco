@@ -3,12 +3,38 @@
 .guia-container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0px 15px 15px 15px;
   background-color: #191919;
   color: #ecdbba;
-  min-height: 100vh;
+  height: 100vh;
   line-height: 1.6;
   font-family: 'Outfit', sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  z-index: 1;
+  
+  /* Scrollbar personalizada - Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #c84b31 transparent;
+}
+
+/* Scrollbar personalizada - Chrome, Safari, Edge */
+.guia-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.guia-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.guia-container::-webkit-scrollbar-thumb {
+  background: #c84b31;
+  border-radius: 3px;
+}
+
+.guia-container::-webkit-scrollbar-thumb:hover {
+  background: #a33e28;
 }
 
 .guia-header {
@@ -34,11 +60,12 @@
 }
 
 .guia-header h1 {
-  font-size: 2.2rem;
+  font-size: 2.5rem;
   color: #ecdbba;
   margin: 0 0 3px 0;
   font-family: 'Magnifika', serif;
   letter-spacing: 1px;
+  font-weight: 300;
   
 }
 
@@ -67,13 +94,18 @@
 .guia-sticky-back {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 10;
   display: flex;
   justify-content: flex-start;
   padding: 16px 0;
-  margin: -20px -20px 24px -20px;
+  margin: 0 -15px 24px -15px;
   background: linear-gradient(to bottom, #191919 85%, transparent);
   backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.guia-sticky-back .back-chip {
+  pointer-events: auto;
 }
 
 .back-chip {
@@ -573,7 +605,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .guia-container {
-    padding: 15px;
+    padding: 0px 15px 15px 15px;
   }
 
   .guia-sticky-back {
@@ -593,7 +625,7 @@
   }
 
   .guia-header h1 {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
 
   .guia-subtitle {
@@ -628,7 +660,7 @@
   }
 
   .guia-header h1 {
-    font-size: 1.5rem;
+    font-size: 2rem;
     letter-spacing: 0.5px;
   }
 

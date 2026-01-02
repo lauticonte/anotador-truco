@@ -21,6 +21,14 @@ const Changelog = ({ isVisible, onClose }) => {
 
   const changelog = [
     {
+      version: "1.4.4",
+      date: "02/01/2026",
+      changes: [
+        "Corrección del scroll en modales y menús.",
+        "Arreglo del botón 'REVISÁ' que no se mostraba correctamente en todos los dispositivos."
+      ]
+    },
+    {
       version: "1.4.3",
       date: "09/12/2025",
       changes: [

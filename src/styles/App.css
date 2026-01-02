@@ -87,7 +87,7 @@ main {
 
 .menu-tooltip {
   position: absolute;
-  left: 81.5%;
+  right: 60px;
   top: 50%;
   transform: translateY(-50%);
   background-color: rgba(236, 219, 186);
@@ -163,9 +163,10 @@ main {
 
 .btn {
   position: relative;
-  width: 30px;
-  height: 5px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
+  padding: 5px;
 }
 
 .btn-line {

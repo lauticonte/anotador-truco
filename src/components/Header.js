@@ -87,12 +87,13 @@ const Header = React.memo(
             decoding="async"
             loading="eager"
           />
-          {showTooltip && (
-            <div className={`menu-tooltip ${isSidebarOpen ? 'hide' : 'show'}`}>
-            <img src="./images/var.svg" alt="VAR Icon" style={{ width: '30px', height: '20px', verticalAlign: 'top', marginRight: '1px' }}  /> REVISÁ 
-            </div>
-          )}
         </div>
+
+        {showTooltip && (
+          <div className={`menu-tooltip ${isSidebarOpen ? 'hide' : 'show'}`}>
+            <img src="./images/var.svg" alt="VAR Icon" style={{ width: '30px', height: '20px', verticalAlign: 'top', marginRight: '1.25px' }}  /> REVISÁ 
+          </div>
+        )}
 
         <div className="menu-container">
           <div

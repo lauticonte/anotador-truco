@@ -111,6 +111,8 @@ const EditNames = ({ isVisible, onClose, teamNames, onSave }) => {
               placeholder="NOSOTROS"
               maxLength={10}
               disabled={isSubmitting}
+              
+
             />
             <span className="character-count">
               {names.NOSOTROS.length}/10
