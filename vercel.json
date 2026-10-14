@@ -1,7 +1,4 @@
 {
-  "framework": null,
-  "buildCommand": "npm run build",
-  "outputDirectory": "build",
   "rewrites": [
     {
       "source": "/ads.txt",
@@ -18,6 +15,10 @@
     {
       "source": "/resultado/:winner",
       "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/404.html"
     }
   ],
   "headers": [
