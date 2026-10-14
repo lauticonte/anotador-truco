@@ -1,7 +1,6 @@
 .counter-body-nos {
 
   align-items: center;
-  border-right: 2px solid #ecdbba;
 }
 
 .counter-body-ellos, .counter-body-nos {
@@ -19,8 +18,6 @@
 }
 
 .counter-body-ellos {
-  border-left: 2px solid #ecdbba;
-  
 }
 
 .counter-buttons-container {
@@ -114,7 +111,20 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
-  
+  position: relative;
+}
+
+/* Línea divisoria entre equipos: se desvanece al final en vez de cortarse contra el anuncio */
+.board::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, #ecdbba calc(100% - 48px), rgba(236, 219, 186, 0));
+  pointer-events: none;
 }
 
 
@@ -152,69 +162,77 @@
   touch-action: manipulation;
 }
 
-.svg-canvas.hint-active {
-  animation: subtleGlow 2s ease-in-out infinite;
+/* Fósforo nuevo: cae en su lugar al sumar */
+.match-place {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: matchPlace 0.22s ease-out;
 }
 
-@keyframes subtleGlow {
-  0%, 100% {
-    filter: drop-shadow(0 0 6px rgba(236, 219, 186, 0.5));
+@keyframes matchPlace {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(1.06);
   }
-  50% {
-    filter: drop-shadow(0 0 14px rgba(236, 219, 186, 0.8));
-  }
-}
-
-/* Overlay profesional */
-.tap-hint-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 5;
-  cursor: pointer;
-  animation: overlayFadeIn 0.5s ease-out forwards;
-}
-
-@keyframes overlayFadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-.tap-hint-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 1.2rem;
-  background: rgba(25, 25, 25, 0.92);
-  border: 2px solid rgba(236, 219, 186, 0.6);
-  border-radius: 16px;
-  backdrop-filter: blur(4px);
-}
-
-.tap-hint-hand {
-  font-size: 2rem;
-  animation: handTap 1.2s ease-in-out infinite;
-}
-
-@keyframes handTap {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    transform: translateY(-8px) scale(1.1);
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
-.tap-hint-text {
-  color: #ecdbba;
-  font-size: 0.85rem;
-  font-weight: 600;
+/* Aviso de "tocá para sumar": fósforo fantasma latiendo con una onda de toque */
+.match-ghost {
+  animation: ghostPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes ghostPulse {
+  0%, 100% { opacity: 0.18; }
+  50% { opacity: 0.55; }
+}
+
+.tap-ripple {
+  fill: none;
+  stroke: #ecdbba;
+  stroke-width: 2;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tapRipple 1.6s ease-out infinite;
+}
+
+.tap-ripple-delay {
+  animation-delay: 0.8s;
+}
+
+@keyframes tapRipple {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.3);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+.tap-hint-label {
+  fill: #ecdbba;
   font-family: "Outfit", sans-serif;
-  text-align: center;
+  font-size: 9px;
+  font-weight: 600;
   letter-spacing: 0.3px;
+  opacity: 0.75;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .match-place,
+  .match-ghost,
+  .tap-ripple {
+    animation: none;
+  }
+
+  .match-ghost {
+    opacity: 0.4;
+  }
 }
 
 @media screen and (max-height: 600px) {

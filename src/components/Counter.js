@@ -54,17 +54,26 @@ class Counter extends Component {
     };
 
     this.stage = initialStage;
-    this.lineLength = 90;
-    this.offsetX = 5;
+    this.lineLength = 86; // Lado del cuadrado
+    this.offsetX = 7;
     this.offsetY = 7;
-    this.stackSpacing = 6; // Espaciado adicional entre grupos de 5 líneas
+    this.stackSpacing = 10; // Espaciado adicional entre cuadrados para que no choquen las cabezas
 
+    // La cola arranca un poco antes de la esquina para pasar por debajo de la cabeza del fósforo anterior
+    const overlap = 2;
+    this.matchLength = this.lineLength + overlap * 2;
+    // La diagonal va de esquina a esquina, dejando lugar para las cabezas de los lados
+    const diagonalInset = 9;
+    this.diagonalLength = (this.lineLength - diagonalInset * 2) * Math.SQRT2;
+
+    // Posición de la cola y rotación de cada fósforo dentro del cuadrado.
+    // Las cabezas van en sentido horario: arriba, izquierda, abajo, derecha y diagonal.
     this.mask = [
-      { x1: 0, y1: 0, x2: this.lineLength, y2: 0 },
-      { x1: 0, y1: 0, x2: 0, y2: this.lineLength },
-      { x1: 0, y1: this.lineLength, x2: this.lineLength, y2: this.lineLength },
-      { x1: this.lineLength, y1: 0, x2: this.lineLength, y2: this.lineLength },
-      { x1: 0, y1: 0, x2: this.lineLength, y2: this.lineLength },
+      { x: -overlap, y: 0, angle: 0 },
+      { x: 0, y: this.lineLength + overlap, angle: -90 },
+      { x: this.lineLength + overlap, y: this.lineLength, angle: 180 },
+      { x: this.lineLength, y: -overlap, angle: 90 },
+      { x: diagonalInset, y: diagonalInset, angle: 45, diagonal: true },
     ];
 
     // Escritores debounced para evitar bloquear la UI en cada click
@@ -277,34 +286,143 @@ class Counter extends Component {
   };
   
 
+  // Se dibujan en dos capas: primero todos los palitos y después todas las cabezas,
+  // así cada cabeza queda por encima de la cola del fósforo que tiene al lado.
   renderLines = () => {
-    return Array.from({ length: this.state.points }, (_, i) => {
-      const box = Math.floor(i / 5);
-      const line = this.mask[i % 5];
-      return this.renderLine(line, box, i);
-    });
+    const matches = Array.from({ length: this.state.points }, (_, i) => this.matchAt(i));
+    return (
+      <>
+        {matches.map(({ variant, transform }, i) => (
+          <g key={`stick-${i}`} transform={transform}>
+            <use className="match-place" href={`#match-stick-${variant}`} />
+          </g>
+        ))}
+        {matches.map(({ variant, transform }, i) => (
+          <g key={`head-${i}`} transform={transform}>
+            <use className="match-place" href={`#match-head-${variant}`} />
+          </g>
+        ))}
+      </>
+    );
   };
 
-  renderLine = ({ x1, y1, x2, y2 }, box, key) => (
-    <line
-      key={key}
-      x1={x1 + this.offsetX}
-      y1={
-        y1 +
-        this.offsetY +
-        box * (this.offsetY + this.lineLength + this.stackSpacing)
-      }
-      x2={x2 + this.offsetX}
-      y2={
-        y2 +
-        this.offsetY +
-        box * (this.offsetY + this.lineLength + this.stackSpacing)
-      }
-      stroke="#ECDBBA"
-      strokeWidth="5"
-      strokeLinecap="round"
-    />
-  );
+  matchAt = (i) => {
+    const match = this.mask[i % 5];
+    const { title } = this.props;
+    return {
+      match,
+      variant: match.diagonal ? `diagonal-${title}` : title,
+      transform: this.matchTransform(match, Math.floor(i / 5)),
+    };
+  };
+
+  // Aviso de primeras sesiones: el próximo fósforo aparece como fantasma en su lugar,
+  // con una onda de toque al lado (hacia adentro del cuadrado), para que se entienda que tocar el tablero suma.
+  renderTapHint = () => {
+    const next = this.state.points;
+    if (next >= 15) return null;
+    const { match, variant, transform } = this.matchAt(next);
+    const length = match.diagonal ? this.diagonalLength : this.matchLength;
+    const box = Math.floor(next / 5);
+    const boxTop = this.offsetY + box * (this.offsetY + this.lineLength + this.stackSpacing);
+    const centerX = this.offsetX + this.lineLength / 2;
+    const centerY = boxTop + this.lineLength / 2;
+    return (
+      <g className="tap-hint" pointerEvents="none">
+        <g className="match-ghost" transform={transform}>
+          <use href={`#match-stick-${variant}`} />
+          <use href={`#match-head-${variant}`} />
+          <circle className="tap-ripple" cx={length / 2} cy="11" r="9" />
+          <circle className="tap-ripple tap-ripple-delay" cx={length / 2} cy="11" r="9" />
+        </g>
+        {!match.diagonal && (
+          <text className="tap-hint-label" x={centerX} y={centerY} textAnchor="middle">
+            <tspan x={centerX} dy="-0.2em">Tocá</tspan>
+            <tspan x={centerX} dy="1.2em">para sumar</tspan>
+          </text>
+        )}
+      </g>
+    );
+  };
+
+  matchTransform = ({ x, y, angle }, box) => {
+    const tx = x + this.offsetX;
+    const ty =
+      y + this.offsetY + box * (this.offsetY + this.lineLength + this.stackSpacing);
+    return `translate(${tx} ${ty}) rotate(${angle})`;
+  };
+
+  // Fósforo dibujado horizontal (cabeza a la derecha) y reutilizado con <use>.
+  // Palito y cabeza son grupos separados para poder dibujarlos en capas distintas.
+  renderMatchParts = (L, variant) => {
+    const id = this.props.title;
+    return (
+      <React.Fragment key={variant}>
+        <g id={`match-stick-${variant}`}>
+          {/* Palito */}
+          <rect
+            x="0"
+            y="-2.75"
+            width={L - 8}
+            height="5.5"
+            rx="1"
+            fill={`url(#match-wood-${id})`}
+            stroke="#8A6232"
+            strokeWidth="0.35"
+          />
+          {/* Vetas de la madera */}
+          <path
+            d={`M3 -1.1 L${L - 18} -0.8 M7 1.2 L${L - 22} 1.5`}
+            stroke="#B98C52"
+            strokeWidth="0.4"
+            strokeLinecap="round"
+            opacity="0.5"
+          />
+          {/* Corte de la cola */}
+          <rect x="0" y="-2.75" width="1.3" height="5.5" rx="0.6" fill="#9C6E38" opacity="0.85" />
+        </g>
+        <g id={`match-head-${variant}`}>
+          {/* Sombra de la cabeza sobre lo que pisa */}
+          <path
+            d={`M${L - 14} -2.2 C${L - 10} -4.6 ${L - 3} -4.9 ${L - 0.2} -2.2 C${L + 1.4} -0.4 ${L + 1.4} 2.4 ${L - 0.2} 4.2 C${L - 3} 6.9 ${L - 10} 6.6 ${L - 14} 3.8 Z`}
+            fill="#000000"
+            opacity="0.3"
+          />
+          {/* Cabeza */}
+          <path
+            d={`M${L - 15} -2.9 C${L - 11} -5.4 ${L - 4} -5.8 ${L - 1.2} -3 C${L + 0.5} -1.1 ${L + 0.5} 1.1 ${L - 1.2} 3 C${L - 4} 5.8 ${L - 11} 5.4 ${L - 15} 2.9 Z`}
+            fill={`url(#match-head-fill-${id})`}
+            stroke="#4A0E07"
+            strokeWidth="0.45"
+          />
+          {/* Brillo de la cabeza */}
+          <ellipse cx={L - 6.5} cy="-2.4" rx="3.4" ry="1.2" fill="#FFFFFF" opacity="0.38" />
+        </g>
+      </React.Fragment>
+    );
+  };
+
+  // Los ids llevan el equipo para no repetirse entre los dos tableros.
+  renderMatchDefs = () => {
+    const id = this.props.title;
+    return (
+      <defs>
+        <linearGradient id={`match-wood-${id}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#F8E6C0" />
+          <stop offset="0.35" stopColor="#EBCB94" />
+          <stop offset="0.75" stopColor="#D2A867" />
+          <stop offset="1" stopColor="#A87A42" />
+        </linearGradient>
+        <radialGradient id={`match-head-fill-${id}`} cx="0.62" cy="0.32" r="0.75">
+          <stop offset="0" stopColor="#F2846A" />
+          <stop offset="0.45" stopColor="#C4361F" />
+          <stop offset="1" stopColor="#6B170C" />
+        </radialGradient>
+        {this.renderMatchParts(this.matchLength, id)}
+        {this.renderMatchParts(this.diagonalLength, `diagonal-${id}`)}
+      </defs>
+    );
+  };
 
   render() {
     const { title, displayName } = this.props;
@@ -335,22 +453,16 @@ class Counter extends Component {
           <h3 style={stageIndicatorStyle}>{stageText}</h3>
         </div>
         <div className="svg-canvas-wrapper">
-          {this.state.showTapHint && (
-            <div className="tap-hint-overlay" onClick={this.addPoint}>
-              <div className="tap-hint-content">
-                <div className="tap-hint-hand">👆</div>
-                <div className="tap-hint-text">Tocá para sumar</div>
-              </div>
-            </div>
-          )}
-          <svg 
-            className={`svg-canvas ${this.state.showTapHint ? "hint-active" : ""}`}
+          <svg
+            className="svg-canvas"
             viewBox="0 0 100 310"
             onClick={this.addPoint}
             role="button"
             aria-label={`Sumar punto a ${displayName || title}`}
           >
+            {this.renderMatchDefs()}
             {this.renderLines()}
+            {this.state.showTapHint && this.renderTapHint()}
           </svg>
         </div>
         <div className="counter-buttons-container">

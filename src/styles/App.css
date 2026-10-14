@@ -536,9 +536,18 @@ main {
 
 
 .finished-message {
+  flex: 1;
+  min-height: 0; /* Se acomoda al espacio entre el header y el anuncio, sin scroll */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  padding-bottom: 8px;
+  box-sizing: border-box;
+}
+
+.finished-message > .next-game-section,
+.finished-message > .feedback-section {
+  flex-shrink: 0;
 }
 
 .revancha-buttons {
@@ -594,15 +603,19 @@ a {
   font-size: 2em;
   text-align: center;
   justify-content: center;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
 }
 
 .winner {
   margin-top: .5em;
   display: flex;
   flex-direction: column-reverse;
+  justify-content: flex-end;
+  min-height: 0;
   padding-bottom: .2em;
   font-size: .8em;
- 
 }
 
 .winner p {
@@ -610,9 +623,13 @@ a {
   line-height: 1;
 }
 
+/* La imagen es lo único que se achica si falta lugar */
 .winner img {
-  height: auto;
+  flex: 0 1 120px;
+  min-height: 0;
+  height: 120px;
   width: 120px;
+  object-fit: contain;
   margin: 0 auto;
 }
 
@@ -630,13 +647,15 @@ a {
 
 .feedback-section h4 {
   font-size: 1.2em;
-  margin-bottom: 0.5em;
+  margin: 0.6em 0 0.5em;
   color: #ecdbba;
 }
 
 .feedback-section textarea {
   width: 100%;
-  height: 60px;
+  height: 52px;
+  box-sizing: border-box;
+  resize: none;
   border-radius: 10px;
   border: 2px solid #ecdbba;
   background-color: #191919;
@@ -667,19 +686,33 @@ a {
 }
 
 .footer {
-  display: flex;
-  justify-content: center; /* Espacio entre los elementos */
+  /* Tres columnas: copyright a la izquierda, CONTE centrado en la pantalla y versión a la derecha */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center; /* Centra verticalmente */
-  padding: 0em 20px; /* Espacio interno */
+  padding: 0 16px; /* Espacio interno */
   width: 100%; /* Ocupa todo el ancho del contenedor */
   background-color: #2d4263; /* Color de fondo */
   border-top: 3px solid #ecdbba; /* Borde superior */
   box-sizing: border-box; /* Asegura que el padding no afecte al ancho */
-  font-size: 0.9rem;
-  gap: 1rem; /* Espacio entre los elementos */
-  height: 35px;
-  flex-direction: row;
+  font-size: 0.75rem;
+  gap: 0.5rem;
+  height: 28px;
+  flex-shrink: 0;
+  white-space: nowrap;
   line-height: 1;
+}
+
+.footer__copy {
+  justify-self: start;
+}
+
+.footer__version {
+  justify-self: end;
+}
+
+.footer p {
+  margin: 0;
 }
 
 .footer__copy,
@@ -702,8 +735,8 @@ h3 {
   font-family: "MBF";
   text-align: center;
   font-weight: bold;
-  font-size: 1.1rem;
-  margin: 0 .4rem 0 .2rem;
+  font-size: 0.95rem;
+  margin: 0;
   /* margin-bottom: 2rem; */
 }
 
@@ -738,7 +771,7 @@ a:link,
   font-size: 1.2rem;
   font-weight: 500;
   color: #ecdbba;
-  margin: 1rem 0 .6rem 0;
+  margin: .6rem 0 .6rem 0;
   text-align: center;
   opacity: 0.9;
 }
@@ -839,6 +872,41 @@ a:link,
 
 
 
+
+/* Pantalla de resultado en celulares chicos: todo entra sin scroll */
+@media screen and (max-width: 360px) {
+  .finished-message > h3 {
+    font-size: 1.6em; /* El título entra en una sola línea */
+  }
+}
+
+@media screen and (max-height: 620px) {
+  .next-game-title {
+    font-size: 1.05rem;
+    margin: .4rem 0;
+  }
+
+  .game-option {
+    padding: .35rem .6rem;
+  }
+
+  .game-option-points {
+    font-size: 1.35rem;
+  }
+
+  .start-game-button {
+    padding: .7rem 0;
+  }
+
+  .feedback-section h4 {
+    font-size: 1.05em;
+    margin: .4em 0 .3em;
+  }
+
+  .feedback-section textarea {
+    height: 44px;
+  }
+}
 
 /* media screen */
 @media screen and (max-height: 700px) {
