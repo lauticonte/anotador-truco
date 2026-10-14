@@ -11,9 +11,7 @@ const AdComponent = ({ adId, type, siteId, formatId }) => {
       }
 
       try {
-        // Finaliza cualquier temporizador previo
-        console.timeEnd(`Carga completa de anuncios (${adId})`);
-        console.time(`Carga completa de anuncios (${adId})`); // Reinicia el temporizador
+        console.time(`Carga completa de anuncios (${adId})`);
 
         // Función para cargar scripts de forma segura
         const loadScript = (src, label) => {

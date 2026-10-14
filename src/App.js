@@ -130,9 +130,11 @@ const App = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
-        <Footer />
         {/* Oculto Intersitial <AdComponent adId="127560-15" type="15" siteId="127560" formatId="15" /> */}
-        <AdComponent adId="127560-6" type="6" siteId="127560" formatId="6" />
+        <div className="ad-slot">
+          <AdComponent adId="127560-28" type="28" siteId="127560" formatId="28" />
+        </div>
+        <Footer />
         
         {/* 🎯 SUSPENSE - Carga modales solo cuando se necesitan */}
         <Suspense fallback={null}>
