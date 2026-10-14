@@ -21,6 +21,17 @@ const Changelog = ({ isVisible, onClose }) => {
 
   const changelog = [
     {
+      version: "1.4.6",
+      date: "14/10/2026",
+      changes: [
+        "Nuevos fósforos realistas en el marcador.",
+        "Nueva guía para mostrar que se puede tocar el tablero para sumar.",
+        "Animación al sumar un punto.",
+        "Arreglo de la pantalla de resultado: el botón Enviar ya no queda tapado por la publicidad.",
+        "Footer más compacto."
+      ]
+    },
+    {
       version: "1.4.5",
       date: "14/10/2026",
       changes: [
