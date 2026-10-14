@@ -345,7 +345,7 @@ class Counter extends Component {
           )}
           <svg 
             className={`svg-canvas ${this.state.showTapHint ? "hint-active" : ""}`}
-            viewBox="0 0 100 300"
+            viewBox="0 0 100 310"
             onClick={this.addPoint}
             role="button"
             aria-label={`Sumar punto a ${displayName || title}`}
