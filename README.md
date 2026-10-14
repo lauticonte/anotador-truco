@@ -1,7 +1,7 @@
 # Anotador de Truco
 
 ![Project Status](https://img.shields.io/badge/status-active-success.svg)
-![Version](https://img.shields.io/badge/version-1.4.4-blue.svg)
+![Version](https://img.shields.io/badge/version-1.4.5-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![React](https://img.shields.io/badge/react-18.x-61DAFB?logo=react)
 
@@ -121,7 +121,8 @@ npm run build
 
 El proyecto sigue [Semantic Versioning](https://semver.org/).
 
-* **v1.4.4 (Latest) - 2026-01-02**: Hotfix de UI para scroll en modales y corrección de renderizado en botón de revisión (VAR).
+* **v1.4.5 (Latest) - 2026-10-14**: Megabanner inferior con espacio reservado para que la publicidad no tape los controles, corrección del recorte de los fósforos en pantallas chicas, migración a Node 24 y limpieza de scripts (GTM duplicado).
+* **v1.4.4 - 2026-01-02**: Hotfix de UI para scroll en modales y corrección de renderizado en botón de revisión (VAR).
 * **v1.4.3**: Implementación de interacción táctil directa sobre los assets gráficos (fósforos).
 * **v1.4.2**: Overhaul de contenido con integración de Guía Interactiva y optimización SEO.
 * **v1.4.1**: Mejoras de performance (Lazy Loading) y optimización de assets.

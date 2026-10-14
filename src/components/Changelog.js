@@ -21,6 +21,15 @@ const Changelog = ({ isVisible, onClose }) => {
 
   const changelog = [
     {
+      version: "1.4.5",
+      date: "14/10/2026",
+      changes: [
+        "La publicidad ahora tiene su propio espacio abajo y ya no tapa los botones de sumar y restar.",
+        "Arreglo de los palitos que se veían cortados en pantallas chicas.",
+        "Corrección del logo en la pantalla de resultado."
+      ]
+    },
+    {
       version: "1.4.4",
       date: "02/01/2026",
       changes: [
