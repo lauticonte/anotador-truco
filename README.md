@@ -1,7 +1,7 @@
 # Anotador de Truco
 
 ![Project Status](https://img.shields.io/badge/status-active-success.svg)
-![Version](https://img.shields.io/badge/version-1.4.6-blue.svg)
+![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![React](https://img.shields.io/badge/react-18.x-61DAFB?logo=react)
 
@@ -121,7 +121,8 @@ npm run build
 
 El proyecto sigue [Semantic Versioning](https://semver.org/).
 
-* **v1.4.6 (Latest) - 2026-10-14**: Fósforos realistas en SVG reutilizable (`<use>`), guía de toque con fósforo fantasma, animación al sumar, pantalla de resultado adaptable sin scroll y footer compacto.
+* **v1.5.0 (Latest) - 2026-10-14**: Rediseño del VAR (línea de tiempo por equipo), hojas unificadas para Editar nombres y Novedades, Guía del truco en pestañas con contenido corregido y prerenderizado en el build (`scripts/prerender-guia.mjs`), y mejoras de SEO: robots.txt, canonical, 404 real, sitemap y llms.txt.
+* **v1.4.6 - 2026-10-14**: Fósforos realistas en SVG reutilizable (`<use>`), guía de toque con fósforo fantasma, animación al sumar, pantalla de resultado adaptable sin scroll y footer compacto.
 * **v1.4.5 - 2026-10-14**: Megabanner inferior con espacio reservado para que la publicidad no tape los controles, corrección del recorte de los fósforos en pantallas chicas, migración a Node 24 y limpieza de scripts (GTM duplicado).
 * **v1.4.4 - 2026-01-02**: Hotfix de UI para scroll en modales y corrección de renderizado en botón de revisión (VAR).
 * **v1.4.3**: Implementación de interacción táctil directa sobre los assets gráficos (fósforos).

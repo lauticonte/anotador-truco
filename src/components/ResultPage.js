@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { usePageMeta } from '../hooks/usePageMeta.js';
 
 async function enviarFeedback(feedback) {
   try {
@@ -29,6 +30,9 @@ const ResultPage = ({ resetGame, teamNames }) => {
   const { winner } = useParams();
   const navigate = useNavigate();
   const [selectedPoints, setSelectedPoints] = useState(null);
+
+  // Pantalla de fin de partida: no tiene contenido propio para buscadores
+  usePageMeta({ robots: 'noindex' });
 
   const handleStartGame = () => {
     if (selectedPoints) {

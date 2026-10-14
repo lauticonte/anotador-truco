@@ -1,456 +1,274 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { usePageMeta } from "../../hooks/usePageMeta.js";
 import "../../styles/GuiaTruco.css";
 
+const TABS = [
+  { id: "cartas", label: "Cartas" },
+  { id: "puntos", label: "Puntos" },
+  { id: "anotador", label: "El anotador" },
+];
+
+// De la más alta a la más baja
+const CARD_RANKING = [
+  { card: "1 de espada", name: "Ancho de espada" },
+  { card: "1 de basto", name: "Ancho de basto" },
+  { card: "7 de espada", name: "Siete de espada" },
+  { card: "7 de oro", name: "Siete de oro" },
+  { card: "3", name: "Los tres", any: true },
+  { card: "2", name: "Los dos", any: true },
+  { card: "1 de copa y de oro", name: "Anchos falsos" },
+  { card: "12", name: "Los reyes", any: true },
+  { card: "11", name: "Los caballos", any: true },
+  { card: "10", name: "Las sotas", any: true },
+  { card: "7 de copa y de basto", name: "Sietes falsos" },
+  { card: "6", name: "Los seis", any: true },
+  { card: "5", name: "Los cinco", any: true },
+  { card: "4", name: "Los cuatro", any: true },
+];
+
+const CANTOS = [
+  { group: "Envido" },
+  { name: "Envido", wanted: "2", notWanted: "1" },
+  { name: "Real envido", wanted: "3", notWanted: "1" },
+  { name: "Falta envido", wanted: "Lo que falta", notWanted: "1" },
+  { group: "Truco" },
+  { name: "Sin cantar", wanted: "1", notWanted: "—" },
+  { name: "Truco", wanted: "2", notWanted: "1" },
+  { name: "Retruco", wanted: "3", notWanted: "2" },
+  { name: "Vale cuatro", wanted: "4", notWanted: "3" },
+  { group: "Flor" },
+  { name: "Flor", wanted: "3", notWanted: "—" },
+];
+
+const FAQ = [
+  {
+    q: "¿Se guardan los puntos si cierro el navegador?",
+    a: "Sí. La partida se guarda en tu dispositivo y sigue donde la dejaste cuando volvés a entrar.",
+  },
+  {
+    q: "¿Cómo empiezo una partida nueva?",
+    a: "Desde el menú, elegí jugar a 15 o a 30: el marcador vuelve a cero. Cuando un equipo gana, también podés arrancar la revancha desde la pantalla de resultado.",
+  },
+  {
+    q: "¿Me equivoqué al sumar, cómo lo corrijo?",
+    a: "Tocá el botón − del equipo. La corrección queda registrada en el VAR.",
+  },
+  {
+    q: "¿Funciona en la computadora?",
+    a: "Sí, funciona en celular, tablet o computadora.",
+  },
+];
+
 const GuiaTruco = () => {
   usePageMeta({
-    title:
-      "Guía Completa del Truco Argentino - Valores, Reglas y Cómo Usar el Contador",
+    title: "Valores del truco: tabla de cartas, envido y puntos | Truqito",
     description:
-      "Aprende los valores del truco argentino, cómo contar los puntos y usar nuestro contador online. Tabla completa de cartas, reglas y tutorial paso a paso.",
+      "Tabla de valores del truco argentino: el orden de las cartas de la más alta a la más baja, cómo se calcula el envido y cuántos puntos vale cada canto.",
+    path: "/guia-truco",
   });
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  const [tab, setTab] = useState("cartas");
 
   return (
-    <div className="guia-container">
-      {/* Botón sticky para volver */}
-      <nav className="guia-sticky-back">
-        <Link to="/" className="back-chip">
-          ← Volver
+    <div className="guia">
+      <header className="guia-bar">
+        <Link to="/" className="guia-back" aria-label="Volver al anotador">
+          ←
         </Link>
-      </nav>
-
-      <header className="guia-header">
-        <h1>Guía del Truco Argentino</h1>
-        <p className="guia-subtitle">
-          Valores, puntos y cómo usar el contador. <br /> Rápido y claro.
-        </p>
-        <span className="guia-underline" />
+        <h1 className="guia-title">Guía del truco</h1>
       </header>
 
-      {/* Índice de navegación */}
-      <nav className="guia-index">
-        <h2>Contenidos</h2>
-        <ul>
-          <li>
-            <a className="guia-card" href="#valores">
-              <p className="guia-card-title">Valores del Truco</p>
-              <p className="guia-card-desc">
-                Tabla completa de cartas, envido y flor
-              </p>
-            </a>
-          </li>
-          <li>
-            <a className="guia-card" href="#puntos-reglas">
-              <p className="guia-card-title">Puntos y Reglas</p>
-              <p className="guia-card-desc">
-                Malas y buenas, puntajes y diferencias
-              </p>
-            </a>
-          </li>
-          <li>
-            <a className="guia-card" href="#como-usar">
-              <p className="guia-card-title">Cómo Usar el Contador</p>
-              <p className="guia-card-desc">
-                Funciones del menú y tips rápidos
-              </p>
-            </a>
-          </li>
-        </ul>
+      <nav className="guia-tabs" role="tablist" aria-label="Secciones de la guía">
+        {TABS.map(({ id, label }) => (
+          <button
+            key={id}
+            role="tab"
+            id={`tab-${id}`}
+            aria-selected={tab === id}
+            aria-controls={`panel-${id}`}
+            className={`guia-tab ${tab === id ? "guia-tab-active" : ""}`}
+            onClick={() => setTab(id)}
+          >
+            {label}
+          </button>
+        ))}
       </nav>
 
-      {/* Sección 1: Valores del Truco */}
-      <section id="valores" className="guia-section">
-        <h2>Valores del Truco Argentino</h2>
+      <div className="guia-panels">
+        {/* Cartas */}
+        <section
+          id="panel-cartas"
+          role="tabpanel"
+          aria-labelledby="tab-cartas"
+          className="guia-panel"
+          hidden={tab !== "cartas"}
+        >
+          <h2 className="guia-h2">Valores de las cartas del truco</h2>
+          <p className="guia-lead">De la más alta a la más baja. Se juega con mazo español de 40 cartas (sin 8 ni 9).</p>
+          <ol className="guia-ranking">
+            {CARD_RANKING.map(({ card, name, any }, i) => (
+              <li key={card} className={i < 4 ? "guia-ranking-top" : ""}>
+                <span className="guia-ranking-pos">{i + 1}</span>
+                <span className="guia-ranking-name">{name}</span>
+                <span className="guia-ranking-card">{any ? `${card} de cualquier palo` : card}</span>
+              </li>
+            ))}
+          </ol>
 
-        <h3>Tabla de Valores de las Cartas</h3>
-        <p>
-          En el truco argentino, no todas las cartas tienen el mismo valor. Acá
-          te mostramos la escala completa de valores, desde la carta más alta
-          hasta la más baja:
-        </p>
+          <h2 className="guia-h2">Envido</h2>
+          <p>
+            Con dos cartas del mismo palo, se suman sus valores más 20. Las figuras (10, 11 y 12) valen 0.
+          </p>
+          <ul className="guia-examples">
+            <li>
+              <span>7 y 6 de oro</span>
+              <span className="guia-math">7 + 6 + 20 = <strong>33</strong></span>
+            </li>
+            <li>
+              <span>12 y 7 de espada</span>
+              <span className="guia-math">0 + 7 + 20 = <strong>27</strong></span>
+            </li>
+            <li>
+              <span>Sin dos del mismo palo</span>
+              <span className="guia-math">la más alta: 7 → <strong>7</strong></span>
+            </li>
+          </ul>
+          <p className="guia-note">El envido más alto posible es 33.</p>
 
-        <div className="valores-table">
-          <table>
+          <h2 className="guia-h2">Flor</h2>
+          <p>
+            Tres cartas del mismo palo. Se canta antes que el envido y vale la suma de las tres más 20. Solo se juega si
+            se acordó antes de empezar.
+          </p>
+        </section>
+
+        {/* Puntos */}
+        <section
+          id="panel-puntos"
+          role="tabpanel"
+          aria-labelledby="tab-puntos"
+          className="guia-panel"
+          hidden={tab !== "puntos"}
+        >
+          <h2 className="guia-h2">Puntos del truco: cuánto vale cada canto</h2>
+          <table className="guia-table">
             <thead>
               <tr>
-                <th>Pos.</th>
-                <th>Carta</th>
-                <th>Nombre Popular</th>
+                <th scope="col">Canto</th>
+                <th scope="col">Quiero</th>
+                <th scope="col">No quiero</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1°</td>
-                <td>1 de Espada</td>
-                <td>Ancho de Espada</td>
-              </tr>
-              <tr>
-                <td>2°</td>
-                <td>1 de Basto (As de Basto)</td>
-                <td>Ancho de Basto</td>
-              </tr>
-              <tr>
-                <td>3°</td>
-                <td>7 de Espada</td>
-                <td>La Espada</td>
-              </tr>
-              <tr>
-                <td>4°</td>
-                <td>7 de Oros</td>
-                <td>El Oro / La Moneda</td>
-              </tr>
-              <tr>
-                <td>5°</td>
-                <td>3 de cualquier palo</td>
-                <td>Los Tres</td>
-              </tr>
-              <tr>
-                <td>6°</td>
-                <td>2 de cualquier palo</td>
-                <td>Los Dos</td>
-              </tr>
-              <tr>
-                <td>7°</td>
-                <td>1 de Copa o 1 de Oros (Falsos)</td>
-                <td>Anchos Falsos</td>
-              </tr>
-              <tr>
-                <td>8°</td>
-                <td>12 (Rey) de cualquier palo</td>
-                <td>Los Reyes</td>
-              </tr>
-              <tr>
-                <td>9°</td>
-                <td>11 (Caballo) de cualquier palo</td>
-                <td>Los Caballos</td>
-              </tr>
-              <tr>
-                <td>10°</td>
-                <td>10 (Sota) de cualquier palo</td>
-                <td>Las Sotas</td>
-              </tr>
-              <tr>
-                <td>11°</td>
-                <td>7 de Copa o 7 de Basto</td>
-                <td>Sietes Falsos</td>
-              </tr>
-              <tr>
-                <td>12°</td>
-                <td>6 de cualquier palo</td>
-                <td>Los Seis</td>
-              </tr>
-              <tr>
-                <td>13°</td>
-                <td>5 de cualquier palo</td>
-                <td>Los Cinco</td>
-              </tr>
-              <tr>
-                <td>14°</td>
-                <td>4 de cualquier palo</td>
-                <td>Los Cuatro</td>
-              </tr>
+              {CANTOS.map((row) =>
+                row.group ? (
+                  <tr key={`group-${row.group}`} className="guia-table-group">
+                    <th scope="rowgroup" colSpan={3}>
+                      {row.group}
+                    </th>
+                  </tr>
+                ) : (
+                  <tr key={row.name}>
+                    <th scope="row">{row.name}</th>
+                    <td>{row.wanted}</td>
+                    <td>{row.notWanted}</td>
+                  </tr>
+                )
+              )}
             </tbody>
           </table>
-        </div>
-
-        <h3>Envido y Real Envido</h3>
-        <p>
-          El envido se juega con las cartas del mismo palo. Los valores para el
-          envido son:
-        </p>
-        <ul>
-          <li>
-            <strong>7, 6, 5, 4, 3, 2, 1:</strong> Valen su número
-          </li>
-          <li>
-            <strong>Rey (12), Caballo (11), Sota (10):</strong> Valen 0 puntos
-          </li>
-        </ul>
-        <p>
-          Para calcular el envido, se suman los valores de las dos cartas más
-          altas del mismo palo y se le agregan 20 puntos. Por ejemplo: si tenés
-          un 7 y un 6 de Espada, tu envido es 33 (7 + 6 + 20 = 33).
-        </p>
-
-        <div className="envido-ejemplos">
-          <h4>Ejemplos de Envido</h4>
-          <ul>
-            <li>
-              7 de Oro + 6 de Oro = <strong>33 puntos</strong> (el máximo)
-            </li>
-            <li>
-              5 de Copa + 4 de Copa = <strong>29 puntos</strong>
-            </li>
-            <li>
-              Rey + 7 de Espada = <strong>27 puntos</strong> (0 + 7 + 20)
-            </li>
-            <li>Sin dos cartas del mismo palo = La carta más alta + 20</li>
-          </ul>
-        </div>
-
-        <h3>La Flor</h3>
-        <p>
-          La flor se da cuando tenés tres cartas del mismo palo. Se canta "Flor"
-          antes que el envido. El valor de la flor es la suma de las tres cartas
-          más 20 puntos.
-        </p>
-
-        <h3>Truco, Retruco y Vale Cuatro</h3>
-        <div className="truco-valores">
-          <ul>
-            <li>
-              <strong>Truco:</strong> Vale 2 puntos
-            </li>
-            <li>
-              <strong>Retruco:</strong> Vale 3 puntos
-            </li>
-            <li>
-              <strong>Vale Cuatro:</strong> Vale 4 puntos
-            </li>
-            <li>
-              <strong>Queremos Ver:</strong> También vale 4 puntos (si se canta
-              después de Vale Cuatro)
-            </li>
-          </ul>
-        </div>
-
-        <p className="nota">
-          <strong>Nota:</strong> En el truco uruguayo, los valores pueden
-          cambiar ligeramente. Nuestro anotador está optimizado para el truco
-          argentino tradicional.
-        </p>
-      </section>
-
-      {/* Sección 2: Puntos y Reglas */}
-      <section id="puntos-reglas" className="guia-section">
-        <h2>Puntos y Reglas: Cómo Contar los Tantos</h2>
-
-        <h3>Malas y Buenas</h3>
-        <p>
-          Una partida de truco se divide en dos etapas según los puntos que
-          tenga cada equipo:
-        </p>
-        <ul>
-          <li>
-            <strong>Malas:</strong> De 0 a 15 puntos
-          </li>
-          <li>
-            <strong>Buenas:</strong> De 16 a 30 puntos
-          </li>
-        </ul>
-        <p>
-          En nuestro anotador, vas a ver un indicador visual que muestra si
-          estás en "Malas" o "Buenas". Cuando llegás a los 16 puntos, el
-          contador cambia automáticamente a la etapa de Buenas.
-        </p>
-
-        <h3>Cómo se Suman los Puntos</h3>
-        <p>Los puntos se suman de la siguiente manera:</p>
-
-        <div className="puntos-tabla">
-          <h4>Puntos por Envido</h4>
-          <ul>
-            <li>
-              <strong>Envido:</strong> 2 puntos
-            </li>
-            <li>
-              <strong>Real Envido:</strong> 3 puntos
-            </li>
-            <li>
-              <strong>Falta Envido:</strong> Los puntos que le faltan al que va
-              ganando para llegar a 30, o 30 si va perdiendo
-            </li>
-          </ul>
-
-          <h4>Puntos por Truco</h4>
-          <ul>
-            <li>
-              <strong>Truco no cantado:</strong> 1 punto (si ganás la mano)
-            </li>
-            <li>
-              <strong>Truco querido:</strong> 2 puntos
-            </li>
-            <li>
-              <strong>Retruco querido:</strong> 3 puntos
-            </li>
-            <li>
-              <strong>Vale Cuatro querido:</strong> 4 puntos
-            </li>
-          </ul>
-
-          <h4>Puntos por Flor</h4>
-          <ul>
-            <li>
-              <strong>Flor:</strong> 3 puntos
-            </li>
-            <li>
-              <strong>Contraflor:</strong> 6 puntos
-            </li>
-            <li>
-              <strong>Contraflor al resto:</strong> Los puntos que faltan para
-              ganar
-            </li>
-          </ul>
-        </div>
-
-        <h3>Partidas a 15 o a 30</h3>
-        <p>El truco se puede jugar de dos maneras:</p>
-        <ul>
-          <li>
-            <strong>A 15 puntos:</strong> Partidas más rápidas, ideales para
-            cuando tenés poco tiempo
-          </li>
-          <li>
-            <strong>A 30 puntos:</strong> Partidas completas, tradicionales, con
-            Malas y Buenas
-          </li>
-        </ul>
-        <p>
-          En nuestro anotador, podés cambiar entre estos dos modos desde el
-          menú. Los puntos se ajustan automáticamente.
-        </p>
-
-        <h3>Diferencias con el Truco Uruguayo</h3>
-        <p>El truco uruguayo tiene algunas diferencias con el argentino:</p>
-        <ul>
-          <li>
-            Las cartas "negras" (4 de Basto, 4 de Espada, 5 de Basto, 5 de
-            Espada) tienen valores especiales
-          </li>
-          <li>Hay diferentes cantos y valores de puntos</li>
-          <li>Se juega con reglas de descarte diferentes</li>
-        </ul>
-        <p>
-          Nuestro contador funciona para ambas variantes, pero está optimizado
-          para el truco argentino.
-        </p>
-      </section>
-
-      {/* Sección 3: Cómo Usar el Contador */}
-      <section id="como-usar" className="guia-section">
-        <h2>Cómo Usar el Contador de Truco</h2>
-
-        <h3>Interfaz Principal</h3>
-        <p>
-          El anotador de truco está diseñado para ser simple y rápido de usar.
-          En la pantalla principal vas a ver:
-        </p>
-        <ul>
-          <li>
-            <strong>Dos contadores:</strong> Uno para "Nosotros" y otro para
-            "Ellos"
-          </li>
-          <li>
-            <strong>Botones + y -:</strong> Para sumar o restar puntos
-          </li>
-          <li>
-            <strong>Indicador de etapa:</strong> Muestra si estás en Malas
-            (hasta 15) o Buenas (16 a 30)
-          </li>
-          <li>
-            <strong>Puntos visuales:</strong> Las líneas que ves representan los
-            puntos al estilo anotador clásico
-          </li>
-        </ul>
-
-        <h3>Funcionalidades del Menú</h3>
-        <p>
-          Desde el menú (las tres rayitas arriba a la derecha) podés acceder a:
-        </p>
-
-        <div className="funcionalidades">
-          <h4>🎥 IR AL VAR</h4>
-          <p>
-            Como en el fútbol, tenemos nuestro propio VAR (Video Asistencia al
-            Referee). Acá podés ver el historial completo de la partida: quién
-            sumó puntos, cuándo, y cuánto. Perfecto para resolver discusiones
-            sobre el puntaje.
+          <p className="guia-note">
+            La falta envido vale los puntos que le faltan al que va ganando para terminar el partido.
+          </p>
+          <p className="guia-note">
+            La contraflor y la contraflor al resto cambian según cómo se juegue: conviene acordarlas antes de empezar.
+          </p>
+          <p className="guia-note">
+            Los cantos de envido se pueden encadenar (envido, envido, real envido…): si se quieren, se suman todos; si no,
+            se cobra lo cantado hasta antes del último.
           </p>
 
-          <h4>🔄 JUGAR A 15 o A 30</h4>
+          <h2 className="guia-h2">Malas y buenas</h2>
           <p>
-            Cambiá rápidamente entre partidas a 15 puntos o a 30 puntos. Cuando
-            cambias el modo, el juego se reinicia automáticamente.
+            A 30 puntos, la partida se divide en dos mitades: las <strong>malas</strong> (del 1 al 15) y las{" "}
+            <strong>buenas</strong> (del 16 al 30). Gana el primero que llega a 15 buenas.
           </p>
 
-          <h4>✏️ EDITAR NOMBRES</h4>
+          <h2 className="guia-h2">A 15 o a 30</h2>
           <p>
-            ¿Cansado de "Nosotros" y "Ellos"? Cambiá los nombres de los equipos
-            para personalizar tu partida. Los nombres se guardan
-            automáticamente.
+            A 15 es una partida corta, sin malas ni buenas. A 30 es la partida completa. En el anotador lo elegís desde el
+            menú.
           </p>
 
-          <h4>ℹ️ NOVEDADES</h4>
+          <h2 className="guia-h2">Truco uruguayo</h2>
           <p>
-            Mirá las últimas actualizaciones y mejoras que le fuimos haciendo al
-            anotador.
+            Se da vuelta una carta, la <strong>muestra</strong>. El 2, 4, 5, 10 y 11 de ese palo (las piezas) pasan a ser
+            las cartas más altas y cambian el envido. El anotador sirve igual para contar los puntos.
           </p>
-        </div>
+        </section>
 
-        <h3>Tips y Trucos de Uso</h3>
-        <div className="tips">
-          <ul>
+        {/* El anotador */}
+        <section
+          id="panel-anotador"
+          role="tabpanel"
+          aria-labelledby="tab-anotador"
+          className="guia-panel"
+          hidden={tab !== "anotador"}
+        >
+          <h2 className="guia-h2">Cómo anotar</h2>
+          <ul className="guia-list">
             <li>
-              <strong>Agregá la app al inicio:</strong> Desde el navegador,
-              seleccioná "Agregar a pantalla de inicio" para tener el anotador
-              como una app en tu celular. Consume menos batería y carga más
-              rápido.
+              <strong>Tocá el tablero</strong> de un equipo para sumarle un punto: aparece un fósforo nuevo.
             </li>
             <li>
-              <strong>Funciona sin internet:</strong> Una vez cargada, la app
-              funciona offline. Ideal para esas reuniones en lugares sin señal.
+              <strong>Botones + y −</strong> para sumar o corregir.
             </li>
             <li>
-              <strong>El VAR es tu amigo:</strong> Si hay dudas sobre el
-              puntaje, revisá el VAR. Ahí está todo registrado con hora y
-              acción.
+              Arriba de cada tablero ves si el equipo está en <strong>malas</strong> o en <strong>buenas</strong>.
             </li>
           </ul>
-        </div>
 
-        <h3>Preguntas Frecuentes</h3>
-        <div className="faq">
-          <details>
-            <summary>¿Se guardan los puntos si cierro el navegador?</summary>
-            <p>
-              Sí, los puntos se guardan automáticamente en tu dispositivo. Podés
-              cerrar el navegador y cuando vuelvas a entrar, la partida sigue
-              donde la dejaste.
-            </p>
-          </details>
+          <h2 className="guia-h2">En el menú</h2>
+          <dl className="guia-menu">
+            <div>
+              <dt>VAR</dt>
+              <dd>Toda la partida jugada por jugada: quién sumó, cuánto y a qué hora. Para terminar las discusiones.</dd>
+            </div>
+            <div>
+              <dt>Jugar a 15 / a 30</dt>
+              <dd>Cambia el modo y empieza una partida nueva.</dd>
+            </div>
+            <div>
+              <dt>Editar nombres</dt>
+              <dd>Ponele nombre a cada equipo.</dd>
+            </div>
+            <div>
+              <dt>Novedades</dt>
+              <dd>Qué cambió en cada versión.</dd>
+            </div>
+          </dl>
 
-          <details>
-            <summary>¿Puedo usar el anotador en mi computadora?</summary>
-            <p>
-              Sí, el anotador funciona en cualquier dispositivo: celular, tablet
-              o computadora. El diseño se adapta automáticamente al tamaño de
-              pantalla.
-            </p>
-          </details>
+          <h2 className="guia-h2">Tip</h2>
+          <p>
+            Desde el navegador, elegí <strong>Agregar a pantalla de inicio</strong> y vas a tener el anotador como una app.
+          </p>
 
-          <details>
-            <summary>¿Cómo reseteo una partida?</summary>
-            <p>
-              Cuando una partida termina (alguien llega a 30 puntos), aparece
-              una pantalla de victoria donde podés elegir jugar la revancha a 15
-              o a 30 puntos.
-            </p>
-          </details>
-        </div>
-      </section>
+          <h2 className="guia-h2">Preguntas frecuentes</h2>
+          <div className="guia-faq">
+            {FAQ.map(({ q, a }) => (
+              <details key={q}>
+                <summary>{q}</summary>
+                <p>{a}</p>
+              </details>
+            ))}
+          </div>
 
-      {/* Footer de la guía */}
-      <footer className="guia-footer">
-        <p>
-          ¿Falta algo en esta guía?{" "}
-          <a href="mailto:lauticonte@gmail.com">Escribinos</a> y lo agregamos.
-        </p>
-      </footer>
+          <p className="guia-contact">
+            ¿Falta algo? <a href="mailto:lauticonte@gmail.com">Escribinos</a>.
+          </p>
+        </section>
+      </div>
     </div>
   );
 };

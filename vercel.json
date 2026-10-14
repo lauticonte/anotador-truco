@@ -1,7 +1,21 @@
 {
   "rewrites": [
-    { "source": "/ads.txt", "destination": "/api/ads-text.js" },
-    { "source": "/((?!api|static|images|favicon|fonts|meta|sitemap.xml|robots.txt).*)", "destination": "/index.html" }
+    {
+      "source": "/ads.txt",
+      "destination": "/api/ads-text.js"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/guia-truco",
+      "destination": "/guia-truco.html"
+    },
+    {
+      "source": "/resultado/:winner",
+      "destination": "/index.html"
+    }
   ],
   "headers": [
     {

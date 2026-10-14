@@ -1,25 +1,21 @@
 import React from "react";
+import SheetCloseButton from "./SheetCloseButton.js";
+import "../styles/Sheet.css";
 import "../styles/Changelog.css";
 
 const Changelog = ({ isVisible, onClose }) => {
-  const CloseIcon = () => (
-    <svg
-      className="svg-history-icon"
-      aria-hidden="true"
-      focusable="false"
-      data-prefix="fas"
-      data-icon="times"
-      role="img"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 352 512"
-    >
-      <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
-    </svg>
-
-
-  );
-
   const changelog = [
+    {
+      version: "1.5.0",
+      date: "14/10/2026",
+      changes: [
+        "Nuevo VAR: el marcador arriba y la partida jugada por jugada, con los puntos de cada equipo de su lado.",
+        "Editar nombres y Novedades con nuevo diseño.",
+        "Nueva Guía del truco: valores de las cartas, envido y cuánto vale cada canto, en tres pestañas.",
+        "Borrar el historial del VAR ahora pide confirmación.",
+        "Arreglo del menú en pantallas chicas y de la barra blanca al abrir el teclado."
+      ]
+    },
     {
       version: "1.4.6",
       date: "14/10/2026",
@@ -136,25 +132,22 @@ const Changelog = ({ isVisible, onClose }) => {
   
 
   return (
-    <div className={`changelog-overlay ${isVisible ? "visible" : ""}`}>
-      <div className="changelog-modal">
-        <div className="changelog-header">
-          <h2>NOVEDADES</h2>
-          <div className="changelog-actions">
-            <a className="github-button" href="https://github.com/lauticonte/anotador-truco/releases" target="_blank" rel="noopener noreferrer">
-                <i class='bx bxl-github bx-md' ></i>
-            </a>
-            <button className="close-button" onClick={onClose}>
-              <CloseIcon />
-            </button>
-          </div>
-        </div>
-        
-        <div className="changelog-content">
+    <div className={`sheet-overlay ${isVisible ? "visible" : ""}`} onClick={onClose}>
+      <div className="sheet sheet-tall" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Novedades">
+        <header className="sheet-header">
+          <h2 className="sheet-title">
+            <span className="sheet-badge">v{changelog[0].version}</span>
+            <span>Novedades</span>
+          </h2>
+          <SheetCloseButton onClick={onClose} />
+        </header>
+
+        <ol className="releases">
           {changelog.map((release, index) => (
-            <div key={index} className="changelog-release">
-              <div className="release-header">
-                <h3>Versión {release.version}</h3>
+            <li key={release.version} className={`release ${index === 0 ? "release-current" : ""}`}>
+              <div className="release-heading">
+                <span className="release-version">Versión {release.version}</span>
+                {index === 0 && <span className="release-tag">Actual</span>}
                 <span className="release-date">{release.date}</span>
               </div>
               <ul className="release-changes">
@@ -162,12 +155,23 @@ const Changelog = ({ isVisible, onClose }) => {
                   <li key={changeIndex}>{change}</li>
                 ))}
               </ul>
-            </div>
+            </li>
           ))}
-        </div>
+        </ol>
+
+        <footer className="sheet-footer">
+          <a
+            className="sheet-secondary"
+            href="https://github.com/lauticonte/anotador-truco"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Ver el código en GitHub
+          </a>
+        </footer>
       </div>
     </div>
   );
 };
 
-export default Changelog; 
+export default Changelog;

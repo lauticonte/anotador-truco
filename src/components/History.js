@@ -1,154 +1,199 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import SheetCloseButton from "./SheetCloseButton.js";
+import "../styles/Sheet.css";
 import "../styles/History.css";
 
+// Toques seguidos del mismo equipo dentro de esta ventana se muestran como una sola jugada (ej. un truco = +2)
+const GROUP_WINDOW_SECONDS = 5;
+
+const toSeconds = (timestamp) => {
+  const [h = 0, m = 0, s = 0] = String(timestamp).split(":").map(Number);
+  return h * 3600 + m * 60 + s;
+};
+
+const toHourMinute = (timestamp) => String(timestamp).slice(0, 5);
+
+// Convierte el historial crudo (un registro por punto, en orden cronológico) en jugadas e hitos
+const buildTimeline = (entries) => {
+  const items = [];
+  const lastStage = {};
+
+  entries.forEach((entry) => {
+    const last = items[items.length - 1];
+    const sameStage = lastStage[entry.team] === undefined || lastStage[entry.team] === entry.stage;
+    const canGroup =
+      last &&
+      last.type === "play" &&
+      last.team === entry.team &&
+      last.action === entry.action &&
+      sameStage &&
+      toSeconds(entry.timestamp) - last.lastSeconds <= GROUP_WINDOW_SECONDS &&
+      toSeconds(entry.timestamp) >= last.lastSeconds;
+
+    if (lastStage[entry.team] !== undefined && !sameStage) {
+      items.push({ type: "stage", team: entry.team, stage: entry.stage, timestamp: entry.timestamp });
+    }
+    lastStage[entry.team] = entry.stage;
+
+    if (canGroup) {
+      last.amount += Math.abs(entry.points);
+      last.result = entry.currentPoints;
+      last.stage = entry.stage;
+      last.lastSeconds = toSeconds(entry.timestamp);
+    } else {
+      items.push({
+        type: "play",
+        team: entry.team,
+        action: entry.action,
+        amount: Math.abs(entry.points),
+        result: entry.currentPoints,
+        stage: entry.stage,
+        maxPoints: entry.maxPoints,
+        timestamp: entry.timestamp,
+        lastSeconds: toSeconds(entry.timestamp),
+      });
+    }
+  });
+
+  return items;
+};
+
 const History = ({ isVisible, onClose, teamNames }) => {
-  const [history, setHistory] = useState([]);
-  const [showSummary, setShowSummary] = useState(false);
-
-  const CloseIcon = () => (
-    <svg
-      className="svg-history-icon"
-      aria-hidden="true"
-      focusable="false"
-      data-prefix="fas"
-      data-icon="times"
-      role="img"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 352 512"
-    >
-      <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
-    </svg>
-  );
-
-  const TrashIcon = () => (
-    <svg
-      className="svg-history-icon"
-      aria-hidden="true"
-      focusable="false"
-      data-prefix="fas"
-      data-icon="trash"
-      role="img"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 448 512"
-    >
-      <path d="M135.2 17.7L128 32H32C14.3 32 0 46.3 0 64S14.3 96 32 96H416c17.7 0 32-14.3 32-32s-14.3-32-32-32H320l-7.2-14.3C307.4 6.8 296.3 0 284.2 0H163.8c-12.1 0-23.2 6.8-28.6 17.7zM416 128H32L53.2 467c1.6 25.3 22.6 45 47.9 45H346.9c25.3 0 46.3-19.7 47.9-45L416 128z" />
-    </svg>
-  );
+  const [entries, setEntries] = useState([]);
+  const [confirmClear, setConfirmClear] = useState(false);
 
   useEffect(() => {
     if (isVisible) {
-      const savedHistory = JSON.parse(localStorage.getItem("history")) || [];
-      setHistory(savedHistory.reverse());
+      // Los puntos se guardan con un pequeño retraso: forzar el guardado para no perder la última jugada
+      window.dispatchEvent(new Event("flushHistory"));
+      setEntries(JSON.parse(localStorage.getItem("history")) || []);
     } else {
-      setHistory([]);
-      setShowSummary(false);
+      setConfirmClear(false);
     }
   }, [isVisible]);
 
-  const toggleView = () => {
-    setShowSummary(!showSummary);
-  };
+  // Más reciente arriba, con un separador de hora cada vez que cambia el minuto
+  const timeline = useMemo(() => {
+    const items = [];
+    let lastMinute = null;
+    buildTimeline(entries)
+      .reverse()
+      .forEach((item) => {
+        const minute = toHourMinute(item.timestamp);
+        if (minute !== lastMinute) {
+          items.push({ type: "time", label: minute });
+          lastMinute = minute;
+        }
+        items.push(item);
+      });
+    return items;
+  }, [entries]);
+
+  // Marcador actual según la última jugada de cada equipo
+  const score = useMemo(() => {
+    const current = {};
+    entries.forEach((entry) => {
+      current[entry.team] = { points: entry.currentPoints, stage: entry.stage, maxPoints: entry.maxPoints };
+    });
+    return current;
+  }, [entries]);
+
+  const nameOf = (team) => (team === "NOSOTROS" ? teamNames.NOSOTROS : teamNames.ELLOS);
 
   const clearHistory = () => {
+    if (!confirmClear) {
+      setConfirmClear(true);
+      return;
+    }
     localStorage.setItem("history", JSON.stringify([]));
-    setHistory([]);
-    setShowSummary(false);
+    setEntries([]);
+    setConfirmClear(false);
   };
 
-  const getHistoryItemClass = (entry) => {
-    return `history-item ${entry.team === "NOSOTROS" ? "nosotros" : "ellos"}`;
-  };
-
-  const renderHistoryEntry = (entry) => {
-    const pointsDisplay = entry.currentPoints;
-    const stageDisplay = entry.maxPoints === 30 ? ` (${entry.stage})` : "";
-    const actionSymbol = entry.action === "SUMA" ? "+" : "-";
-
+  const renderScore = (team) => {
+    const s = score[team];
+    const showStage = s && s.maxPoints === 30;
     return (
-      <div className={getHistoryItemClass(entry)} key={entry.timestamp}>
-        <div className="team-indicator">{entry.team === "NOSOTROS" ? "N" : "E"}</div>
-        <div className="action-info">
-          <span className="action">{entry.action}</span>
-          <span className={`points ${entry.action === "SUMA" ? "positive" : "negative"}`}>
-            {actionSymbol}{Math.abs(entry.points)} → {pointsDisplay}{stageDisplay}
+      <div className={`var-score var-score-${team.toLowerCase()}`}>
+        <span className="var-score-name">{nameOf(team)}</span>
+        <span className="var-score-points">{s ? s.points : 0}</span>
+        {showStage && <span className={`var-stage var-stage-${s.stage.toLowerCase()}`}>{s.stage}</span>}
+      </div>
+    );
+  };
+
+  const renderItem = (item, index) => {
+    if (item.type === "time") {
+      return (
+        <li className="var-time" key={`time-${index}`}>
+          <span>{item.label}</span>
+        </li>
+      );
+    }
+
+    if (item.type === "stage") {
+      return (
+        <li className="var-milestone" key={`stage-${index}`}>
+          <span className={`var-stage var-stage-${item.stage.toLowerCase()}`}>
+            {nameOf(item.team)} → {item.stage}
+          </span>
+        </li>
+      );
+    }
+
+    const isAdd = item.action === "SUMA";
+    const side = item.team === "NOSOTROS" ? "left" : "right";
+    return (
+      <li className={`var-play var-play-${side} ${isAdd ? "" : "var-play-correction"}`} key={`play-${index}`}>
+        <div className="var-play-card">
+          <span className="var-play-amount">
+            {isAdd ? "+" : "−"}
+            {item.amount}
+          </span>
+          <span className="var-play-detail">
+            {!isAdd && <span className="sheet-sr-only">Corrección: </span>}→ {item.result}
           </span>
         </div>
-        <div className="timestamp">{entry.timestamp}</div>
-      </div>
+      </li>
     );
   };
-
-  const calculateSummary = () => {
-    const savedHistory = JSON.parse(localStorage.getItem("history")) || [];
-    const summary = {
-      NOSOTROS: { sumas: 0, restas: 0 },
-      ELLOS: { sumas: 0, restas: 0 }
-    };
-
-    savedHistory.forEach(entry => {
-      if (entry.action === "SUMA") {
-        summary[entry.team].sumas++;
-      } else if (entry.action === "RESTA") {
-        summary[entry.team].restas++;
-      }
-    });
-
-    return summary;
-  };
-
-  const SummaryView = () => {
-    const summary = calculateSummary();
-    return (
-      <div className="summary-container">
-        {Object.entries(summary).map(([team, stats]) => (
-          <div key={team} className={`summary-team ${team.toLowerCase()}`}>
-            <h3>{team === "NOSOTROS" ? teamNames.NOSOTROS : teamNames.ELLOS}</h3>
-            <p>
-              <span>Sumas</span>
-              <span>{stats.sumas}</span>
-            </p>
-            <p>
-              <span>Restas</span>
-              <span>{stats.restas}</span>
-            </p>
-            <p>
-              <span>Total de cambios</span>
-              <span>{stats.sumas + stats.restas}</span>
-            </p>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const HistoryView = () => (
-    <div className="history-content">
-      {history.map(renderHistoryEntry)}
-    </div>
-  );
 
   return (
-    <div className={`history-overlay ${isVisible ? "visible" : ""}`}>
-      <div className="history-modal">
-        <div className="history-header">
-          <h2>{showSummary ? "RESUMEN" : "HISTORIAL"}</h2>
-          <div className="history-actions">
-            <button 
-              className="summary-button"
-              onClick={toggleView}
-            >
-              {showSummary ? "Movimientos" : "Resumen"}
-            </button>
-            <button className="clear-button" onClick={clearHistory}>
-              <TrashIcon />
-            </button>
-            <button className="close-button" onClick={onClose}>
-              <CloseIcon />
-            </button>
-          </div>
+    <div className={`sheet-overlay ${isVisible ? "visible" : ""}`} onClick={onClose}>
+      <div className="sheet sheet-tall" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="VAR: revisión de la partida">
+        <header className="sheet-header">
+          <h2 className="sheet-title">
+            <span className="sheet-badge">VAR</span>
+            <span>Revisión de la partida</span>
+          </h2>
+          <SheetCloseButton onClick={onClose} />
+        </header>
+
+        <div className="var-scoreboard">
+          {renderScore("NOSOTROS")}
+          {renderScore("ELLOS")}
         </div>
-        
-        {showSummary ? <SummaryView /> : <HistoryView />}
+
+        {timeline.length ? (
+          <ol className="var-timeline">{timeline.map(renderItem)}</ol>
+        ) : (
+          <div className="var-empty">
+            <p>Todavía no hay jugadas.</p>
+            <p className="var-empty-hint">Cada punto que sumes o restes va a aparecer acá.</p>
+          </div>
+        )}
+
+        {timeline.length > 0 && (
+          <footer className="sheet-footer">
+            <button
+              className={`sheet-secondary ${confirmClear ? "sheet-secondary-danger" : ""}`}
+              onClick={clearHistory}
+              onBlur={() => setConfirmClear(false)}
+            >
+              {confirmClear ? "¿Seguro? Tocá de nuevo para borrar" : "Borrar historial"}
+            </button>
+          </footer>
+        )}
       </div>
     </div>
   );

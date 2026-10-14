@@ -12,8 +12,9 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Aplicación online para anotar y contar los puntos de tu partida de truco. ¡Agregala al inicio para que consuma menos batería!"
+      content="Anotá los puntos del truco desde el celular, sin descargar nada: partidas a 15 o a 30, malas y buenas, con fósforos como en papel. Gratis."
     />
+    <link rel="canonical" href="https://truco.contelautaro.com.ar/" />
     <link
       rel="apple-touch-icon"
       href="%PUBLIC_URL%/favicon/apple-touch-icon.png"
@@ -26,25 +27,24 @@
       property="og:image"
       content="https://truco.contelautaro.com.ar/images/og.png"
     />
-    <meta property="og:title" content="Anotador de Truco" />
+    <meta property="og:title" content="Anotador de Truco Argentino online y gratis" />
     <meta
       property="og:description"
-      content="Aplicación online para anotar los puntos de tu partido de truco. ¡Agregala al inicio para que consuma menos recursos!"
+      content="Anotá los puntos del truco desde el celular, sin descargar nada: partidas a 15 o a 30, malas y buenas, con fósforos como en papel. Gratis."
     />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:url" content="https://truco.contelautaro.com.ar/" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Anotador de Truco" />
-    <meta name="keywords" content="Truco, Anotador, Marcador, Contador, Tanteador, Valores, Puntos, Tantos, Tabla, Reglas" />
     <meta name="author" content="Lautaro Conte" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lauticonte" />
-    <meta name="twitter:title" content="Anotador de Truco | Online y Gratis" />
+    <meta name="twitter:title" content="Anotador de Truco Argentino online y gratis" />
     <meta
       name="twitter:description"
-      content="Aplicación online para anotar los puntos de tu partido de truco. ¡Agregala al inicio para que consuma menos recursos!"
+      content="Anotá los puntos del truco desde el celular, sin descargar nada: partidas a 15 o a 30, malas y buenas, con fósforos como en papel. Gratis."
     />
     <meta
       name="twitter:image"
@@ -94,7 +94,7 @@
       })(window, document, "clarity", "script", "qu1vkonhc5");
     </script>
 
-    <title>Anotador de Truco | Online y Gratis</title>
+    <title>Anotador de Truco Argentino online y gratis | Truqito</title>
 
     <!-- InMobi Choice. Consent Manager Tag v3.0 (for TCF 2.2) -->
     <script type="text/javascript" defer>
@@ -294,8 +294,22 @@
           (window.siq = window.siq || []).push(arguments);
         };
     </script>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <noscript><p style="margin: 0; padding: 0.5rem 1rem; color: #ecdbba; background: #2d4263; font-family: Outfit, system-ui, sans-serif; font-size: 0.85rem; text-align: center">Para usar el anotador necesitás activar JavaScript.</p></noscript>
+    <div id="root">
+      <!-- Contenido inicial: lo leen los buscadores sin ejecutar JavaScript. React lo reemplaza al cargar. -->
+      <main style="max-width: 640px; margin: 0 auto; padding: 2rem 1rem; color: #ecdbba; background: #191919; font-family: Outfit, system-ui, sans-serif; line-height: 1.5">
+        <h1 style="font-size: 1.5rem; margin: 0 0 0.75rem">Anotador de Truco Argentino</h1>
+        <p>Anotá los puntos de tu partida de truco desde el celular o la computadora, sin descargar nada ni registrarte.</p>
+        <ul>
+          <li>Partidas a 15 o a 30 puntos, con malas y buenas.</li>
+          <li>Los puntos se dibujan con fósforos, como en el anotador de papel. Sumás tocando el tablero.</li>
+          <li>Nombres de los equipos editables.</li>
+          <li>VAR: el historial de la partida, jugada por jugada.</li>
+          <li>La partida queda guardada si cerrás el navegador.</li>
+        </ul>
+        <p><a href="/guia-truco" style="color: #ecdbba">Guía del truco</a>: valor de las cartas, cómo calcular el envido y cuánto vale cada canto.</p>
+      </main>
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

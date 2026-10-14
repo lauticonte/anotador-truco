@@ -1,0 +1,20 @@
+# Truqito: Anotador de Truco
+
+> Anotador de truco argentino online y gratis. Sirve para llevar los puntos de una partida desde el celular o la computadora, sin descargar nada ni registrarse.
+
+## Qué hace
+
+- Lleva los puntos de dos equipos ("Nosotros" y "Ellos", con nombres editables).
+- Partidas a 15 o a 30 puntos. A 30 separa malas (1 a 15) y buenas (16 a 30).
+- Los puntos se dibujan con fósforos, como el anotador de papel. Se suma tocando el tablero o con los botones + y −.
+- VAR: historial de la partida jugada por jugada, con la hora de cada punto.
+- La partida se guarda en el dispositivo y sigue donde quedó al volver a entrar.
+
+## Páginas
+
+- [Anotador](https://truco.contelautaro.com.ar/): el marcador.
+- [Guía del truco](https://truco.contelautaro.com.ar/guia-truco): valor de las cartas, cómo calcular el envido, cuánto vale cada canto, malas y buenas.
+
+## Autor
+
+Hecho por Lautaro Conte (https://contelautaro.com.ar).

@@ -1,5 +1,5 @@
-import React, { useState, useCallback, lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { useState, useCallback, useEffect, useRef, lazy, Suspense } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import "./styles/App.css";
 import Header from "./components/Header.js";
 import Footer from "./components/Footer.js";
@@ -16,6 +16,22 @@ const Changelog = lazy(() => import("./components/Changelog.js"));
 const GuiaTruco = lazy(() => import("./components/pages/GuiaTruco.js"));
 
 const App = () => {
+  const location = useLocation();
+  // En la guía el contenido sigue por debajo del anuncio (se scrollea igual)
+  const contentUnderAd = location.pathname === "/guia-truco";
+  const adSlotRef = useRef(null);
+
+  // Alto real del anuncio (cambia según el banner que gane) para dejar espacio al final de la guía
+  useEffect(() => {
+    const el = adSlotRef.current;
+    if (!el || !window.ResizeObserver) return;
+    const observer = new ResizeObserver(() => {
+      document.documentElement.style.setProperty("--ad-slot-height", `${el.offsetHeight}px`);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   const [finished, setFinished] = useState(false);
   const [winner, setWinner] = useState("");
   const [maxPoints, setMaxPoints] = useState(() => {
@@ -91,7 +107,7 @@ const App = () => {
 
   return (
     <AuthProvider>
-      <div className="app">
+      <div className={`app ${contentUnderAd ? "app-content-under-ad" : ""}`}>
         <Header
           toggleMaxPoints={toggleMaxPoints}
           maxPoints={maxPoints}
@@ -131,7 +147,7 @@ const App = () => {
           </Routes>
         </main>
         {/* Oculto Intersitial <AdComponent adId="127560-15" type="15" siteId="127560" formatId="15" /> */}
-        <div className="ad-slot">
+        <div className="ad-slot" ref={adSlotRef}>
           <AdComponent adId="127560-28" type="28" siteId="127560" formatId="28" />
         </div>
         <Footer />

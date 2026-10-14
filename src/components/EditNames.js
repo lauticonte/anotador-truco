@@ -1,160 +1,91 @@
 import React, { useState, useEffect } from "react";
+import SheetCloseButton from "./SheetCloseButton.js";
+import "../styles/Sheet.css";
 import "../styles/EditNames.css";
+
+const MAX_LENGTH = 10;
+const DEFAULT_NAMES = { NOSOTROS: "NOSOTROS", ELLOS: "ELLOS" };
+
+const FIELDS = [
+  { team: "NOSOTROS", label: "Tu equipo" },
+  { team: "ELLOS", label: "Rivales" },
+];
 
 const EditNames = ({ isVisible, onClose, teamNames, onSave }) => {
   const [names, setNames] = useState(teamNames);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (isVisible) {
       setNames(teamNames);
-      setIsSubmitting(false);
     }
   }, [isVisible, teamNames]);
 
-  const handleInputFocus = (e) => {
-    e.target.select(); // Select all text when focused
+  const handleChange = (team, value) => {
+    setNames((prev) => ({ ...prev, [team]: value.toUpperCase() }));
   };
 
-  const handleInputChange = (e, team) => {
-    const value = e.target.value;
-    setNames(prev => ({ ...prev, [team]: value }));
-  };
-
-  const handleSave = async () => {
-    if (isSubmitting) return;
-    
-    setIsSubmitting(true);
-    
-    // Validar y establecer valores por defecto si están vacíos
-    const formattedNames = {
-      NOSOTROS: names.NOSOTROS.trim() || "NOSOTROS",
-      ELLOS: names.ELLOS.trim() || "ELLOS"
-    };
-
-    // Convertir a mayúsculas
-    formattedNames.NOSOTROS = formattedNames.NOSOTROS.toUpperCase();
-    formattedNames.ELLOS = formattedNames.ELLOS.toUpperCase();
-
-    // Simular un pequeño delay para la animación
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    onSave(formattedNames);
+  // Vacío vuelve al nombre por defecto
+  const handleSave = () => {
+    onSave({
+      NOSOTROS: names.NOSOTROS.trim() || DEFAULT_NAMES.NOSOTROS,
+      ELLOS: names.ELLOS.trim() || DEFAULT_NAMES.ELLOS,
+    });
     onClose();
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSave();
-    }
-  };
-
-  const handleReset = async () => {
-    if (isSubmitting) return;
-    
-    setIsSubmitting(true);
-    
-    // Establecer nombres por defecto
-    const defaultNames = {
-      NOSOTROS: "NOSOTROS",
-      ELLOS: "ELLOS"
-    };
-
-    // Simular un pequeño delay para la animación
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    onSave(defaultNames);
+  const handleReset = () => {
+    onSave(DEFAULT_NAMES);
     onClose();
   };
 
-  const CloseIcon = () => (
-    <svg
-      className="svg-history-icon"
-      aria-hidden="true"
-      focusable="false"
-      data-prefix="fas"
-      data-icon="times"
-      role="img"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 352 512"
-    >
-      <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" />
-    </svg>
-  );
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSave();
+  };
 
   return (
-    <div className={`edit-names-overlay ${isVisible ? "visible" : ""}`}>
-      <div className="edit-names-modal">
-        <div className="edit-names-header">
-          <h2>EDITAR NOMBRES</h2>
-          <div className="edit-names-actions">
-            <button 
-              className="close-button" 
-              onClick={onClose}
-              aria-label="Cerrar"
-            >
-              <CloseIcon />
-            </button>
-          </div>
-        </div>
-        
-        <div className="edit-names-form">
-          <div className="edit-name-input nosotros">
-            <label htmlFor="nosotros-input">Modificá tu nombre...</label>
-            <input
-              id="nosotros-input"
-              type="text"
-              value={names.NOSOTROS}
-              onChange={(e) => handleInputChange(e, "NOSOTROS")}
-              onFocus={handleInputFocus}
-              onKeyPress={handleKeyPress}
-              placeholder="NOSOTROS"
-              maxLength={10}
-              disabled={isSubmitting}
-              
+    <div className={`sheet-overlay ${isVisible ? "visible" : ""}`} onClick={onClose}>
+      <div className="sheet" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Nombres de los equipos">
+        <header className="sheet-header">
+          <h2 className="sheet-title">Nombres de los equipos</h2>
+          <SheetCloseButton onClick={onClose} />
+        </header>
 
-            />
-            <span className="character-count">
-              {names.NOSOTROS.length}/10
-            </span>
-          </div>
-          <div className="edit-name-input ellos">
-            <label htmlFor="ellos-input">Modificá el nombre del rival...</label>
-            <input
-              id="ellos-input"
-              type="text"
-              value={names.ELLOS}
-              onChange={(e) => handleInputChange(e, "ELLOS")}
-              onFocus={handleInputFocus}
-              onKeyPress={handleKeyPress}
-              placeholder="ELLOS"
-              maxLength={10}
-              disabled={isSubmitting}
-            />
-            <span className="character-count">
-              {names.ELLOS.length}/10
-            </span>
-          </div>
+        <div className="names-fields">
+          {FIELDS.map(({ team, label }) => (
+            <label className="names-field" key={team} htmlFor={`name-${team}`}>
+              <span className="names-label">{label}</span>
+              <input
+                id={`name-${team}`}
+                className="names-input"
+                type="text"
+                value={names[team]}
+                onChange={(e) => handleChange(team, e.target.value)}
+                onFocus={(e) => e.target.select()}
+                onKeyDown={handleKeyDown}
+                placeholder={DEFAULT_NAMES[team]}
+                maxLength={MAX_LENGTH}
+                autoComplete="off"
+                autoCapitalize="characters"
+                enterKeyHint="done"
+              />
+              <span className="names-count">
+                {names[team].length}/{MAX_LENGTH}
+              </span>
+            </label>
+          ))}
         </div>
 
-        <div className="edit-names-buttons">
-          <button 
-            className="save-button" 
-            onClick={handleSave}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "GUARDANDO..." : "GUARDAR"}
+        <footer className="sheet-footer">
+          <button className="sheet-primary" onClick={handleSave}>
+            Guardar
           </button>
-          <button 
-            onClick={handleReset}
-            disabled={isSubmitting}
-          >
-            RESTAURAR
+          <button className="sheet-secondary" onClick={handleReset}>
+            Restaurar nombres
           </button>
-        </div>
+        </footer>
       </div>
     </div>
   );
 };
 
-export default EditNames; 
+export default EditNames;
