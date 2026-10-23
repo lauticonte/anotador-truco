@@ -80,12 +80,13 @@ const Header = React.memo(
         <div className={`logo-container ${logoSlide ? 'slide' : ''}`}>
           <img
             src="/images/main_logo.webp"
-            alt="Main Logo"
+            alt="Truqito"
             className="logo"
-            width="auto"
+            width="141"
             height="38"
             decoding="async"
             loading="eager"
+            fetchpriority="high"
           />
         </div>
 
