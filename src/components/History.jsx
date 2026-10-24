@@ -135,7 +135,7 @@ const History = ({ isVisible, onClose, teamNames }) => {
       return (
         <li className="var-milestone" key={`stage-${index}`}>
           <span className={`var-stage var-stage-${item.stage.toLowerCase()}`}>
-            {nameOf(item.team)} → {item.stage}
+            {nameOf(item.team)} <span className="flecha flecha-der">→</span> {item.stage}
           </span>
         </li>
       );
@@ -151,7 +151,7 @@ const History = ({ isVisible, onClose, teamNames }) => {
             {item.amount}
           </span>
           <span className="var-play-detail">
-            {!isAdd && <span className="sheet-sr-only">Corrección: </span>}→ {item.result}
+            {!isAdd && <span className="sheet-sr-only">Corrección: </span>}<span className="flecha flecha-der">→</span> {item.result}
           </span>
         </div>
       </li>

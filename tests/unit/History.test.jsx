@@ -73,7 +73,7 @@ describe("History", () => {
     expect(nos.querySelector(".var-score-points")).toHaveTextContent("1");
     expect(nos.querySelector(".var-stage")).toHaveTextContent("Buenas");
     expect(container.querySelector(".var-score-ellos .var-score-points")).toHaveTextContent("4");
-    expect(screen.getByText("LOS PIBES → Buenas")).toBeInTheDocument();
+    expect(container.querySelector(".var-milestone .var-stage")).toHaveTextContent("LOS PIBES → Buenas");
   });
 
   it("al abrirse fuerza el guardado pendiente con el evento flushHistory", () => {
@@ -91,5 +91,15 @@ describe("History", () => {
     fireEvent.click(screen.getByRole("button", { name: /¿Seguro\?/ }));
     expect(JSON.parse(localStorage.getItem("history"))).toEqual([]);
     expect(screen.getByText("Todavía no hay jugadas.")).toBeInTheDocument();
+  });
+});
+
+describe("History: flechas", () => {
+  it("dibuja la flecha con el ícono (Outfit no tiene el glifo) sin sacarla del texto", () => {
+    localStorage.setItem("history", JSON.stringify([jugada("ELLOS", "SUMA", 3, "23:11:00")]));
+    const { container } = render(<History isVisible onClose={() => {}} teamNames={NOMBRES} />);
+    const detalle = container.querySelector(".var-play-detail");
+    expect(detalle).toHaveTextContent("→ 3");
+    expect(detalle.querySelector(".flecha.flecha-der")).toHaveTextContent("→");
   });
 });
