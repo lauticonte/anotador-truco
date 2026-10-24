@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import SheetCloseButton from "./SheetCloseButton.js";
+import SheetCloseButton from "./SheetCloseButton.jsx";
 import "../styles/Sheet.css";
 import "../styles/History.css";
 
@@ -14,7 +14,7 @@ const toSeconds = (timestamp) => {
 const toHourMinute = (timestamp) => String(timestamp).slice(0, 5);
 
 // Convierte el historial crudo (un registro por punto, en orden cronológico) en jugadas e hitos
-const buildTimeline = (entries) => {
+export const buildTimeline = (entries) => {
   const items = [];
   const lastStage = {};
 

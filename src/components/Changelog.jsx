@@ -1,5 +1,5 @@
 import React from "react";
-import SheetCloseButton from "./SheetCloseButton.js";
+import SheetCloseButton from "./SheetCloseButton.jsx";
 import "../styles/Sheet.css";
 import "../styles/Changelog.css";
 
