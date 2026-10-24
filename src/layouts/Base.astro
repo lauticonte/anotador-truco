@@ -8,6 +8,7 @@ import "../styles/SobreAnotador.css";
 import Menu from "../components/Menu.jsx";
 import Ads from "../components/Ads.jsx";
 import Footer from "../components/Footer.astro";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title: string;
@@ -37,7 +38,7 @@ const { title, description, canonical, ogTitle = title, jsonLd, robots, contentU
     <!-- AdSense Verification -->
     <meta name="google-adsense-account" content="ca-pub-3361247486635932" />
 
-    <meta property="og:image" content="https://truco.contelautaro.com.ar/images/og.png" />
+    <meta property="og:image" content="https://truco.contelautaro.com.ar/images/og-truqito.png" />
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:image:width" content="1200" />
@@ -51,7 +52,7 @@ const { title, description, canonical, ogTitle = title, jsonLd, robots, contentU
     <meta name="twitter:site" content="@lauticonte" />
     <meta name="twitter:title" content={ogTitle} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content="https://truco.contelautaro.com.ar/images/og.png" />
+    <meta name="twitter:image" content="https://truco.contelautaro.com.ar/images/og-truqito.png" />
 
     <link rel="manifest" href="/meta/manifest.json" />
     <link rel="preload" as="image" href="/images/main_logo.webp" fetchpriority="high" />
@@ -258,6 +259,22 @@ const { title, description, canonical, ogTitle = title, jsonLd, robots, contentU
     <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />
 
     <slot name="head" />
+
+    <script is:inline>
+      // El menú agrega ?menu=open al historial sin cambiar de página. Al volver atrás, ClientRouter traería la
+      // misma página de nuevo: este listener, registrado antes que el del router, lo frena si la ruta no cambió.
+      (function () {
+        var ruta = location.pathname;
+        addEventListener("popstate", function (evento) {
+          if (location.pathname === ruta) evento.stopImmediatePropagation();
+        });
+        document.addEventListener("astro:after-swap", function () {
+          ruta = location.pathname;
+        });
+      })();
+    </script>
+    <!-- Navegación sin recargar la página: el anuncio queda vivo entre páginas (src/scripts/navegacion.js) -->
+    <ClientRouter />
   </head>
   <body>
     <script is:inline>
@@ -288,7 +305,8 @@ const { title, description, canonical, ogTitle = title, jsonLd, robots, contentU
       </div>
     </div>
     <script is:inline>
-      // Alto real del anuncio (cambia según el banner que gane) para dejar espacio al final de la guía
+      // Alto real del anuncio (cambia según el banner que gane) para dejar espacio al final de la guía.
+      // El anuncio es el mismo nodo en todas las páginas: alcanza con observarlo una vez.
       (function () {
         var el = document.getElementById("ad-slot");
         if (!el || !window.ResizeObserver) return;
@@ -303,6 +321,9 @@ const { title, description, canonical, ogTitle = title, jsonLd, robots, contentU
       const loadWebVitals = () => import("../reportWebVitals.js").then(({ default: report }) => report());
       if (document.readyState === "complete") loadWebVitals();
       else window.addEventListener("load", loadWebVitals, { once: true });
+    </script>
+    <script>
+      import "../scripts/navegacion.js";
     </script>
   </body>
 </html>

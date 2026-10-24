@@ -1,22 +1,25 @@
 // Islas que usan el store: tablero, menú y resultado
 import React from "react";
 import { renderToString } from "react-dom/server";
+import { hydrateRoot } from "react-dom/client";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import Board from "../../src/components/Board.jsx";
 import Menu from "../../src/components/Menu.jsx";
 import ResultPage from "../../src/components/ResultPage.jsx";
-import { maxPoints, teamNames } from "../../src/stores/partida.js";
+import { cargarPartida, maxPoints, teamNames } from "../../src/stores/partida.js";
 import { reiniciarStore } from "./partida.test.js";
 
 vi.mock("@vercel/analytics/react", () => ({ Analytics: () => null }));
+// Las páginas se cambian con ClientRouter (sin recargar, el anuncio queda vivo)
+const asignar = vi.hoisted(() => vi.fn());
+vi.mock("astro:transitions/client", () => ({ navigate: asignar }));
 
-const asignar = vi.fn();
 beforeEach(() => {
   reiniciarStore();
   localStorage.setItem("tapHintSessions", "10");
   asignar.mockReset();
-  vi.stubGlobal("location", { ...window.location, assign: asignar, pathname: window.location.pathname });
+  vi.stubGlobal("location", { ...window.location, pathname: window.location.pathname });
   document.documentElement.className = "";
 });
 
@@ -59,6 +62,25 @@ describe("Board", () => {
     expect(localStorage.getItem("points-NOSOTROS")).toBeNull();
   });
 
+  it("al volver al tablero sin recargar hidrata igual que el build y después muestra la partida", () => {
+    // HTML del build (store con valores por defecto)
+    const contenedor = document.createElement("div");
+    contenedor.innerHTML = renderToString(<Board />);
+    // El store quedó cargado de la página anterior (ClientRouter no recarga los módulos)
+    localStorage.setItem("points-NOSOTROS", "7");
+    localStorage.setItem("teamNames", JSON.stringify({ NOSOTROS: "PIBES", ELLOS: "TÍOS" }));
+    cargarPartida();
+    document.body.appendChild(contenedor);
+    const desajustes = vi.fn();
+    const errores = vi.spyOn(console, "error").mockImplementation(() => {});
+    act(() => hydrateRoot(contenedor, <Board />, { onRecoverableError: desajustes }));
+    expect(desajustes).not.toHaveBeenCalled();
+    expect(screen.getByText("PIBES")).toBeInTheDocument();
+    expect(puntosDe(contenedor, "nos")).toBe(7);
+    errores.mockRestore();
+    contenedor.remove();
+  });
+
   it("muestra los nombres nuevos al editarlos", () => {
     render(<Board />);
     act(() => teamNames.set({ NOSOTROS: "PIBES", ELLOS: "ELLOS" }));
@@ -97,14 +119,24 @@ describe("Menu", () => {
   });
 
   it("abre y cierra el menú, y deja ?menu=open en la URL mientras está abierto", () => {
+    // Conserva el estado de ClientRouter (índice del historial) en la entrada nueva
+    window.history.replaceState({ index: 3 }, "");
     const pushState = vi.spyOn(window.history, "pushState");
     const { container } = render(<Menu />);
     fireEvent.click(container.querySelector(".menu-container .btn"));
     expect(container.querySelector("#sidebar")).toHaveClass("open");
-    expect(pushState).toHaveBeenLastCalledWith({}, "", `${window.location.pathname}?menu=open`);
+    expect(pushState).toHaveBeenLastCalledWith({ index: 3 }, "", `${window.location.pathname}?menu=open`);
     fireEvent.click(container.querySelector(".overlay"));
     expect(container.querySelector("#sidebar")).not.toHaveClass("open");
-    expect(pushState).toHaveBeenLastCalledWith({}, "", window.location.pathname);
+    expect(pushState).toHaveBeenLastCalledWith({ index: 3 }, "", window.location.pathname);
+  });
+
+  it("se cierra al llegar a otra página (el header no se recarga)", () => {
+    const { container } = render(<Menu />);
+    fireEvent.click(container.querySelector(".menu-container .btn"));
+    expect(container.querySelector("#sidebar")).toHaveClass("open");
+    act(() => document.dispatchEvent(new Event("astro:after-swap")));
+    expect(container.querySelector("#sidebar")).not.toHaveClass("open");
   });
 
   it("'Jugar a 15' cambia el modo, cierra el menú y la etiqueta pasa a 'Jugar a 30'", () => {
@@ -143,7 +175,7 @@ describe("Menu", () => {
 });
 
 describe("ResultPage", () => {
-  const enResultado = (ganador) => vi.stubGlobal("location", { ...window.location, assign: asignar, pathname: `/resultado/${ganador}` });
+  const enResultado = (ganador) => vi.stubGlobal("location", { ...window.location, pathname: `/resultado/${ganador}` });
 
   it("sin ganador por prop, en el build sale vacía (el ganador está en la URL)", () => {
     expect(renderToString(<ResultPage />)).toBe("");

@@ -6,6 +6,13 @@ import "../styles/Changelog.css";
 const Changelog = ({ isVisible, onClose }) => {
   const changelog = [
     {
+      version: "2.0.1",
+      date: "24/10/2026",
+      changes: [
+        "Pasar del anotador al resultado o a la guía es más rápido: la página ya no se recarga entera."
+      ]
+    },
+    {
       version: "2.0.0",
       date: "23/10/2026",
       changes: [

@@ -55,6 +55,13 @@ const Menu = () => {
     };
   }, []);
 
+  // El header no se recarga entre páginas (ClientRouter): al llegar a otra página, el menú se cierra
+  useEffect(() => {
+    const cerrar = () => setIsSidebarOpen(false);
+    document.addEventListener("astro:after-swap", cerrar);
+    return () => document.removeEventListener("astro:after-swap", cerrar);
+  }, []);
+
   // El logo es HTML estático del header: acá solo se le aplica el desplazamiento
   useEffect(() => {
     document.querySelector("#app-header .logo-container")?.classList.toggle("slide", logoSlide);
@@ -67,10 +74,10 @@ const Menu = () => {
 
     if (!isSidebarOpen) {
       // Cuando se abre el menú
-      window.history.pushState({}, '', window.location.pathname + '?menu=open');
+      window.history.pushState(window.history.state, '', window.location.pathname + '?menu=open');
     } else {
       // Cuando se cierra el menú
-      window.history.pushState({}, '', window.location.pathname);
+      window.history.pushState(window.history.state, '', window.location.pathname);
     }
   };
 
