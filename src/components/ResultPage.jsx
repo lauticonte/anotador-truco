@@ -1,7 +1,8 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useStore } from '@nanostores/react';
-import { useMontado } from '../hooks/useMontado.js';
-import { cargarPartida, partidaCargada, resetGame, teamNames as teamNamesStore } from '../stores/partida.js';
+import { navigate } from 'astro:transitions/client';
+import { useMontado, useStoreTrasMontar } from '../hooks/useMontado.js';
+import { cargarPartida, DEFAULT_NAMES, partidaCargada, resetGame, teamNames as teamNamesStore } from '../stores/partida.js';
 
 // En el build no hay layout: useLayoutEffect solo avisa. En el navegador corre antes del dibujo.
 const useLayoutEffectEnNavegador = typeof window === 'undefined' ? useEffect : useLayoutEffect;
@@ -35,8 +36,9 @@ async function enviarFeedback(feedback) {
 const winnerFromUrl = () => decodeURIComponent(window.location.pathname.split('/')[2] || '');
 
 const ResultPage = ({ ganador }) => {
-  const teamNames = useStore(teamNamesStore);
-  const cargada = useStore(partidaCargada);
+  // Hasta montar, los valores del build (ver Board)
+  const teamNames = useStoreTrasMontar(useStore(teamNamesStore), DEFAULT_NAMES);
+  const cargada = useStoreTrasMontar(useStore(partidaCargada), false);
   const [selectedPoints, setSelectedPoints] = useState(null);
   // Sin ganador por prop, el ganador solo se conoce en el navegador: en el build la página sale vacía
   const montado = useMontado();
@@ -57,7 +59,7 @@ const ResultPage = ({ ganador }) => {
   const handleStartGame = () => {
     if (selectedPoints) {
       resetGame(selectedPoints);
-      window.location.assign('/');
+      navigate('/');
     }
   };
 

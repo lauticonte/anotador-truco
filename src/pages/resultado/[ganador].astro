@@ -12,7 +12,7 @@ const ganador = Astro.params.ganador.toUpperCase();
 ---
 
 <Base {...HOME} robots="noindex">
-  <script is:inline slot="head">
+  <script is:inline slot="head" data-astro-rerun>
     // Con nombres propios guardados, el mensaje del build (con los nombres por defecto) se oculta hasta cargarlos
     try {
       if (localStorage.getItem("teamNames")) document.documentElement.classList.add("nombres-guardados");

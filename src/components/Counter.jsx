@@ -130,7 +130,7 @@ class Counter extends Component {
     if (window.location.search.includes("reset-hint")) {
       localStorage.removeItem("tapHintSessions");
       // Limpiar el parámetro de la URL sin recargar
-      window.history.replaceState({}, "", window.location.pathname);
+      window.history.replaceState(window.history.state, "", window.location.pathname);
       this.setState({ tapHintCompleted: false });
     }
     

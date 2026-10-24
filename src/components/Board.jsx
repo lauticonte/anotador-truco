@@ -2,7 +2,9 @@ import React, { useCallback, useEffect, useLayoutEffect, useState } from "react"
 import { useStore } from "@nanostores/react";
 import Counter from "./Counter.jsx";
 import { Analytics } from "@vercel/analytics/react";
-import { cargarPartida, maxPoints as maxPointsStore, partidaCargada, teamNames as teamNamesStore } from "../stores/partida.js";
+import { navigate } from "astro:transitions/client";
+import { useStoreTrasMontar } from "../hooks/useMontado.js";
+import { cargarPartida, DEFAULT_NAMES, maxPoints as maxPointsStore, partidaCargada, teamNames as teamNamesStore } from "../stores/partida.js";
 
 // Cuánto se ve el fósforo ganador antes de pasar al resultado (chispazo y llama de Counter.css)
 const DURACION_FINAL = 1400;
@@ -12,9 +14,10 @@ const DURACION_FINAL_SIN_ANIMACION = 300;
 const useLayoutEffectEnNavegador = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 const Board = () => {
-  const maxPoints = useStore(maxPointsStore);
-  const teamNames = useStore(teamNamesStore);
-  const cargada = useStore(partidaCargada);
+  // Hasta montar, los valores del build: al volver al tablero sin recargar, el store ya tiene la partida
+  const maxPoints = useStoreTrasMontar(useStore(maxPointsStore), 30);
+  const teamNames = useStoreTrasMontar(useStore(teamNamesStore), DEFAULT_NAMES);
+  const cargada = useStoreTrasMontar(useStore(partidaCargada), false);
   const [finished, setFinished] = useState(false);
   const [winner, setWinner] = useState("");
 
@@ -53,7 +56,7 @@ const Board = () => {
     precarga.href = url;
     document.head.appendChild(precarga);
     const sinAnimacion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    const timer = setTimeout(() => window.location.assign(url), sinAnimacion ? DURACION_FINAL_SIN_ANIMACION : DURACION_FINAL);
+    const timer = setTimeout(() => navigate(url), sinAnimacion ? DURACION_FINAL_SIN_ANIMACION : DURACION_FINAL);
     return () => clearTimeout(timer);
   }, [finished, winner]);
 

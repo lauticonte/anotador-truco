@@ -1,6 +1,6 @@
 ---
 // Guía del truco: todo el contenido (las tres pestañas) sale en el HTML del build. Las pestañas inactivas
-// llevan hidden y el script de abajo solo alterna hidden y aria-selected: no genera contenido.
+// llevan hidden y src/scripts/pestanas.js (lo activa navegacion.js) solo alterna hidden y aria-selected.
 import Base from "../layouts/Base.astro";
 import "../styles/GuiaTruco.css";
 import { SITE_URL } from "../data/sitio.js";
@@ -232,8 +232,3 @@ const jsonLd = {
     </div>
   </div>
 </Base>
-
-<script>
-  import { activarPestanas } from "../scripts/pestanas.js";
-  activarPestanas(document.querySelector(".guia"));
-</script>

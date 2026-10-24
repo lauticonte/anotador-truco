@@ -964,8 +964,8 @@ a:link,
 
 
 /* Paso entre páginas (anotador → resultado → anotador, guía): fundido corto en vez de un corte.
-   Es CSS del navegador (cross-document view transitions): no usa JS ni toca la publicidad.
-   Donde no está soportado, se cambia de página como siempre. */
+   Con ClientRouter cambia solo el <main> (src/scripts/navegacion.js): header y anuncio no se funden,
+   quedan fijos. @view-transition cubre lo que todavía carga una página entera. */
 @media (prefers-reduced-motion: no-preference) {
   @view-transition {
     navigation: auto;
@@ -975,4 +975,21 @@ a:link,
   ::view-transition-new(root) {
     animation-duration: 0.25s;
   }
+}
+
+#app-header {
+  view-transition-name: header;
+}
+
+.ad-slot {
+  view-transition-name: anuncio;
+}
+
+::view-transition-group(header),
+::view-transition-group(anuncio),
+::view-transition-old(header),
+::view-transition-new(header),
+::view-transition-old(anuncio),
+::view-transition-new(anuncio) {
+  animation: none;
 }
