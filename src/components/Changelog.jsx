@@ -6,6 +6,13 @@ import "../styles/Changelog.css";
 const Changelog = ({ isVisible, onClose }) => {
   const changelog = [
     {
+      version: "2.0.4",
+      date: "24/10/2026",
+      changes: [
+        "Accesibilidad: el anuncio de abajo se anuncia como \"Publicidad\" en los lectores de pantalla."
+      ]
+    },
+    {
       version: "2.0.3",
       date: "24/10/2026",
       changes: [

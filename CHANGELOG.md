@@ -2,6 +2,14 @@
 
 Todas las versiones de Truqito. Sigue [Semantic Versioning](https://semver.org/). Lo que ven los usuarios está en **Novedades** dentro de la app (`src/components/Changelog.jsx`).
 
+## [2.0.4] - 2026-10-24
+
+### Para los usuarios
+- Accesibilidad: el anuncio de abajo se anuncia como "Publicidad" en los lectores de pantalla.
+
+### Técnico
+- Los iframes que crea y rota Moneytizer no traen `title` (Lighthouse lo marca en Accesibilidad: "frame-title"). `Ads.jsx` observa el contenedor y les pone `title="Publicidad"` si no tienen uno.
+
 ## [2.0.3] - 2026-10-24
 
 ### Para los usuarios
