@@ -1,12 +1,12 @@
 @font-face {
   font-family: "Magnifika";
-  src: url("/public/fonts/Magnifika.otf") format("truetype");
+  src: url("/fonts/Magnifika.woff2") format("woff2");
   font-display: swap;
 }
 
 @font-face {
   font-family: "MBF";
-  src: url("/public/fonts/MBF-m.ttf") format("truetype");
+  src: url("/fonts/MBF-m.woff2") format("woff2");
   font-display: swap;
 }
 
@@ -962,3 +962,17 @@ a:link,
   }
 }
 
+
+/* Paso entre páginas (anotador → resultado → anotador, guía): fundido corto en vez de un corte.
+   Es CSS del navegador (cross-document view transitions): no usa JS ni toca la publicidad.
+   Donde no está soportado, se cambia de página como siempre. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.25s;
+  }
+}

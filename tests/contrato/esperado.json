@@ -1,0 +1,198 @@
+{
+  "capturado": "2026-10-24T00:45:51.173Z",
+  "base": "https://truco.contelautaro.com.ar",
+  "paginas": {
+    "/": {
+      "title": "Anotador de Truco Argentino online y gratis | Truqito",
+      "description": "Anotá los puntos del truco desde el celular, sin descargar nada: partidas a 15 o a 30, malas y buenas, con fósforos como en papel. Gratis.",
+      "canonical": "https://truco.contelautaro.com.ar/",
+      "robots": null,
+      "openGraph": {
+        "og:image": "https://truco.contelautaro.com.ar/images/og.png",
+        "og:title": "Anotador de Truco Argentino online y gratis",
+        "og:description": "Anotá los puntos del truco desde el celular, sin descargar nada: partidas a 15 o a 30, malas y buenas, con fósforos como en papel. Gratis.",
+        "og:image:width": "1200",
+        "og:image:height": "630",
+        "og:url": "https://truco.contelautaro.com.ar/",
+        "og:type": "website",
+        "og:site_name": "Anotador de Truco"
+      },
+      "twitter": {
+        "twitter:card": "summary_large_image",
+        "twitter:site": "@lauticonte",
+        "twitter:title": "Anotador de Truco Argentino online y gratis",
+        "twitter:description": "Anotá los puntos del truco desde el celular, sin descargar nada: partidas a 15 o a 30, malas y buenas, con fósforos como en papel. Gratis.",
+        "twitter:image": "https://truco.contelautaro.com.ar/images/og.png"
+      },
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "Anotador de Truco",
+          "description": "Aplicación online para anotar los puntos de tu partida de truco",
+          "url": "https://truco.contelautaro.com.ar",
+          "applicationCategory": "GameApplication",
+          "operatingSystem": "Any",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "ARS"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "Lautaro Conte"
+          }
+        }
+      ],
+      "h1": [
+        "Anotador de Truco Argentino"
+      ],
+      "h2": [],
+      "enlaces": [
+        "/guia-truco"
+      ],
+      "textoPrincipal": "Anotador de Truco ArgentinoAnotá los puntos de tu partida de truco desde el celular o la computadora, sin descargar nada ni registrarte.Partidas a 15 o a 30 puntos, con malas y buenas.Los puntos se dibujan con fósforos, como en el anotador de papel. Sumás tocando el tablero.Nombres de los equipos editables.VAR: el historial de la partida, jugada por jugada.La partida queda guardada si cerrás el navegador.Guía del truco: valor de las cartas, cómo calcular el envido y cuánto vale cada canto."
+    },
+    "/guia-truco": {
+      "title": "Valores del truco: tabla de cartas, envido y puntos | Truqito",
+      "description": "Tabla de valores del truco argentino: el orden de las cartas de la más alta a la más baja, cómo se calcula el envido y cuántos puntos vale cada canto.",
+      "canonical": "https://truco.contelautaro.com.ar/guia-truco",
+      "robots": null,
+      "openGraph": {
+        "og:image": "https://truco.contelautaro.com.ar/images/og.png",
+        "og:title": "Valores del truco: tabla de cartas, envido y puntos | Truqito",
+        "og:description": "Tabla de valores del truco argentino: el orden de las cartas de la más alta a la más baja, cómo se calcula el envido y cuántos puntos vale cada canto.",
+        "og:image:width": "1200",
+        "og:image:height": "630",
+        "og:url": "https://truco.contelautaro.com.ar/guia-truco",
+        "og:type": "website",
+        "og:site_name": "Anotador de Truco"
+      },
+      "twitter": {
+        "twitter:card": "summary_large_image",
+        "twitter:site": "@lauticonte",
+        "twitter:title": "Valores del truco: tabla de cartas, envido y puntos | Truqito",
+        "twitter:description": "Tabla de valores del truco argentino: el orden de las cartas de la más alta a la más baja, cómo se calcula el envido y cuántos puntos vale cada canto.",
+        "twitter:image": "https://truco.contelautaro.com.ar/images/og.png"
+      },
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": "https://truco.contelautaro.com.ar/guia-truco#webpage",
+              "url": "https://truco.contelautaro.com.ar/guia-truco",
+              "name": "Valores del truco: tabla de cartas, envido y puntos | Truqito",
+              "description": "Tabla de valores del truco argentino: el orden de las cartas de la más alta a la más baja, cómo se calcula el envido y cuántos puntos vale cada canto.",
+              "inLanguage": "es",
+              "isPartOf": {
+                "@type": "WebSite",
+                "name": "Anotador de Truco",
+                "url": "https://truco.contelautaro.com.ar/"
+              },
+              "breadcrumb": {
+                "@id": "https://truco.contelautaro.com.ar/guia-truco#breadcrumb"
+              },
+              "author": {
+                "@type": "Person",
+                "name": "Lautaro Conte",
+                "url": "https://contelautaro.com.ar"
+              }
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://truco.contelautaro.com.ar/guia-truco#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Anotador de truco",
+                  "item": "https://truco.contelautaro.com.ar/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Guía del truco",
+                  "item": "https://truco.contelautaro.com.ar/guia-truco"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "h1": [
+        "Guía del truco"
+      ],
+      "h2": [
+        "Valores de las cartas del truco",
+        "Envido",
+        "Flor",
+        "Puntos del truco: cuánto vale cada canto",
+        "Malas y buenas",
+        "A 15 o a 30",
+        "Truco uruguayo",
+        "Cómo anotar",
+        "En el menú",
+        "Tip",
+        "Preguntas frecuentes"
+      ],
+      "enlaces": [
+        "/",
+        "mailto:lauticonte@gmail.com"
+      ],
+      "textoPrincipal": "←Guía del trucoCartasPuntosEl anotadorValores de las cartas del trucoDe la más alta a la más baja. Se juega con mazo español de 40 cartas (sin 8 ni 9).1Ancho de espada1 de espada2Ancho de basto1 de basto3Siete de espada7 de espada4Siete de oro7 de oro5Los tres3 de cualquier palo6Los dos2 de cualquier palo7Anchos falsos1 de copa y de oro8Los reyes12 de cualquier palo9Los caballos11 de cualquier palo10Las sotas10 de cualquier palo11Sietes falsos7 de copa y de basto12Los seis6 de cualquier palo13Los cinco5 de cualquier palo14Los cuatro4 de cualquier paloEnvidoCon dos cartas del mismo palo, se suman sus valores más 20. Las figuras (10, 11 y 12) valen 0.7 y 6 de oro7 + 6 + 20 = 3312 y 7 de espada0 + 7 + 20 = 27Sin dos del mismo palola más alta: 7 → 7El envido más alto posible es 33.FlorTres cartas del mismo palo. Se canta antes que el envido y vale la suma de las tres más 20. Solo se juega si se acordó antes de empezar.Puntos del truco: cuánto vale cada cantoCantoQuieroNo quieroEnvidoEnvido21Real envido31Falta envidoLo que falta1TrucoSin cantar1—Truco21Retruco32Vale cuatro43FlorFlor3—La falta envido vale los puntos que le faltan al que va ganando para terminar el partido.La contraflor y la contraflor al resto cambian según cómo se juegue: conviene acordarlas antes de empezar.Los cantos de envido se pueden encadenar (envido, envido, real envido…): si se quieren, se suman todos; si no, se cobra lo cantado hasta antes del último.Malas y buenasA 30 puntos, la partida se divide en dos mitades: las malas (del 1 al 15) y las buenas (del 16 al 30). Gana el primero que llega a 15 buenas.A 15 o a 30A 15 es una partida corta, sin malas ni buenas. A 30 es la partida completa. En el anotador lo elegís desde el menú.Truco uruguayoSe da vuelta una carta, la muestra. El 2, 4, 5, 10 y 11 de ese palo (las piezas) pasan a ser las cartas más altas y cambian el envido. El anotador sirve igual para contar los puntos.Cómo anotarTocá el tablero de un equipo para sumarle un punto: aparece un fósforo nuevo.Botones + y − para sumar o corregir.Arriba de cada tablero ves si el equipo está en malas o en buenas.En el menúVARToda la partida jugada por jugada: quién sumó, cuánto y a qué hora. Para terminar las discusiones.Jugar a 15 / a 30Cambia el modo y empieza una partida nueva.Editar nombresPonele nombre a cada equipo.NovedadesQué cambió en cada versión.TipDesde el navegador, elegí Agregar a pantalla de inicio y vas a tener el anotador como una app.Preguntas frecuentes¿Se guardan los puntos si cierro el navegador?Sí. La partida se guarda en tu dispositivo y sigue donde la dejaste cuando volvés a entrar.¿Cómo empiezo una partida nueva?Desde el menú, elegí jugar a 15 o a 30: el marcador vuelve a cero. Cuando un equipo gana, también podés arrancar la revancha desde la pantalla de resultado.¿Me equivoqué al sumar, cómo lo corrijo?Tocá el botón − del equipo. La corrección queda registrada en el VAR.¿Funciona en la computadora?Sí, funciona en celular, tablet o computadora.¿Falta algo? Escribinos."
+    },
+    "/resultado/nosotros": {
+      "title": "Anotador de Truco Argentino online y gratis | Truqito",
+      "description": "Anotá los puntos del truco desde el celular, sin descargar nada: partidas a 15 o a 30, malas y buenas, con fósforos como en papel. Gratis.",
+      "canonical": "https://truco.contelautaro.com.ar/",
+      "robots": null,
+      "openGraph": {
+        "og:image": "https://truco.contelautaro.com.ar/images/og.png",
+        "og:title": "Anotador de Truco Argentino online y gratis",
+        "og:description": "Anotá los puntos del truco desde el celular, sin descargar nada: partidas a 15 o a 30, malas y buenas, con fósforos como en papel. Gratis.",
+        "og:image:width": "1200",
+        "og:image:height": "630",
+        "og:url": "https://truco.contelautaro.com.ar/",
+        "og:type": "website",
+        "og:site_name": "Anotador de Truco"
+      },
+      "twitter": {
+        "twitter:card": "summary_large_image",
+        "twitter:site": "@lauticonte",
+        "twitter:title": "Anotador de Truco Argentino online y gratis",
+        "twitter:description": "Anotá los puntos del truco desde el celular, sin descargar nada: partidas a 15 o a 30, malas y buenas, con fósforos como en papel. Gratis.",
+        "twitter:image": "https://truco.contelautaro.com.ar/images/og.png"
+      },
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "Anotador de Truco",
+          "description": "Aplicación online para anotar los puntos de tu partida de truco",
+          "url": "https://truco.contelautaro.com.ar",
+          "applicationCategory": "GameApplication",
+          "operatingSystem": "Any",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "ARS"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "Lautaro Conte"
+          }
+        }
+      ],
+      "h1": [
+        "Anotador de Truco Argentino"
+      ],
+      "h2": [],
+      "enlaces": [
+        "/guia-truco"
+      ],
+      "textoPrincipal": "Anotador de Truco ArgentinoAnotá los puntos de tu partida de truco desde el celular o la computadora, sin descargar nada ni registrarte.Partidas a 15 o a 30 puntos, con malas y buenas.Los puntos se dibujan con fósforos, como en el anotador de papel. Sumás tocando el tablero.Nombres de los equipos editables.VAR: el historial de la partida, jugada por jugada.La partida queda guardada si cerrás el navegador.Guía del truco: valor de las cartas, cómo calcular el envido y cuánto vale cada canto."
+    }
+  }
+}

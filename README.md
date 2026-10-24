@@ -1,136 +1,132 @@
 # Anotador de Truco
 
 ![Project Status](https://img.shields.io/badge/status-active-success.svg)
-![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Astro](https://img.shields.io/badge/astro-7.x-BC52EE?logo=astro)
 ![React](https://img.shields.io/badge/react-18.x-61DAFB?logo=react)
 
-**Anotador de Truco** es una Progressive Web Application (PWA) diseñada para la gestión digital del anotador en partidas de Truco Argentino. Desarrollada con un enfoque *mobile-first*, la aplicación moderniza la experiencia tradicional mediante una interfaz interactiva, persistencia de datos y herramientas de análisis de partida.
+**Truqito** ([truco.contelautaro.com.ar](https://truco.contelautaro.com.ar)) es un anotador de Truco Argentino online y gratis: los puntos se dibujan con fósforos, como en el anotador de papel. Está pensado para el celular, sin descargar nada ni registrarse.
 
 ---
 
 ## 📑 Tabla de Contenidos
 
-- [Descripción General](#-descripción-general)
-- [Características Técnicas](#-características-técnicas)
+- [Características](#-características)
 - [Stack Tecnológico](#-stack-tecnológico)
 - [Arquitectura del Proyecto](#-arquitectura-del-proyecto)
-- [Instalación y Despliegue](#-instalación-y-despliegue)
+- [Instalación y Desarrollo](#-instalación-y-desarrollo)
+- [Pruebas](#-pruebas)
+- [Despliegue](#-despliegue)
 - [Changelog y Versionado](#-changelog-y-versionado)
 - [Autor](#-autor)
 
 ---
-## 💎 Características Técnicas
 
-### Core Features
-* **Sistema de Puntuación Vectorial**: Renderizado de "fósforos" interactivos mediante SVG y manipulación directa del DOM virtual.
-* **VAR System (Log de Eventos)**: Registro inmutable de cada acción de puntaje con *timestamps*, permitiendo auditoría completa de la partida en tiempo real.
-* **Gestión de Estado Compleja**: Manejo de modos de juego (15/30 puntos), transiciones de etapas (Malas/Buenas) y lógica de victoria determinista.
-* **Feedback System**: Integración con servicios backend (Supabase/Telegram) para recolección de reportes de usuario en tiempo real.
+## 💎 Características
 
-### UX/UI & Performance
-* **Progressive Web App (PWA)**: Manifest `json` configurado para instalación nativa en dispositivos móviles y funcionamiento offline.
-* **Diseño Responsivo Adaptativo**: Layouts que se ajustan desde dispositivos móviles pequeños hasta entornos de escritorio.
-* **Accesibilidad (a11y)**: Controles táctiles optimizados y elementos semánticos para mejorar la navegación.
+* **Fósforos en SVG**: cada punto es un fósforo; se suma tocando el tablero o con los botones + y −. El fósforo que gana la partida se enciende antes de pasar al resultado.
+* **Partidas a 15 o a 30**: a 30, con malas y buenas.
+* **VAR**: la partida jugada por jugada, con la hora de cada punto.
+* **Nombres editables** para los dos equipos.
+* **La partida queda guardada** en el dispositivo (`localStorage`) aunque se cierre el navegador.
+* **Guía del truco**: valores de las cartas, envido y cuánto vale cada canto.
+* **Sugerencias** desde la pantalla de resultado, que llegan por Telegram.
 
 ---
 
 ## 🛠 Stack Tecnológico
 
-El proyecto utiliza una arquitectura moderna basada en componentes funcionales y Hooks.
-
-### Frontend
-* **Framework**: [React 18](https://reactjs.org/) - Utilizando `Strict Mode` y las últimas features de concurrencia.
-* **Routing**: [React Router v7](https://reactrouter.com/) - Para manejo de navegación SPA (Single Page Application).
-* **Estilos**: CSS3 Modular con variables CSS para consistencia temática y diseño responsivo avanzado.
-* **Iconografía**: FontAwesome & Boxicons integrados vía componentes SVG para menor peso.
-
-### Backend & Servicios (BaaS)
-* **Base de Datos**: [Supabase](https://supabase.com/) - Utilizado para funcionalidades en tiempo real y persistencia de feedback.
-* **Analytics**: Vercel Analytics - Monitoreo de performance y *User Vitals*.
-* **Hosting/CI/CD**: Vercel - Despliegues automáticos basados en integración continua con GitHub.
+* **[Astro 7](https://astro.build/)**: sitio 100 % estático. Cada página sale del build con su HTML completo (SEO y primer dibujo sin esperar al JavaScript).
+* **[React 18](https://react.dev/) como islas**: solo lo interactivo (tablero, menú, resultado y anuncio) se hidrata en el navegador. Se renderiza en el build y se hidrata **después del primer dibujo** con la directiva propia `client:tras-dibujo` (`src/directivas/`).
+* **[nanostores](https://github.com/nanostores/nanostores)**: estado compartido entre islas (modo de juego y nombres), en `src/stores/partida.js`.
+* **CSS** propio, inline en el HTML; íconos Boxicons como máscaras SVG locales (`src/styles/Icons.css`); fuentes en woff2 servidas desde el sitio.
+* **Transiciones entre páginas** con View Transitions del navegador (solo CSS).
+* **Vercel**: hosting del sitio estático y funciones en `api/` (`ads.txt`, 404 real y envío de sugerencias). GA4 con web vitals reales de cada visita (`src/reportWebVitals.js`) y Vercel Analytics.
 
 ---
 
 ## 📂 Arquitectura del Proyecto
 
-La estructura de directorios sigue las mejores prácticas para escalabilidad en React:
-
 ```bash
 anotador-truco/
-├── public/              # Assets estáticos y PWA Manifest
+├── api/                    # Vercel Functions: ads.txt, 404 real, sugerencias a Telegram
+├── public/                 # Archivos tal cual: imágenes, fuentes, robots, sitemap, llms.txt, 404.html
 ├── src/
-│   ├── api/             # Interfaces de comunicación con servicios externos
-│   ├── components/      # Componentes UI reutilizables (Board, Counter, VAR)
-│   ├── config/          # Configuraciones de entorno (Supabase Client)
-│   ├── context/         # React Context API para estado global (Auth, Theme)
-│   ├── hooks/           # Custom Hooks (usePageMeta, lógica de juego)
-│   ├── styles/          # Hojas de estilo modulares por componente
-│   ├── App.js           # Componente raíz y orquestador de rutas
-│   └── index.js         # Punto de entrada y montaje del DOM
-├── vercel.json          # Configuración de despliegue y headers
-└── package.json         # Dependencias y scripts de ejecución
-
+│   ├── pages/              # Una página por URL
+│   │   ├── index.astro               # Anotador (tablero renderizado en 0-0)
+│   │   ├── guia-truco.astro          # Guía: las tres pestañas en el HTML
+│   │   ├── resultado/[ganador].astro # /resultado/nosotros y /resultado/ellos
+│   │   └── resultado.astro           # Cualquier otro /resultado/:winner
+│   ├── layouts/Base.astro  # <head> común (meta, GA4, CMP de InMobi), header y footer
+│   ├── components/         # Islas de React (Board, Counter, Menu, ResultPage, VAR…) y Footer.astro
+│   ├── directivas/         # client:tras-dibujo: hidratar después del primer dibujo
+│   ├── stores/partida.js   # Estado compartido entre islas
+│   ├── data/               # Metadatos de las páginas y contenido de la guía
+│   ├── scripts/            # JS sin React (pestañas de la guía)
+│   └── styles/             # Hojas de estilo por componente
+├── scripts/                # Contrato SEO, comparación entre deploys y PageSpeed
+├── tests/
+│   ├── unit/               # Vitest + Testing Library
+│   └── contrato/           # Contrato SEO sobre el build (node:test)
+├── astro.config.mjs
+└── vercel.json             # Rewrites, headers (noindex en /resultado/*) y cache
 ```
 
 ---
 
-## 💻 Instalación y Despliegue
+## 💻 Instalación y Desarrollo
 
-### Requisitos Previos
+### Requisitos
 
-* Node.js v16+
-* NPM v8+
+* Node.js 24 (LTS)
+* npm (Vercel instala con `package-lock.json`)
 
-### Entorno de Desarrollo Local
+### Comandos
 
-1. **Clonar el repositorio:**
 ```bash
-git clone [https://github.com/lauticonte/anotador-truco.git](https://github.com/lauticonte/anotador-truco.git)
-cd anotador-truco
-
+npm install          # dependencias
+npm run dev          # servidor de desarrollo en http://localhost:4321
+npm run build        # build de producción en dist/
+npm run preview      # sirve dist/ localmente
 ```
 
+> Las funciones de `api/` y las reglas de `vercel.json` (rewrites y headers) solo corren en Vercel. Para probarlas, usar el deploy de preview de la rama.
 
-2. **Instalar dependencias:**
+---
+
+## ✅ Pruebas
+
 ```bash
-npm install
-
+npm test                 # unitarios: lógica de juego, store, islas, VAR, nombres
+npm run build && npm run test:contrato   # contrato SEO del build contra producción
 ```
 
+* **Contrato SEO** (`tests/contrato/`): title, description, canonical, Open Graph, Twitter, JSON-LD y texto de cada página tienen que ser iguales a los capturados de producción (`tests/contrato/esperado.json`). También controla el presupuesto de JavaScript de la home.
+* **Comparar dos deploys URL por URL** (status, redirecciones, headers, SEO y texto):
+  ```bash
+  node scripts/comparar-urls.mjs https://truco.contelautaro.com.ar https://<preview>.vercel.app
+  ```
+* **Volver a capturar el contrato** (solo cuando producción cambia a propósito): `node scripts/capturar-contrato.mjs`.
+* **PageSpeed Insights** (3 corridas mobile, mediana): `PSI_KEY=... node scripts/psi.mjs <url>`. La clave está en Bitwarden; nunca en archivos.
 
-3. **Ejecutar servidor de desarrollo:**
-```bash
-npm start
+---
 
-```
+## 🚀 Despliegue
 
-
-La aplicación estará disponible en `http://localhost:3000`.
-4. **Build para producción:**
-```bash
-npm run build
-
-```
-
-
+* Cada push genera un deploy de preview en Vercel; `master` es producción.
+* `vercel.json` fija `framework: astro` y `outputDirectory: dist`.
+* Antes de pasar a producción: tests en verde y `comparar-urls` sin diferencias inesperadas contra producción.
 
 ---
 
 ## 📜 Changelog y Versionado
 
-El proyecto sigue [Semantic Versioning](https://semver.org/).
+El proyecto sigue [Semantic Versioning](https://semver.org/). El historial completo está en [`CHANGELOG.md`](CHANGELOG.md) y, para los usuarios, en **Novedades** dentro de la app (`src/components/Changelog.jsx`).
 
-* **v1.5.0 (Latest) - 2026-10-14**: Rediseño del VAR (línea de tiempo por equipo), hojas unificadas para Editar nombres y Novedades, Guía del truco en pestañas con contenido corregido y prerenderizado en el build (`scripts/prerender-guia.mjs`), y mejoras de SEO: robots.txt, canonical, 404 real, sitemap y llms.txt.
-* **v1.4.6 - 2026-10-14**: Fósforos realistas en SVG reutilizable (`<use>`), guía de toque con fósforo fantasma, animación al sumar, pantalla de resultado adaptable sin scroll y footer compacto.
-* **v1.4.5 - 2026-10-14**: Megabanner inferior con espacio reservado para que la publicidad no tape los controles, corrección del recorte de los fósforos en pantallas chicas, migración a Node 24 y limpieza de scripts (GTM duplicado).
-* **v1.4.4 - 2026-01-02**: Hotfix de UI para scroll en modales y corrección de renderizado en botón de revisión (VAR).
-* **v1.4.3**: Implementación de interacción táctil directa sobre los assets gráficos (fósforos).
-* **v1.4.2**: Overhaul de contenido con integración de Guía Interactiva y optimización SEO.
-* **v1.4.1**: Mejoras de performance (Lazy Loading) y optimización de assets.
-* **v1.3.0**: Lanzamiento del módulo VAR y panel de historial lateral.
-
-Para ver el historial completo de cambios, consulta el archivo `CHANGELOG.md` o la sección de novedades dentro de la aplicación.
+* **v2.0.0 (Latest) - 2026-10-23**: Migración de Create React App a Astro con islas de React: HTML completo desde el build, tablero visible en el primer dibujo, JavaScript inicial a la mitad, fósforo ganador que se enciende, transiciones entre páginas y texto "Sobre el anotador" siempre en el HTML.
+* **v1.5.0 - 2026-10-14**: Rediseño del VAR, hojas unificadas, Guía del truco en pestañas y mejoras de SEO.
+* **v1.4.6 - 2026-10-14**: Fósforos realistas en SVG, guía de toque y animación al sumar.
 
 ---
 

@@ -1,0 +1,37 @@
+---
+import packageInfo from "../../package.json";
+
+// El año sale del build; el script de abajo lo corrige si pasa un año sin deploys
+const year = new Date().getFullYear();
+---
+
+<div class="footer">
+  <span class="footer__copy">
+    <details class="sobre-anotador">
+      <summary aria-label="Sobre el anotador"><span class="sobre-anotador-copy">&#169; Copyright <span id="footer-year">{year}</span> <i class="bx bx-info-circle"></i></span></summary>
+      <!-- Contenido sobre la app: siempre en el HTML (lo leen los buscadores) y a mano para cualquiera que toque el ©.
+           Es el mismo texto que antes estaba en #root de public/index.html y React borraba al cargar. -->
+      <div class="sobre-anotador-hoja" id="contenido-seo">
+        <h1>Anotador de Truco Argentino</h1>
+        <p>Anotá los puntos de tu partida de truco desde el celular o la computadora, sin descargar nada ni registrarte.</p>
+        <ul>
+          <li>Partidas a 15 o a 30 puntos, con malas y buenas.</li>
+          <li>Los puntos se dibujan con fósforos, como en el anotador de papel. Sumás tocando el tablero.</li>
+          <li>Nombres de los equipos editables.</li>
+          <li>VAR: el historial de la partida, jugada por jugada.</li>
+          <li>La partida queda guardada si cerrás el navegador.</li>
+        </ul>
+        <p><a href="/guia-truco">Guía del truco</a>: valor de las cartas, cómo calcular el envido y cuánto vale cada canto.</p>
+      </div>
+    </details>
+  </span>
+  <span class="footer__title">
+    <a href="https://contelautaro.com.ar" target="_blank" rel="noreferrer">Conte</a>
+  </span>
+  <span class="footer__version">
+    <p>versión {packageInfo.version} 🚀</p>
+  </span>
+</div>
+<script is:inline>
+  document.getElementById("footer-year").textContent = new Date().getFullYear();
+</script>

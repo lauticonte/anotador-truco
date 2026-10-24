@@ -1,0 +1,11 @@
+---
+// Una sola página para cualquier /resultado/:winner (rewrite en vercel.json). Como en la versión CRA, lleva
+// el head de la home; además del header X-Robots-Tag, ahora el noindex también está en el HTML.
+import Base from "../layouts/Base.astro";
+import ResultPage from "../components/ResultPage.jsx";
+import { HOME } from "../data/sitio.js";
+---
+
+<Base {...HOME} robots="noindex">
+  <ResultPage client:tras-dibujo />
+</Base>

@@ -1,0 +1,90 @@
+/* "Sobre el anotador": <details> nativo en el footer, sin JavaScript.
+   Abierto, el contenido se ve como las hojas de VAR y Novedades (Sheet.css), sin scroll de página. */
+
+.sobre-anotador > summary {
+  list-style: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sobre-anotador > summary::-webkit-details-marker {
+  display: none;
+}
+
+.sobre-anotador-copy {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+.sobre-anotador > summary .bx {
+  width: 1em;
+  height: 1em;
+  opacity: 0.8;
+}
+
+/* Fondo oscuro de toda la pantalla: es parte del summary, así que tocarlo cierra el panel */
+.sobre-anotador[open] > summary::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+}
+
+.sobre-anotador-hoja {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 1001;
+  width: 100%;
+  max-height: 80vh;
+  max-height: 80dvh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 1.25rem 1rem calc(1rem + env(safe-area-inset-bottom));
+  background-color: #191919;
+  border: 2px solid #ecdbba;
+  border-bottom: none;
+  border-radius: 20px 20px 0 0;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #ecdbba;
+  white-space: normal;
+  text-align: left;
+}
+
+.sobre-anotador-hoja h1 {
+  margin: 0 0 0.75rem;
+  font-size: 1.3rem;
+}
+
+.sobre-anotador-hoja p {
+  margin: 0 0 0.75rem;
+}
+
+.sobre-anotador-hoja ul {
+  margin: 0 0 0.75rem;
+  padding-left: 1.2rem;
+}
+
+.sobre-anotador-hoja a {
+  color: #ecdbba;
+  text-decoration: underline;
+}
+
+/* Quien vuelve con una partida guardada no ve el 0-0 del HTML: se oculta lo que cambia (sin cambiar
+   tamaños, así que no hay saltos) hasta que el tablero restaura la partida. Ver index.astro. */
+html.partida-guardada .counter-title h2,
+html.partida-guardada .stage-indicator h3,
+html.partida-guardada .counter-points h1,
+html.partida-guardada .svg-canvas > g {
+  visibility: hidden;
+}
+
+/* Lo mismo en el resultado: el mensaje del build usa los nombres por defecto. Ver resultado/[ganador].astro */
+html.nombres-guardados .finished-message .winner p {
+  visibility: hidden;
+}

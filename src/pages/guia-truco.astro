@@ -1,0 +1,239 @@
+---
+// Guía del truco: todo el contenido (las tres pestañas) sale en el HTML del build. Las pestañas inactivas
+// llevan hidden y el script de abajo solo alterna hidden y aria-selected: no genera contenido.
+import Base from "../layouts/Base.astro";
+import "../styles/GuiaTruco.css";
+import { SITE_URL } from "../data/sitio.js";
+import { TABS, CARD_RANKING, CANTOS, FAQ, GUIA } from "../data/guia.js";
+
+const url = `${SITE_URL}${GUIA.path}`;
+// Datos estructurados propios de la guía (antes los armaba scripts/prerender-guia.mjs)
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": `${url}#webpage`,
+      url,
+      name: GUIA.title,
+      description: GUIA.description,
+      inLanguage: "es",
+      isPartOf: { "@type": "WebSite", name: "Anotador de Truco", url: `${SITE_URL}/` },
+      breadcrumb: { "@id": `${url}#breadcrumb` },
+      author: { "@type": "Person", name: "Lautaro Conte", url: "https://contelautaro.com.ar" },
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${url}#breadcrumb`,
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Anotador de truco", item: `${SITE_URL}/` },
+        { "@type": "ListItem", position: 2, name: "Guía del truco", item: url },
+      ],
+    },
+  ],
+};
+---
+
+<Base title={GUIA.title} description={GUIA.description} canonical={url} jsonLd={jsonLd} contentUnderAd>
+  <div class="guia">
+    <header class="guia-bar">
+      <a href="/" class="guia-back" aria-label="Volver al anotador">
+        <span class="flecha flecha-izq">←</span>
+      </a>
+      <h1 class="guia-title">Guía del truco</h1>
+    </header>
+
+    <nav class="guia-tabs" role="tablist" aria-label="Secciones de la guía">
+      {TABS.map(({ id, label }) => (
+        <button
+          role="tab"
+          id={`tab-${id}`}
+          aria-selected={String(id === "cartas")}
+          aria-controls={`panel-${id}`}
+          class={`guia-tab ${id === "cartas" ? "guia-tab-active" : ""}`}
+        >
+          {label}
+        </button>
+      ))}
+    </nav>
+
+    <div class="guia-panels">
+      {/* Cartas */}
+      <section
+        id="panel-cartas"
+        role="tabpanel"
+        aria-labelledby="tab-cartas"
+        class="guia-panel"
+      >
+        <h2 class="guia-h2">Valores de las cartas del truco</h2>
+        <p class="guia-lead">De la más alta a la más baja. Se juega con mazo español de 40 cartas (sin 8 ni 9).</p>
+        <ol class="guia-ranking">
+          {CARD_RANKING.map(({ card, name, any }, i) => (
+            <li class={i < 4 ? "guia-ranking-top" : ""}>
+              <span class="guia-ranking-pos">{i + 1}</span>
+              <span class="guia-ranking-name">{name}</span>
+              <span class="guia-ranking-card">{any ? `${card} de cualquier palo` : card}</span>
+            </li>
+          ))}
+        </ol>
+
+        <h2 class="guia-h2">Envido</h2>
+        <p>
+          Con dos cartas del mismo palo, se suman sus valores más 20. Las figuras (10, 11 y 12) valen 0.
+        </p>
+        <ul class="guia-examples">
+          <li>
+            <span>7 y 6 de oro</span>
+            <span class="guia-math">7 + 6 + 20 = <strong>33</strong></span>
+          </li>
+          <li>
+            <span>12 y 7 de espada</span>
+            <span class="guia-math">0 + 7 + 20 = <strong>27</strong></span>
+          </li>
+          <li>
+            <span>Sin dos del mismo palo</span>
+            <span class="guia-math">la más alta: 7 <span class="flecha flecha-der">→</span> <strong>7</strong></span>
+          </li>
+        </ul>
+        <p class="guia-note">El envido más alto posible es 33.</p>
+
+        <h2 class="guia-h2">Flor</h2>
+        <p>
+          Tres cartas del mismo palo. Se canta antes que el envido y vale la suma de las tres más 20. Solo se juega si
+          se acordó antes de empezar.
+        </p>
+      </section>
+
+      {/* Puntos */}
+      <section
+        id="panel-puntos"
+        role="tabpanel"
+        aria-labelledby="tab-puntos"
+        class="guia-panel"
+        hidden
+      >
+        <h2 class="guia-h2">Puntos del truco: cuánto vale cada canto</h2>
+        <table class="guia-table">
+          <thead>
+            <tr>
+              <th scope="col">Canto</th>
+              <th scope="col">Quiero</th>
+              <th scope="col">No quiero</th>
+            </tr>
+          </thead>
+          <tbody>
+            {CANTOS.map((row) =>
+              row.group ? (
+                <tr`} class="guia-table-group">
+                  <th scope="rowgroup" colspan="3">
+                    {row.group}
+                  </th>
+                </tr>
+              ) : (
+                <tr>
+                  <th scope="row">{row.name}</th>
+                  <td>{row.wanted}</td>
+                  <td>{row.notWanted}</td>
+                </tr>
+              )
+            )}
+          </tbody>
+        </table>
+        <p class="guia-note">
+          La falta envido vale los puntos que le faltan al que va ganando para terminar el partido.
+        </p>
+        <p class="guia-note">
+          La contraflor y la contraflor al resto cambian según cómo se juegue: conviene acordarlas antes de empezar.
+        </p>
+        <p class="guia-note">
+          Los cantos de envido se pueden encadenar (envido, envido, real envido…): si se quieren, se suman todos; si no,
+          se cobra lo cantado hasta antes del último.
+        </p>
+
+        <h2 class="guia-h2">Malas y buenas</h2>
+        <p>
+          A 30 puntos, la partida se divide en dos mitades: las <strong>malas</strong> (del 1 al 15) y las{" "}
+          <strong>buenas</strong> (del 16 al 30). Gana el primero que llega a 15 buenas.
+        </p>
+
+        <h2 class="guia-h2">A 15 o a 30</h2>
+        <p>
+          A 15 es una partida corta, sin malas ni buenas. A 30 es la partida completa. En el anotador lo elegís desde el
+          menú.
+        </p>
+
+        <h2 class="guia-h2">Truco uruguayo</h2>
+        <p>
+          Se da vuelta una carta, la <strong>muestra</strong>. El 2, 4, 5, 10 y 11 de ese palo (las piezas) pasan a ser
+          las cartas más altas y cambian el envido. El anotador sirve igual para contar los puntos.
+        </p>
+      </section>
+
+      {/* El anotador */}
+      <section
+        id="panel-anotador"
+        role="tabpanel"
+        aria-labelledby="tab-anotador"
+        class="guia-panel"
+        hidden
+      >
+        <h2 class="guia-h2">Cómo anotar</h2>
+        <ul class="guia-list">
+          <li>
+            <strong>Tocá el tablero</strong> de un equipo para sumarle un punto: aparece un fósforo nuevo.
+          </li>
+          <li>
+            <strong>Botones + y −</strong> para sumar o corregir.
+          </li>
+          <li>
+            Arriba de cada tablero ves si el equipo está en <strong>malas</strong> o en <strong>buenas</strong>.
+          </li>
+        </ul>
+
+        <h2 class="guia-h2">En el menú</h2>
+        <dl class="guia-menu">
+          <div>
+            <dt>VAR</dt>
+            <dd>Toda la partida jugada por jugada: quién sumó, cuánto y a qué hora. Para terminar las discusiones.</dd>
+          </div>
+          <div>
+            <dt>Jugar a 15 / a 30</dt>
+            <dd>Cambia el modo y empieza una partida nueva.</dd>
+          </div>
+          <div>
+            <dt>Editar nombres</dt>
+            <dd>Ponele nombre a cada equipo.</dd>
+          </div>
+          <div>
+            <dt>Novedades</dt>
+            <dd>Qué cambió en cada versión.</dd>
+          </div>
+        </dl>
+
+        <h2 class="guia-h2">Tip</h2>
+        <p>
+          Desde el navegador, elegí <strong>Agregar a pantalla de inicio</strong> y vas a tener el anotador como una app.
+        </p>
+
+        <h2 class="guia-h2">Preguntas frecuentes</h2>
+        <div class="guia-faq">
+          {FAQ.map(({ q, a }) => (
+            <details>
+              <summary>{q}</summary>
+              <p>{a}</p>
+            </details>
+          ))}
+        </div>
+
+        <p class="guia-contact">
+          ¿Falta algo? <a href="mailto:lauticonte@gmail.com">Escribinos</a>.
+        </p>
+      </section>
+    </div>
+  </div>
+</Base>
+
+<script>
+  import { activarPestanas } from "../scripts/pestanas.js";
+  activarPestanas(document.querySelector(".guia"));
+</script>

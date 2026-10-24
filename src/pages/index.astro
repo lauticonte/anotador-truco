@@ -1,0 +1,17 @@
+---
+import Base from "../layouts/Base.astro";
+import Board from "../components/Board.jsx";
+import { HOME } from "../data/sitio.js";
+---
+
+<Base {...HOME}>
+  <script is:inline slot="head">
+    // Si hay una partida guardada, el tablero 0-0 del HTML se oculta hasta que se restaura (SobreAnotador.css)
+    try {
+      var s = localStorage;
+      if (+s.getItem("points-NOSOTROS") > 0 || +s.getItem("points-ELLOS") > 0 || s.getItem("maxPoints") === "15" || s.getItem("teamNames"))
+        document.documentElement.classList.add("partida-guardada");
+    } catch (e) {}
+  </script>
+  <Board client:tras-dibujo />
+</Base>
