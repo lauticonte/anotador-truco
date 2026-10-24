@@ -2,8 +2,8 @@
   "capturado": "2026-10-23",
   "fuente": "producción (CRA, master 2001a1f)",
   "jsInicialGzip": {
-    "/": 108652,
-    "/guia-truco": 108652
+    "/": 108802,
+    "/guia-truco": 108802
   },
   "nota": "main.*.js medido con gzip -9. web-vitals va en un chunk aparte que se carga después del load y no cuenta para el presupuesto."
 }
