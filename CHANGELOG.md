@@ -2,6 +2,14 @@
 
 Todas las versiones de Truqito. Sigue [Semantic Versioning](https://semver.org/). Lo que ven los usuarios está en **Novedades** dentro de la app (`src/components/Changelog.jsx`).
 
+## [2.0.3] - 2026-10-24
+
+### Para los usuarios
+- Arreglo: el menú vuelve a abrirse por encima del tablero.
+
+### Técnico
+- La 2.0.1 le puso `view-transition-name` a `#app-header` y a `.ad-slot` para que no se fundieran al navegar. Eso hace del header un contexto de apilamiento propio: el menú lateral, que está adentro, quedaba debajo del tablero (se abría, pero no se veía). Se sacó; header y anuncio igual no cambian al navegar porque son los mismos nodos. Test de contrato nuevo.
+
 ## [2.0.2] - 2026-10-24
 
 ### Para los usuarios

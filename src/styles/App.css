@@ -964,8 +964,10 @@ a:link,
 
 
 /* Paso entre páginas (anotador → resultado → anotador, guía): fundido corto en vez de un corte.
-   Con ClientRouter cambia solo el <main> (src/scripts/navegacion.js): header y anuncio no se funden,
-   quedan fijos. @view-transition cubre lo que todavía carga una página entera. */
+   Con ClientRouter cambia solo el <main> (src/scripts/navegacion.js): header y anuncio son los mismos
+   nodos, así que el fundido no los cambia. Sin view-transition-name en el header: lo haría un contexto de
+   apilamiento propio y el menú lateral (que está adentro) quedaría tapado por el tablero.
+   @view-transition cubre lo que todavía carga una página entera. */
 @media (prefers-reduced-motion: no-preference) {
   @view-transition {
     navigation: auto;
@@ -975,21 +977,4 @@ a:link,
   ::view-transition-new(root) {
     animation-duration: 0.25s;
   }
-}
-
-#app-header {
-  view-transition-name: header;
-}
-
-.ad-slot {
-  view-transition-name: anuncio;
-}
-
-::view-transition-group(header),
-::view-transition-group(anuncio),
-::view-transition-old(header),
-::view-transition-new(header),
-::view-transition-old(anuncio),
-::view-transition-new(anuncio) {
-  animation: none;
 }
