@@ -1,5 +1,6 @@
 // Tests de caracterización del contador: fijan cómo se comporta hoy para que la migración no lo cambie.
 import React from "react";
+import { renderToString } from "react-dom/server";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import Counter from "../../src/components/Counter.jsx";
@@ -9,7 +10,9 @@ const sinAviso = () => localStorage.setItem("tapHintSessions", "10");
 
 const renderContador = (props = {}) => {
   const onWin = vi.fn();
-  const utils = render(<Counter title="NOSOTROS" displayName="NOSOTROS" maxPoints={30} onWin={onWin} {...props} />);
+  const utils = render(
+    <Counter title="NOSOTROS" displayName="NOSOTROS" maxPoints={30} cargada onWin={onWin} {...props} />
+  );
   return { ...utils, onWin };
 };
 
@@ -146,7 +149,7 @@ describe("Counter: guardado en localStorage", () => {
     localStorage.setItem("points-NOSOTROS", "7");
     localStorage.setItem("stage-NOSOTROS", "Malas");
     const { container, rerender, onWin } = renderContador();
-    rerender(<Counter title="NOSOTROS" displayName="NOSOTROS" maxPoints={15} onWin={onWin} />);
+    rerender(<Counter title="NOSOTROS" displayName="NOSOTROS" maxPoints={15} cargada onWin={onWin} />);
     expect([puntos(container), etapa(container)]).toEqual([0, "a 15"]);
     expect(localStorage.getItem("points-NOSOTROS")).toBeNull();
     expect(localStorage.getItem("stage-NOSOTROS")).toBeNull();
@@ -236,5 +239,57 @@ describe("Counter: aviso 'Tocá para sumar'", () => {
     act(() => vi.advanceTimersByTime(600));
     expect(container.querySelector(".tap-hint")).not.toBeNull();
     expect(window.location.search).toBe("");
+  });
+});
+
+describe("Counter: render en el build e hidratación", () => {
+  const props = { title: "NOSOTROS", displayName: "NOSOTROS", onWin: () => {} };
+
+  it("el primer render es 0 en malas aunque haya una partida guardada (igual al HTML del build)", () => {
+    localStorage.setItem("points-NOSOTROS", "7");
+    localStorage.setItem("stage-NOSOTROS", "Buenas");
+    const html = renderToString(<Counter {...props} maxPoints={30} cargada={false} />);
+    expect(html).toContain(">Malas</h3>");
+    expect(html).toMatch(/<h1[^>]*>0<\/h1>/);
+    expect(html).not.toContain("match-place");
+  });
+
+  it("restaura la partida guardada recién cuando la partida está cargada", () => {
+    sinAviso();
+    localStorage.setItem("points-NOSOTROS", "7");
+    localStorage.setItem("stage-NOSOTROS", "Buenas");
+    const { container, rerender } = render(<Counter {...props} maxPoints={30} cargada={false} />);
+    expect(puntos(container)).toBe(0);
+    rerender(<Counter {...props} maxPoints={30} cargada />);
+    expect([puntos(container), etapa(container)]).toEqual([7, "Buenas"]);
+  });
+
+  it("no borra una partida guardada a 15 cuando el modo pasa de 30 (por defecto) a 15 al cargar", () => {
+    sinAviso();
+    localStorage.setItem("maxPoints", "15");
+    localStorage.setItem("points-NOSOTROS", "9");
+    localStorage.setItem("stage-NOSOTROS", "a 15");
+    const { container, rerender } = render(<Counter {...props} maxPoints={30} cargada={false} />);
+    // El modo cambia antes de que la partida figure como cargada, y también en el mismo render
+    rerender(<Counter {...props} maxPoints={15} cargada={false} />);
+    rerender(<Counter {...props} maxPoints={15} cargada />);
+    expect([puntos(container), etapa(container)]).toEqual([9, "a 15"]);
+    expect(localStorage.getItem("points-NOSOTROS")).toBe("9");
+  });
+
+  it("tampoco la borra si el modo y la carga llegan en el mismo render", () => {
+    sinAviso();
+    localStorage.setItem("points-NOSOTROS", "9");
+    localStorage.setItem("stage-NOSOTROS", "a 15");
+    const { container, rerender } = render(<Counter {...props} maxPoints={30} cargada={false} />);
+    rerender(<Counter {...props} maxPoints={15} cargada />);
+    expect([puntos(container), etapa(container)]).toEqual([9, "a 15"]);
+    expect(localStorage.getItem("points-NOSOTROS")).toBe("9");
+  });
+
+  it("no registra listeners de window hasta montar (se puede renderizar en el servidor)", () => {
+    const espia = vi.spyOn(window, "addEventListener");
+    renderToString(<Counter {...props} maxPoints={30} cargada={false} />);
+    expect(espia).not.toHaveBeenCalled();
   });
 });

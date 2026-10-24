@@ -29,28 +29,15 @@ const debounce = (fn, delay) => {
 class Counter extends Component {
   constructor(props) {
     super(props);
-    const savedPoints = parseInt(localStorage.getItem(`points-${props.title}`), 10) || 0;
-    const defaultStage = props.maxPoints === 15 ? "a 15" : "Malas";
-    const savedStage = localStorage.getItem(`stage-${props.title}`);
-    
-    // Si no hay stage guardado o si cambiamos de modo de juego, usar el default
-    // También asegurarnos que en modo 30, si los puntos son 0, el estado sea "Malas"
-    const initialStage = !savedStage || 
-      (props.maxPoints === 15 && savedStage !== "a 15") || 
-      (props.maxPoints === 30 && savedStage === "a 15") ||
-      (props.maxPoints === 30 && savedPoints === 0 && savedStage === "Buenas")
-      ? defaultStage 
-      : savedStage;
-    
-    // Verificar contador de sesiones del tap hint (se muestra hasta 10 sesiones)
-    const tapHintSessions = parseInt(localStorage.getItem("tapHintSessions"), 10) || 0;
-    const tapHintCompleted = tapHintSessions >= 10;
-    
+    // El tablero se renderiza en el build: el primer render es siempre 0 puntos con la etapa por defecto,
+    // igual al HTML del servidor. Lo guardado en localStorage se restaura después (restoreSavedGame).
+    const initialStage = props.maxPoints === 15 ? "a 15" : "Malas";
+
     this.state = {
-      points: savedPoints,
+      points: 0,
       stage: initialStage,
       showTapHint: false,
-      tapHintCompleted: tapHintCompleted,
+      tapHintCompleted: false,
     };
 
     this.stage = initialStage;
@@ -104,14 +91,37 @@ class Counter extends Component {
       }
     };
     this.debouncedFlushHistory = debounce(this.flushHistoryBuffer, 300);
+  }
 
+  // Lee la partida guardada. Se llama recién cuando el estado de la partida (modo y nombres) ya se cargó,
+  // porque la etapa válida depende del modo de juego.
+  restoreSavedGame = () => {
+    const { title, maxPoints } = this.props;
+    const savedPoints = parseInt(localStorage.getItem(`points-${title}`), 10) || 0;
+    const defaultStage = maxPoints === 15 ? "a 15" : "Malas";
+    const savedStage = localStorage.getItem(`stage-${title}`);
+
+    // Si no hay stage guardado o si cambiamos de modo de juego, usar el default
+    // También asegurarnos que en modo 30, si los puntos son 0, el estado sea "Malas"
+    const initialStage = !savedStage ||
+      (maxPoints === 15 && savedStage !== "a 15") ||
+      (maxPoints === 30 && savedStage === "a 15") ||
+      (maxPoints === 30 && savedPoints === 0 && savedStage === "Buenas")
+      ? defaultStage
+      : savedStage;
+
+    this.stage = initialStage;
+    this.setState({ points: savedPoints, stage: initialStage });
+  };
+
+  componentDidMount() {
     // Asegurar que el buffer se persista si se cierra/recarga la página
     window.addEventListener("beforeunload", this.flushHistoryBuffer);
     // Permitir a otros componentes forzar un flush inmediato del historial
     window.addEventListener("flushHistory", this.flushHistoryBuffer);
-  }
 
-  componentDidMount() {
+    if (this.props.cargada) this.restoreSavedGame();
+
     // Reset hint si la URL tiene ?reset-hint (útil para testing en mobile)
     if (window.location.search.includes("reset-hint")) {
       localStorage.removeItem("tapHintSessions");
@@ -142,11 +152,18 @@ class Counter extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
+    // Recién cargada la partida: restaurar lo guardado. El cambio de modo que llega con la carga
+    // (por ejemplo, de 30 por defecto a 15 guardado) no es una partida nueva y no borra nada.
+    if (!prevProps.cargada && this.props.cargada) {
+      this.restoreSavedGame();
+      return;
+    }
+
     if (prevState.points !== this.state.points) {
       this.debouncedSavePoints(this.state.points);
     }
-  
-    if (prevProps.maxPoints !== this.props.maxPoints) {
+
+    if (prevProps.cargada && prevProps.maxPoints !== this.props.maxPoints) {
       const newStage = this.props.maxPoints === 15 ? "a 15" : "Malas";
       
       // Limpiar el localStorage para este equipo

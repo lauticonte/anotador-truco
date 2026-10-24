@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { usePageMeta } from '../hooks/usePageMeta.js';
+import React, { useEffect, useState } from 'react';
+import { useStore } from '@nanostores/react';
+import { useMontado } from '../hooks/useMontado.js';
+import { cargarPartida, resetGame, teamNames as teamNamesStore } from '../stores/partida.js';
 
 async function enviarFeedback(feedback) {
   try {
@@ -26,18 +27,27 @@ async function enviarFeedback(feedback) {
   }
 }
 
-const ResultPage = ({ resetGame, teamNames }) => {
-  const { winner } = useParams();
-  const navigate = useNavigate();
-  const [selectedPoints, setSelectedPoints] = useState(null);
+// Es una sola página para cualquier /resultado/:winner (rewrite de vercel.json): el ganador sale de la URL
+const winnerFromUrl = () => decodeURIComponent(window.location.pathname.split('/')[2] || '');
 
-  // Pantalla de fin de partida: no tiene contenido propio para buscadores
-  usePageMeta({ robots: 'noindex' });
+const ResultPage = () => {
+  const teamNames = useStore(teamNamesStore);
+  const [selectedPoints, setSelectedPoints] = useState(null);
+  // El ganador y los nombres solo se conocen en el navegador: en el build la página sale vacía (lleva noindex)
+  const montado = useMontado();
+
+  useEffect(() => {
+    cargarPartida();
+  }, []);
+
+  if (!montado) return null;
+
+  const winner = winnerFromUrl();
 
   const handleStartGame = () => {
     if (selectedPoints) {
       resetGame(selectedPoints);
-      navigate('/');
+      window.location.assign('/');
     }
   };
 
