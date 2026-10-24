@@ -3,7 +3,7 @@ import { cleanup } from "@testing-library/react";
 import { afterEach, beforeEach, vi } from "vitest";
 
 beforeEach(() => {
-  localStorage.clear();
+  globalThis.localStorage?.clear(); // en los tests con entorno node (funciones de api/) no hay localStorage
 });
 
 afterEach(() => {
