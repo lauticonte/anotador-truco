@@ -1,7 +1,7 @@
 # Anotador de Truco
 
 ![Project Status](https://img.shields.io/badge/status-active-success.svg)
-![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-2.0.1-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Astro](https://img.shields.io/badge/astro-7.x-BC52EE?logo=astro)
 ![React](https://img.shields.io/badge/react-18.x-61DAFB?logo=react)
@@ -124,7 +124,8 @@ npm run build && npm run test:contrato   # contrato SEO del build contra producc
 
 El proyecto sigue [Semantic Versioning](https://semver.org/). El historial completo está en [`CHANGELOG.md`](CHANGELOG.md) y, para los usuarios, en **Novedades** dentro de la app (`src/components/Changelog.jsx`).
 
-* **v2.0.0 (Latest) - 2026-10-23**: Migración de Create React App a Astro con islas de React: HTML completo desde el build, tablero visible en el primer dibujo, JavaScript inicial a la mitad, fósforo ganador que se enciende, transiciones entre páginas y texto "Sobre el anotador" siempre en el HTML.
+* **v2.0.1 (Latest) - 2026-10-30**: Publicidad diferida 2,5 s después de cargar la página, para que no compita con el primer dibujo ni con los primeros toques.
+* **v2.0.0 - 2026-10-23**: Migración de Create React App a Astro con islas de React: HTML completo desde el build, tablero visible en el primer dibujo, JavaScript inicial a la mitad, fósforo ganador que se enciende, transiciones entre páginas y texto "Sobre el anotador" siempre en el HTML.
 * **v1.5.0 - 2026-10-14**: Rediseño del VAR, hojas unificadas, Guía del truco en pestañas y mejoras de SEO.
 * **v1.4.6 - 2026-10-14**: Fósforos realistas en SVG, guía de toque y animación al sumar.
 

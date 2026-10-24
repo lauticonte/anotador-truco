@@ -6,6 +6,13 @@ import "../styles/Changelog.css";
 const Changelog = ({ isVisible, onClose }) => {
   const changelog = [
     {
+      version: "2.0.1",
+      date: "30/10/2026",
+      changes: [
+        "La publicidad aparece unos segundos después para que el anotador responda más rápido al abrirlo."
+      ]
+    },
+    {
       version: "2.0.0",
       date: "23/10/2026",
       changes: [

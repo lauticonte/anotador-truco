@@ -2,6 +2,16 @@
 
 Todas las versiones de Truqito. Sigue [Semantic Versioning](https://semver.org/). Lo que ven los usuarios está en **Novedades** dentro de la app (`src/components/Changelog.jsx`).
 
+## [2.0.1] - 2026-10-30
+
+### Para los usuarios
+- La publicidad aparece unos segundos después para que el anotador responda más rápido al abrirlo.
+
+### Técnico
+- **Publicidad diferida:** los scripts de Moneytizer (`gen.js` y `requestform.js`) se cargan 2,5 s después del evento `load` (`AD_DELAY_MS` en `src/components/Ads.jsx`), en lugar de 100 ms después de hidratar. El disparador es solo el tiempo, nunca el primer toque.
+- El CMP de InMobi y GA4 no cambian (mismo código y orden en el `<head>`).
+- **Cómo se mide:** 7 días de la 2.0.0 contra 7 días de la 2.0.1, mismos días de la semana. Web vitals en GA4 por página (LCP, INP, FCP); en Moneytizer, ingresos por sesión, impresiones y RPM (sobre todo en `/resultado/*`, donde las visitas son cortas). Si el ingreso por sesión cae más de 15 % sostenido, se vuelve a la 2.0.0 con un rollback en Vercel.
+
 ## [2.0.0] - 2026-10-23
 
 Migración de Create React App a **Astro + React (islas)**. El objetivo es SEO y velocidad: cada página llega con su HTML completo y React solo activa lo interactivo.
