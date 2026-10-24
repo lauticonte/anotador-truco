@@ -5,6 +5,12 @@ import './index.css';
 import './styles/Icons.css';
 import App from './App.js';
 
+// Velocidad real de cada visita a GA4. Va en un archivo aparte que se carga después del load para no
+// sumar peso a la carga inicial; los observadores leen también lo que pasó antes de ese momento.
+const loadWebVitals = () => import('./reportWebVitals.js').then(({ default: report }) => report());
+if (document.readyState === 'complete') loadWebVitals();
+else window.addEventListener('load', loadWebVitals, { once: true });
+
 // Obtener el elemento del DOM donde se montará la aplicación
 const rootElement = document.getElementById('root');
 
