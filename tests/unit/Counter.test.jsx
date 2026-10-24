@@ -87,7 +87,12 @@ describe("Counter: partida a 30 (malas y buenas)", () => {
     expect(onWin).not.toHaveBeenCalled();
     tocar(1);
     expect(onWin).toHaveBeenCalledWith("NOSOTROS");
-    expect(puntos(container)).toBe(14);
+    // El fósforo ganador se dibuja (15 buenas en pantalla) pero no se guarda
+    expect([puntos(container), etapa(container)]).toEqual([15, "Buenas"]);
+    expect(fosforos(container)).toBe(15);
+    expect(container.querySelectorAll(".match-ganador")).toHaveLength(2);
+    act(() => window.dispatchEvent(new Event("pagehide")));
+    expect(localStorage.getItem("points-NOSOTROS")).toBe("14");
   });
 
   it("con la partida terminada no suma ni resta", () => {
@@ -107,7 +112,9 @@ describe("Counter: partida a 15", () => {
     expect(puntos(container)).toBe(14);
     tocar(1);
     expect(onWin).toHaveBeenCalledWith("NOSOTROS");
-    expect(puntos(container)).toBe(14);
+    expect(puntos(container)).toBe(15);
+    expect(fosforos(container)).toBe(15);
+    expect(container.querySelector(".counter-points h1")).toHaveClass("puntos-ganador");
   });
 });
 

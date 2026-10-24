@@ -38,6 +38,8 @@ class Counter extends Component {
       stage: initialStage,
       showTapHint: false,
       tapHintCompleted: false,
+      // Toque que gana la partida: el último fósforo se dibuja (solo en pantalla, no se guarda)
+      winning: false,
     };
 
     this.stage = initialStage;
@@ -240,11 +242,11 @@ class Counter extends Component {
             nextPoints = 1;
           } else if (nextPoints === 15 && nextStage === "Buenas") {
             this.props.onWin(this.props.title);
-            return prevState;
+            return { winning: true };
           }
         } else if (nextPoints === 15) {
           this.props.onWin(this.props.title);
-          return prevState;
+          return { winning: true };
         }
   
         return { points: nextPoints, stage: nextStage };
@@ -312,18 +314,21 @@ class Counter extends Component {
 
   // Se dibujan en dos capas: primero todos los palitos y después todas las cabezas,
   // así cada cabeza queda por encima de la cola del fósforo que tiene al lado.
+  // El fósforo que gana la partida se coloca y se prende (Counter.css) antes de pasar al resultado.
   renderLines = () => {
-    const matches = Array.from({ length: this.state.points }, (_, i) => this.matchAt(i));
+    const { points, winning } = this.state;
+    const matches = Array.from({ length: points + (winning ? 1 : 0) }, (_, i) => this.matchAt(i));
+    const extra = (i, clase) => (winning && i === points ? ` ${clase}` : "");
     return (
       <>
         {matches.map(({ variant, transform }, i) => (
           <g key={`stick-${i}`} transform={transform}>
-            <use className="match-place" href={`#match-stick-${variant}`} />
+            <use className={`match-place${extra(i, "match-ganador")}`} href={`#match-stick-${variant}`} />
           </g>
         ))}
         {matches.map(({ variant, transform }, i) => (
           <g key={`head-${i}`} transform={transform}>
-            <use className="match-place" href={`#match-head-${variant}`} />
+            <use className={`match-place${extra(i, "match-ganador match-ganador-cabeza")}`} href={`#match-head-${variant}`} />
           </g>
         ))}
       </>
@@ -452,7 +457,7 @@ class Counter extends Component {
     const { title, displayName } = this.props;
   
     // Calculamos el puntaje a mostrar, asegurándonos de que no sea negativo
-    const displayedPoints = Math.max(this.state.points, 0);
+    const displayedPoints = Math.max(this.state.points, 0) + (this.state.winning ? 1 : 0);
   
     const stageText = this.state.stage; // Tomamos stage del estado
     const stageIndicatorStyle = {
@@ -491,7 +496,7 @@ class Counter extends Component {
         </div>
         <div className="counter-buttons-container">
           <div className="counter-points">
-            <h1 style={{ color: stageIndicatorStyle.background }}>
+            <h1 className={this.state.winning ? "puntos-ganador" : undefined} style={{ color: stageIndicatorStyle.background }}>
               {displayedPoints}
             </h1>
           </div>

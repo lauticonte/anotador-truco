@@ -4,6 +4,10 @@ import Counter from "./Counter.jsx";
 import { Analytics } from "@vercel/analytics/react";
 import { cargarPartida, maxPoints as maxPointsStore, partidaCargada, teamNames as teamNamesStore } from "../stores/partida.js";
 
+// Cuánto se ve el fósforo ganador antes de pasar al resultado (las animaciones de Counter.css duran 0,9 s)
+const DURACION_FINAL = 950;
+const DURACION_FINAL_SIN_ANIMACION = 300;
+
 // En el build no hay layout: useLayoutEffect solo avisa. En el navegador corre antes del dibujo.
 const useLayoutEffectEnNavegador = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
@@ -39,12 +43,18 @@ const Board = () => {
     setFinished(false);
   }, [maxPoints]);
 
-  // Ir a la página de resultado cuando termine la partida. Mientras carga, el tablero queda como está
-  // (sin toques): la página nueva ya viene renderizada y el navegador pasa de una a otra con un fundido.
+  // Partida terminada: el último fósforo se coloca y se prende (Counter.css) y después se pasa al resultado
+  // con un fundido. La página del resultado se precarga mientras dura la animación, así no hay espera extra.
   useEffect(() => {
-    if (finished && winner) {
-      window.location.assign(`/resultado/${winner.toLowerCase()}`);
-    }
+    if (!finished || !winner) return;
+    const url = `/resultado/${winner.toLowerCase()}`;
+    const precarga = document.createElement("link");
+    precarga.rel = "prefetch";
+    precarga.href = url;
+    document.head.appendChild(precarga);
+    const sinAnimacion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const timer = setTimeout(() => window.location.assign(url), sinAnimacion ? DURACION_FINAL_SIN_ANIMACION : DURACION_FINAL);
+    return () => clearTimeout(timer);
   }, [finished, winner]);
 
   const handleWin = useCallback((winner) => {

@@ -69,8 +69,14 @@ describe("Board", () => {
     localStorage.setItem("maxPoints", "15");
     localStorage.setItem("points-ELLOS", "14");
     localStorage.setItem("stage-ELLOS", "a 15");
+    vi.useFakeTimers();
     const { container } = render(<Board />);
     fireEvent.click(screen.getByRole("button", { name: "Sumar punto a ELLOS" }));
+    // Primero se ve el último fósforo y se precarga el resultado; después se navega
+    expect(puntosDe(container, "ellos")).toBe(15);
+    expect(document.head.querySelector('link[rel="prefetch"][href="/resultado/ellos"]')).not.toBeNull();
+    expect(asignar).not.toHaveBeenCalled();
+    act(() => vi.advanceTimersByTime(950));
     expect(asignar).toHaveBeenCalledWith("/resultado/ellos");
     // Sin pantalla intermedia: siguen los dos tableros (antes se veía "GANARON ELLOS" cruzado por la línea)
     expect(container.querySelectorAll(".counter-points")).toHaveLength(2);
