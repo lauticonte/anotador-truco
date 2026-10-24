@@ -19,6 +19,10 @@ document.addEventListener("astro:before-swap", (evento) => {
     const appNueva = doc.querySelector("#root > .app");
     const main = app?.querySelector(":scope > main");
     const mainNuevo = appNueva?.querySelector(":scope > main");
+    // Después del swap, ClientRouter ejecuta de nuevo todo <script> sin data-astro-exec. Los que agregan
+    // Ads.jsx y Moneytizer adentro del anuncio no la tienen: volverían a correr, pedirían otro anuncio
+    // (otra subasta) y dejarían un segundo div#sas_* vacío. Todo lo que ya está en la página ya corrió.
+    for (const script of document.querySelectorAll("script:not([data-astro-exec])")) script.dataset.astroExec = "";
     deselectScripts(doc);
     swapRootAttributes(doc);
     swapHeadElements(doc);

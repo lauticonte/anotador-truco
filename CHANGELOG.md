@@ -2,6 +2,14 @@
 
 Todas las versiones de Truqito. Sigue [Semantic Versioning](https://semver.org/). Lo que ven los usuarios está en **Novedades** dentro de la app (`src/components/Changelog.jsx`).
 
+## [2.0.2] - 2026-10-24
+
+### Para los usuarios
+- Arreglo: el anuncio de abajo ya no se duplica al cambiar de pantalla.
+
+### Técnico
+- Después de cada swap, `ClientRouter` vuelve a ejecutar todo `<script>` sin `data-astro-exec`. Los que agregan `Ads.jsx` y Moneytizer dentro del anuncio (`gen.js`, `requestform.js`, `sas_script_*`) no la tenían: corrían de nuevo, pedían otro anuncio (otra subasta) y dejaban un segundo `div#sas_*` vacío que duplicaba el alto del bloque. Ahora `navegacion.js` marca como ejecutado todo script que ya está en la página antes de cambiarla.
+
 ## [2.0.1] - 2026-10-24
 
 La 2.0.0 se desplegó el 2026-10-24 a las 04:30 y se volvió a la versión CRA a los 3 minutos: cada cambio de página recargaba el anuncio y lo volvía a subastar. Esta versión corrige eso.

@@ -54,6 +54,17 @@ describe("swap de ClientRouter", () => {
     expect(swapFunctions.swapBodyElement).not.toHaveBeenCalled();
   });
 
+  it("los scripts del anuncio quedan marcados como ejecutados (ClientRouter no los vuelve a correr)", () => {
+    // Como hacen Ads.jsx y Moneytizer: scripts agregados en el navegador, sin data-astro-exec
+    const contenedor = document.getElementById("127560-28");
+    const gen = document.createElement("script");
+    gen.src = "//ads.themoneytizer.com/s/gen.js?type=28";
+    contenedor.appendChild(gen);
+    navegarA(pagina("app", "guía"));
+    expect(document.getElementById("127560-28").querySelector("script")).toBe(gen);
+    expect(gen.dataset.astroExec).toBe("");
+  });
+
   it("vuelve a la página anterior con el mismo anuncio", () => {
     const iframe = document.querySelector("iframe");
     navegarA(pagina("app app-content-under-ad", "guía"));
