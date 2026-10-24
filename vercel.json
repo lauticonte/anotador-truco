@@ -1,4 +1,6 @@
 {
+  "framework": "astro",
+  "outputDirectory": "dist",
   "trailingSlash": false,
   "rewrites": [
     {
@@ -15,7 +17,7 @@
     },
     {
       "source": "/resultado/:winner",
-      "destination": "/index.html"
+      "destination": "/resultado.html"
     },
     {
       "source": "/(.*)",
@@ -33,7 +35,7 @@
       ]
     },
     {
-      "source": "/static/(.*)",
+      "source": "/_astro/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

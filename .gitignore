@@ -28,3 +28,7 @@ yarn-error.log*
 .vercel
 .env*
 src/components/pages/.prerender-*.mjs
+
+# Astro
+/dist
+/.astro
