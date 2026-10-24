@@ -2,6 +2,19 @@
 
 Todas las versiones de Truqito. Sigue [Semantic Versioning](https://semver.org/). Lo que ven los usuarios está en **Novedades** dentro de la app (`src/components/Changelog.jsx`).
 
+## [2.0.1] - 2026-10-24
+
+La 2.0.0 se desplegó el 2026-10-24 a las 04:30 y se volvió a la versión CRA a los 3 minutos: cada cambio de página recargaba el anuncio y lo volvía a subastar. Esta versión corrige eso.
+
+### Para los usuarios
+- Pasar del anotador al resultado o a la guía es más rápido: la página ya no se recarga entera.
+
+### Técnico
+- **El anuncio queda vivo entre páginas**, como en la SPA de la versión CRA. `ClientRouter` de Astro con un swap propio (`src/scripts/navegacion.js`): cambia el `<head>` y el `<main>`; header, `.ad-slot` y footer son siempre los mismos nodos, así que el iframe de Moneytizer no se recarga ni vuelve a subastar. No se usa `transition:persist`: sin `moveBefore()` (Safari e iOS no lo tienen) mueve el iframe y lo recarga, y la documentación de Astro lo advierte.
+- GA4 y el CMP de InMobi se cargan una sola vez por visita. Las páginas vistas las cuenta la medición mejorada de GA4 por cambios del historial, como en la versión CRA.
+- Las islas nuevas hidratan con los valores del build (`useStoreTrasMontar`) y la partida se vuelve a leer de `localStorage` en cada navegación. El menú se cierra al cambiar de página y volver atrás con el menú abierto no trae la página de nuevo.
+- **OG nuevo** (logo, tablero con fósforos y truqito.dev.ar) con nombre propio, `og-truqito.png`: `/images/*` es `immutable` por un año.
+
 ## [2.0.0] - 2026-10-23
 
 Migración de Create React App a **Astro + React (islas)**. El objetivo es SEO y velocidad: cada página llega con su HTML completo y React solo activa lo interactivo.
