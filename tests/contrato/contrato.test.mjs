@@ -77,6 +77,10 @@ describe("home", () => {
     assert.ok(html("index.html").includes("@view-transition"));
   });
 
+  it("el header no tiene view-transition-name (taparía el menú lateral, que está adentro)", () => {
+    assert.ok(!/#app-header\s*\{[^}]*view-transition-name/.test(html("index.html")));
+  });
+
   it("marca la partida guardada antes del primer dibujo", () => {
     const head = parse(html("index.html")).querySelector("head").toString();
     assert.ok(head.includes('classList.add("partida-guardada")'));
