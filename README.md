@@ -15,6 +15,7 @@
 - [Características](#-características)
 - [Stack Tecnológico](#-stack-tecnológico)
 - [Arquitectura del Proyecto](#-arquitectura-del-proyecto)
+- [Estado y cómo seguir](#-estado-y-cómo-seguir)
 - [Instalación y Desarrollo](#-instalación-y-desarrollo)
 - [Pruebas](#-pruebas)
 - [Despliegue](#-despliegue)
@@ -74,6 +75,10 @@ anotador-truco/
 ```
 
 ---
+
+## 📋 Estado y cómo seguir
+
+El estado actual, los pendientes, cómo medir y las lecciones aprendidas están en [`docs/HANDOFF.md`](docs/HANDOFF.md). Las herramientas de medición están en [`scripts/medicion/`](scripts/medicion/README.md).
 
 ## 💻 Instalación y Desarrollo
 

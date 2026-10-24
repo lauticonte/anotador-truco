@@ -1,0 +1,114 @@
+# Handoff: Truqito
+
+Actualizado: **2026-10-24, ~19 h**. Producción: **v2.0.4** (`master` = `dc87d17`), en https://truco.contelautaro.com.ar.
+
+Este documento alcanza para retomar el trabajo. El detalle histórico está en los documentos de la [tabla del final](#documentos).
+
+## 1. Qué hay en producción
+
+| Versión | Fecha | Qué cambió |
+|---|---|---|
+| 2.0.0 | 24/10 04:30 | Migración de CRA a **Astro 7 + React 18 en islas** (SSG). La desplegó sola el timer `truqito-despliegue` de a1. **Se sacó a los 3 min:** cada cambio de página recargaba el anuncio y lo volvía a subastar |
+| 2.0.1 | 24/10 | **`ClientRouter` con swap propio** (`src/scripts/navegacion.js`): entre páginas cambian solo el `<head>` y el `<main>`; header, anuncio y footer son siempre los mismos nodos. OG nuevo (`/images/og-truqito.png`) |
+| 2.0.2 | 24/10 | Los scripts del anuncio se marcan con `data-astro-exec` antes del swap: sin anuncio duplicado ni subasta extra al navegar |
+| 2.0.3 | 24/10 | Sin `view-transition-name` en el header: el menú lateral volvía a quedar tapado por el tablero |
+| 2.0.4 | 24/10 | `title="Publicidad"` en los iframes de Moneytizer (accesibilidad) |
+
+Releases en GitHub: v2.0.0 a v2.0.4 (la v2.0.4 todavía no tiene release, ver pendientes). `CHANGELOG.md` y Novedades (`src/components/Changelog.jsx`) están al día.
+
+## 2. Números de referencia (línea base)
+
+**Usuarios reales, GA4, home, 23–24/10, con la versión CRA ya optimizada.** Google aprueba una métrica con ≥ 75 % de visitas en verde.
+
+| Métrica | Visitas en verde | Promedio | ¿Aprueba? |
+|---|---|---|---|
+| LCP | 94 % | 1,04 s | ✅ |
+| FCP | 89 % | 1,04 s | ✅ |
+| CLS | 97 % | 0,01 | ✅ |
+| TTFB | 88 % | 0,47 s | ✅ |
+| **INP** | **71 %** | ~0,12 s | ❌ |
+
+- **INP por elemento:** botón **+** 28 % de toques lentos (397 toques), botón **−** 38 % (149). Tocar el tablero: 18–28 %.
+- **CrUX (p75, 28 días, el que muestra PageSpeed arriba):** LCP 4,6 s, INP 316 ms, CLS 0,01, FCP 2,4 s, TTFB 0,72 s. Arrastra los días anteriores al 23/10; el LCP debería verse en verde a mediados de noviembre.
+- **Search Console, "anotador de truco":** posición **2,0** estable en octubre, CTR 20–24 %, ~300–600 clics por día.
+- **Laboratorio, Chrome real con CPU 4× y 4G** (`carga-cdp.mjs`, mediana de 5): CRA FCP 0,61 / LCP 0,61 s · 2.0.0 0,45 / 0,66 · 2.0.3 0,46 / 0,76. El tablero sale antes que en la CRA; **el logo, ~0,1 s más tarde**.
+- **Toques en el laboratorio** (`toques-cdp.mjs`, CPU 4×): mediana 24–32 ms sin publicidad y 48 ms con publicidad; ningún toque pasó de 200 ms. Nuestro código no es lo lento.
+
+## 3. Pendientes, por prioridad
+
+| # | Qué | Cómo | Quién |
+|---|---|---|---|
+| 1 | **Seguridad:** borrar la copia de la clave de la cuenta de servicio que quedó en el servidor del despliegue automático, y apagar ese timer | Comando en las notas privadas (`truqito-operacion.md`, en la carpeta de la doc de la red) | Dueño (el auto mode lo bloquea) |
+| 2 | **Seguridad:** CVE-2026-111497 (Brotli) | Plan en la carpeta de la doc de la red (pendiente #41) | Con OK del dueño |
+| 3 | **Comparar CRA contra 2.0.x con usuarios reales** (desde el 25/10, cuando GA4 procese las horas) | `CORTE=2026102416 node scripts/medicion/ga4-calificaciones.mjs 451539738`, más `ga4-promedios.mjs` y `ga4-inp.mjs` | Agente |
+| 4 | **INP: en qué fase se va el tiempo** (desde el 26/10) | Métricas registradas el 24/10: `inp_input_delay`, `inp_processing`, `inp_presentation` y la dimensión `load_state`. Si domina la **demora de entrada** con `load_state=complete`, es la publicidad durante la partida y hay que hablar con Moneytizer (frecuencia de refresco o bidders); es decisión del dueño por ingresos. Si domina la **presentación**, es el dibujo de los fósforos y lo optimizamos nosotros | Agente y dueño |
+| 5 | **LCP +0,1 s en celulares lentos** | Confirmar con `lcp_render_delay` en GA4. Si se confirma: cargar el JS del router después del logo (prioridad baja o `import()` diferido) | Agente |
+| 6 | **Publicidad diferida** (rama `release/2.0.1`, sobre la 2.0.0) | El dueño dijo "la sacaría por ahora", **sin aclarar si es pausarla o publicarla**: preguntar. Si es publicarla, hay que rehacerla sobre `master` (sería la 2.0.5) | Dueño decide |
+| 7 | **Search Console:** solicitar indexación de `/` y `/guia-truco` (el contenido cambió) | Solo desde la web: Inspeccionar URL → Solicitar indexación. No hay API para páginas comunes | Dueño |
+| 8 | **CrUX History** (p75 semanal) | Sumar "Chrome UX Report API" a las restricciones de la clave en Google Cloud → Credenciales | Dueño |
+| 9 | Release `v2.0.4` en GitHub | `gh release create v2.0.4 --target dc87d17 --title "Versión 2.0.4" --notes-file <(awk '/^## \[2.0.4\]/{f=1;next} /^## \[/{if(f)exit} f' CHANGELOG.md) --latest` | Dueño (el auto mode lo bloquea) |
+| 10 | Limpieza | Borrar las ramas mergeadas `fix/primer-dibujo`, `seo-tecnico` y `fix/titulo-iframe-anuncio`. En Vercel → Settings → General, cambiar Node.js de 20.x a 24.x (es solo para que no aparezca el aviso: `engines` ya fuerza 24.x) | Dueño |
+| 11 | Siguientes mejoras de SEO | B1: guía como "Tabla de valores del truco" (CTR 0,24 % sobre 120 mil impresiones). A7: alto reservado del anuncio en la guía (CLS 0,25). Páginas nuevas: reglas, señas, truco uruguayo, `/pt`. CI con e2e | Agente |
+
+## 4. Cómo desplegar (decisión del dueño: desde la notebook, no con a1)
+
+1. Rama desde `origin/master` → commits con gitmoji → `npm test`, `npm run build`, `npm run test:contrato`.
+2. Subir la versión (`npm version X.Y.Z --no-git-tag-version`), con su entrada en `CHANGELOG.md` y en Novedades.
+3. PR → esperar el preview de Vercel en verde → `gh pr merge <n> --merge --match-head-commit <sha>`. Vercel publica `master` solo (la asignación automática del dominio está activa).
+4. **Verificar en producción**, no solo en tests:
+   - `curl -s https://truco.contelautaro.com.ar/ | grep -o 'versión 2.0.[0-9]'`
+   - anuncio: un solo `div#sas_30012`, alto 90 px (escritorio) o 100 px (iPhone), y el iframe tiene que ser **el mismo nodo** después de navegar (ver lección 2)
+   - menú: abrirlo y comprobar con `document.elementFromPoint` que el sidebar es lo que queda arriba, no solo que tenga la clase `open`
+   - `node scripts/comparar-urls.mjs <deploy-anterior> https://truco.contelautaro.com.ar`. Ojo: si la base es un `*.vercel.app`, todas las URLs muestran `x-robots-tag: noindex` en la base; es ruido de Vercel
+5. **Vuelta atrás:** `vercel promote <url-del-deploy-anterior>` (el auto mode lo bloquea: que lo corra el dueño con `!`) o revertir el PR.
+
+## 5. Ver los datos en GA4 (web)
+
+**Exploraciones → En blanco**:
+- **Dimensiones:** Nombre del evento, Calificación web vital, Elemento web vital, Estado de carga, Ruta de la página, Fecha y hora.
+- **Métricas:** Recuento de eventos y las métricas calculadas creadas el 24/10 (todas en ms):
+  - "Web vital: valor promedio (ms)"
+  - "INP: demora de entrada promedio (ms)"
+  - "INP: procesamiento promedio (ms)"
+  - "INP: presentación promedio (ms)"
+  - "LCP: demora de dibujo promedio (ms)"
+- **Filtro:** Nombre del evento = `INP` (o `LCP`). Las métricas calculadas dividen por la cantidad de eventos, así que sin el filtro el promedio mezcla todos los eventos del sitio.
+- **Ejemplos:** filas = Elemento web vital, columnas = Calificación web vital, valores = Recuento de eventos (qué botones fallan). O filas = Estado de carga, valores = las 3 fases del INP.
+- Los informes procesados tardan **24–48 h**. En Tiempo real los eventos aparecen enseguida, pero sin los parámetros.
+
+## 6. Lecciones aprendidas
+
+Para no repetir los errores de esta semana:
+
+1. **PageSpeed/Lighthouse mide el primer dibujo en escalones de ~1 s** (~0,3, ~1,4 o ~2,4 s), porque su Chrome headless de servidor genera frames de a uno por segundo. Con 2 o 3 corridas no se pueden comparar versiones: el LCP salta de ~3 a ~5 o ~9 s por azar. Para comparar, usar `carga-cdp.mjs` (Chrome real, muchas corridas). Para ver el porqué, Lighthouse con trace en un servidor aparte (nunca en la notebook). La verdad son GA4 y CrUX.
+2. **`transition:persist` no sirve para el anuncio.** Sin `moveBefore()` (Safari e iOS no lo tienen), Astro mueve el iframe y lo recarga, y su propia documentación lo advierte. Por eso el swap propio no mueve nunca el anuncio.
+3. **`ClientRouter` re-ejecuta todo `<script>` sin `data-astro-exec`** después de cada swap, también los que agregan terceros en el `<body>`. Los de Moneytizer volvían a correr, pedían otro anuncio y dejaban un `div#sas_*` vacío. `navegacion.js` los marca antes del swap: no sacarlo.
+4. **`view-transition-name` crea un contexto de apilamiento:** el menú, que está adentro del header, quedó tapado por el tablero. Comprobar visibilidad con `elementFromPoint`, no con clases.
+5. **Con `ClientRouter`, los módulos y los stores sobreviven a la navegación.** Las islas nuevas tienen que hidratar con los valores del build (`useStoreTrasMontar`) y releer la partida (`partidaCargada.set(false)` en el swap). Hay un test que falla si no.
+6. **Promover un preview a producción lo reconstruye con sus meta:** el deploy de prueba de `preview/og`, con `og:url` apuntando al preview, quedó en producción desde las 04:33 hasta la 2.0.1. Los commits "solo preview" no van en ramas que alguien pueda promover; mejor hacer un preview aparte.
+7. **Las automatizaciones despliegan aunque nadie mire:** el timer de despliegue automático mergeó la 2.0.0 de madrugada y nadie revisó los anuncios antes. Los cambios que tocan la publicidad se verifican en producción con el anuncio real, navegando.
+8. **"TRY OUR BANNER / AD UNITS" de Moneytizer no es un error:** es su anuncio de relleno cuando no hay anuncio pago para esa visita o esa IP. Con la VPN de casa (DNS en AdGuard) no se ve ningún anuncio. Para probar anuncios: celular con datos móviles, o desde un servidor fuera de casa.
+9. **El INP de una visita es su peor toque de toda la sesión** (las sesiones duran ~8 min y el anuncio rota cada ~10 s). Una prueba de 12 toques no lo reproduce; hacen falta datos reales por fase (pendiente 4) o un trace de varios minutos.
+10. **Rol no es scope:** "solo lectura" era el scope con el que se pedía el token, no el rol de la cuenta de servicio. Verificar el rol real (GA4 → Gestión de accesos) antes de decirle al dueño que algo no se puede.
+11. **Un efecto chico puede ser real aunque el método sea ruidoso:** la 2.0.3 cayó 5 de 5 veces en el escalón alto de PSI. Era ruido amplificado de un +0,1 s real en el LCP. Cruzar siempre con un método preciso antes de decir "no cambió nada".
+12. **Shell:** en zsh, `set -- $var` no separa palabras (usar arrays). `pkill -f '<patrón>'` mata también el propio comando si el patrón aparece en él (usar el PID).
+13. **Medir desde casa:** AdGuard bloquea los anuncios. Para ver la página como un usuario real, usar datos móviles o un servidor fuera de casa.
+
+## 7. Accesos y herramientas
+
+- **Credenciales:** en el gestor de contraseñas del dueño (cuenta de servicio de Google y clave de PageSpeed). Cómo pasarlas a los scripts: [`scripts/medicion/README.md`](../scripts/medicion/README.md). Los detalles operativos (servidores, cuenta de servicio, Telegram) están en las notas privadas `truqito-operacion.md`, fuera del repo.
+- **MCP `ga4` y `gsc`:** fallan al conectar (`CONNECTION_CLOSED`). Mientras tanto, los scripts de `scripts/medicion/` hacen lo mismo con la cuenta de servicio.
+- **Navegador:** `agent-browser`, una sola sesión con nombre propio. Recomendado instalar el MCP oficial `chrome-devtools-mcp` (`/plugin marketplace add ChromeDevTools/chrome-devtools-mcp` y `/plugin install chrome-devtools-mcp@chrome-devtools-plugins`, con `--no-usage-statistics --no-performance-crux`) para traces con análisis de DevTools.
+
+## Documentos
+
+| Documento | Qué tiene |
+|---|---|
+| `docs/HANDOFF.md` | Este: estado y cómo seguir |
+| `docs/documentacion-truqito.html` | Documento A4 de 11 páginas: design system, análisis SEO, migración, mediciones y usuarios reales. Se exporta a PDF con `chromium-browser --headless --no-pdf-header-footer --print-to-pdf=...` |
+| `docs/analisis-seo.md` | Análisis de Search Console, GA4 y velocidad del 23/10 (histórico) |
+| `docs/plan-migracion-astro.md` | Plan y decisiones de la migración (histórico; la decisión de "páginas separadas" quedó reemplazada por la 2.0.1) |
+| `docs/migracion-astro.md` | Brief original de la migración (histórico) |
+| `docs/mediciones/` | JSON de PageSpeed: CRA y 2.0.3 |
+| `scripts/medicion/README.md` | Cómo medir: laboratorio, Lighthouse en a1, GA4 y Search Console |
+| `CHANGELOG.md` | Todas las versiones |
