@@ -16,6 +16,14 @@
       "destination": "/guia-truco.html"
     },
     {
+      "source": "/resultado/nosotros",
+      "destination": "/resultado/nosotros.html"
+    },
+    {
+      "source": "/resultado/ellos",
+      "destination": "/resultado/ellos.html"
+    },
+    {
       "source": "/resultado/:winner",
       "destination": "/resultado.html"
     },

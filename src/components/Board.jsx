@@ -39,7 +39,8 @@ const Board = () => {
     setFinished(false);
   }, [maxPoints]);
 
-  // Ir a la página de resultado cuando termine la partida
+  // Ir a la página de resultado cuando termine la partida. Mientras carga, el tablero queda como está
+  // (sin toques): la página nueva ya viene renderizada y el navegador pasa de una a otra con un fundido.
   useEffect(() => {
     if (finished && winner) {
       window.location.assign(`/resultado/${winner.toLowerCase()}`);
@@ -53,34 +54,23 @@ const Board = () => {
 
   return (
     <div className="board">
-      {finished ? (
-        <div className="finished-message">
-          <h3>
-            <div className="winner">
-              <p>{winner === "NOSOTROS" ? `GANAMOS ${teamNames.NOSOTROS}` : `GANARON ${teamNames.ELLOS}`}</p>
-              {/* Imagen eliminada - se muestra solo en ResultPage */}
-            </div>
-          </h3>
-        </div>
-      ) : (
-        <>
-          <Analytics />
-          <Counter
-            title="NOSOTROS"
-            displayName={teamNames.NOSOTROS}
-            maxPoints={maxPoints}
-            cargada={cargada}
-            onWin={() => handleWin("NOSOTROS")}
-          />
-          <Counter
-            title="ELLOS"
-            displayName={teamNames.ELLOS}
-            maxPoints={maxPoints}
-            cargada={cargada}
-            onWin={() => handleWin("ELLOS")}
-          />
-        </>
-      )}
+      <Analytics />
+      <Counter
+        title="NOSOTROS"
+        displayName={teamNames.NOSOTROS}
+        maxPoints={maxPoints}
+        cargada={cargada}
+        finished={finished}
+        onWin={() => handleWin("NOSOTROS")}
+      />
+      <Counter
+        title="ELLOS"
+        displayName={teamNames.ELLOS}
+        maxPoints={maxPoints}
+        cargada={cargada}
+        finished={finished}
+        onWin={() => handleWin("ELLOS")}
+      />
     </div>
   );
 };

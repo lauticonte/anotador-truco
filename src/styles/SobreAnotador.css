@@ -83,3 +83,8 @@ html.partida-guardada .counter-points h1,
 html.partida-guardada .svg-canvas > g {
   visibility: hidden;
 }
+
+/* Lo mismo en el resultado: el mensaje del build usa los nombres por defecto. Ver resultado/[ganador].astro */
+html.nombres-guardados .finished-message .winner p {
+  visibility: hidden;
+}

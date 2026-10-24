@@ -186,6 +186,17 @@ describe("Counter: historial (VAR)", () => {
     expect(historial()).toHaveLength(1);
   });
 
+  it("al ir a otra página (pagehide) guarda puntos, etapa e historial pendientes", () => {
+    vi.useFakeTimers();
+    sinAviso();
+    renderContador();
+    tocar(16);
+    act(() => window.dispatchEvent(new Event("pagehide")));
+    expect(localStorage.getItem("points-NOSOTROS")).toBe("1");
+    expect(localStorage.getItem("stage-NOSOTROS")).toBe("Buenas");
+    expect(historial()).toHaveLength(16);
+  });
+
   it("agrega al historial existente sin pisarlo", () => {
     sinAviso();
     localStorage.setItem("history", JSON.stringify([{ action: "SUMA", team: "ELLOS" }]));

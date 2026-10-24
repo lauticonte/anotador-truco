@@ -1,0 +1,22 @@
+---
+// /resultado/nosotros y /resultado/ellos: salen renderizadas del build, así al terminar la partida la página
+// nueva ya tiene contenido en el primer dibujo (sin cuadro en blanco). Como en la versión CRA, llevan el head
+// de la home; además del header X-Robots-Tag, el noindex también está en el HTML.
+import Base from "../../layouts/Base.astro";
+import ResultPage from "../../components/ResultPage.jsx";
+import { HOME } from "../../data/sitio.js";
+
+export const getStaticPaths = () => [{ params: { ganador: "nosotros" } }, { params: { ganador: "ellos" } }];
+
+const ganador = Astro.params.ganador.toUpperCase();
+---
+
+<Base {...HOME} robots="noindex">
+  <script is:inline slot="head">
+    // Con nombres propios guardados, el mensaje del build (con los nombres por defecto) se oculta hasta cargarlos
+    try {
+      if (localStorage.getItem("teamNames")) document.documentElement.classList.add("nombres-guardados");
+    } catch (e) {}
+  </script>
+  <ResultPage client:tras-dibujo ganador={ganador} />
+</Base>

@@ -11,7 +11,7 @@ export const SITE_URL = "https://truco.contelautaro.com.ar";
 export const PAGINAS = {
   "/": { archivo: "index.html", contenido: "#contenido-seo" },
   "/guia-truco": { archivo: "guia-truco.html", contenido: "main" },
-  "/resultado/nosotros": { archivo: "resultado.html", contenido: "#contenido-seo" },
+  "/resultado/nosotros": { archivo: "resultado/nosotros.html", contenido: "#contenido-seo" },
 };
 
 const normalizar = (texto) => texto.replace(/\s+/g, " ").trim();

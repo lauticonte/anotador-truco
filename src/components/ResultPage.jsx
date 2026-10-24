@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useStore } from '@nanostores/react';
 import { useMontado } from '../hooks/useMontado.js';
-import { cargarPartida, resetGame, teamNames as teamNamesStore } from '../stores/partida.js';
+import { cargarPartida, partidaCargada, resetGame, teamNames as teamNamesStore } from '../stores/partida.js';
+
+// En el build no hay layout: useLayoutEffect solo avisa. En el navegador corre antes del dibujo.
+const useLayoutEffectEnNavegador = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
 async function enviarFeedback(feedback) {
   try {
@@ -27,22 +30,29 @@ async function enviarFeedback(feedback) {
   }
 }
 
-// Es una sola página para cualquier /resultado/:winner (rewrite de vercel.json): el ganador sale de la URL
+// /resultado/nosotros y /resultado/ellos salen renderizadas del build (ganador por prop). Cualquier otra
+// /resultado/:winner usa una página genérica (rewrite de vercel.json) y el ganador sale de la URL.
 const winnerFromUrl = () => decodeURIComponent(window.location.pathname.split('/')[2] || '');
 
-const ResultPage = () => {
+const ResultPage = ({ ganador }) => {
   const teamNames = useStore(teamNamesStore);
+  const cargada = useStore(partidaCargada);
   const [selectedPoints, setSelectedPoints] = useState(null);
-  // El ganador y los nombres solo se conocen en el navegador: en el build la página sale vacía (lleva noindex)
+  // Sin ganador por prop, el ganador solo se conoce en el navegador: en el build la página sale vacía
   const montado = useMontado();
 
   useEffect(() => {
     cargarPartida();
   }, []);
 
-  if (!montado) return null;
+  // Con los nombres ya cargados se muestra el mensaje (ver el script de nombres guardados en resultado/[ganador].astro)
+  useLayoutEffectEnNavegador(() => {
+    if (cargada) document.documentElement.classList.remove('nombres-guardados');
+  }, [cargada]);
 
-  const winner = winnerFromUrl();
+  if (!ganador && !montado) return null;
+
+  const winner = ganador ?? winnerFromUrl();
 
   const handleStartGame = () => {
     if (selectedPoints) {

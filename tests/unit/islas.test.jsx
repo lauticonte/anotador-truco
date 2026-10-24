@@ -65,14 +65,18 @@ describe("Board", () => {
     expect(screen.getByText("PIBES")).toBeInTheDocument();
   });
 
-  it("al ganar va a la página de resultado", () => {
+  it("al ganar va a la página de resultado y deja el tablero como está, sin aceptar más toques", () => {
     localStorage.setItem("maxPoints", "15");
     localStorage.setItem("points-ELLOS", "14");
     localStorage.setItem("stage-ELLOS", "a 15");
-    render(<Board />);
+    const { container } = render(<Board />);
     fireEvent.click(screen.getByRole("button", { name: "Sumar punto a ELLOS" }));
     expect(asignar).toHaveBeenCalledWith("/resultado/ellos");
-    expect(screen.getByText("GANARON ELLOS")).toBeInTheDocument();
+    // Sin pantalla intermedia: siguen los dos tableros (antes se veía "GANARON ELLOS" cruzado por la línea)
+    expect(container.querySelectorAll(".counter-points")).toHaveLength(2);
+    expect(container.querySelector(".finished-message")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Sumar punto a NOSOTROS" }));
+    expect(puntosDe(container, "nos")).toBe(0);
   });
 });
 
@@ -135,8 +139,24 @@ describe("Menu", () => {
 describe("ResultPage", () => {
   const enResultado = (ganador) => vi.stubGlobal("location", { ...window.location, assign: asignar, pathname: `/resultado/${ganador}` });
 
-  it("en el build sale vacía (el ganador está en la URL)", () => {
+  it("sin ganador por prop, en el build sale vacía (el ganador está en la URL)", () => {
     expect(renderToString(<ResultPage />)).toBe("");
+  });
+
+  it("con ganador por prop sale renderizada en el build con los nombres por defecto", () => {
+    localStorage.setItem("teamNames", JSON.stringify({ NOSOTROS: "PIBES", ELLOS: "TÍOS" }));
+    const html = renderToString(<ResultPage ganador="NOSOTROS" />);
+    expect(html).toContain("¡GANAMOS NOSOTROS!");
+    expect(html).toContain("/images/happy.webp");
+    expect(html).toContain("¿A cuánto la revancha?");
+  });
+
+  it("con ganador por prop muestra los nombres guardados al montar y saca la marca", () => {
+    document.documentElement.classList.add("nombres-guardados");
+    localStorage.setItem("teamNames", JSON.stringify({ NOSOTROS: "PIBES", ELLOS: "TÍOS" }));
+    render(<ResultPage ganador="ELLOS" />);
+    expect(screen.getByText("¡TÍOS HA GANADO!")).toBeInTheDocument();
+    expect(document.documentElement).not.toHaveClass("nombres-guardados");
   });
 
   it.each([

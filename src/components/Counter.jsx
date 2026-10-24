@@ -119,6 +119,8 @@ class Counter extends Component {
     window.addEventListener("beforeunload", this.flushHistoryBuffer);
     // Permitir a otros componentes forzar un flush inmediato del historial
     window.addEventListener("flushHistory", this.flushHistoryBuffer);
+    // Al ir a otra página (resultado, guía) se guarda lo pendiente: puntos, etapa e historial
+    window.addEventListener("pagehide", this.flushPending);
 
     if (this.props.cargada) this.restoreSavedGame();
 
@@ -177,15 +179,20 @@ class Counter extends Component {
     }
   }
   
-  componentWillUnmount() {
-    // Forzar escritura de cualquier cambio pendiente
+  // Forzar escritura de cualquier cambio pendiente
+  flushPending = () => {
     try {
       this.debouncedSavePoints.flush();
       this.debouncedSaveStage.flush();
       this.flushHistoryBuffer();
     } catch (_) {}
+  };
+
+  componentWillUnmount() {
+    this.flushPending();
     window.removeEventListener("beforeunload", this.flushHistoryBuffer);
     window.removeEventListener("flushHistory", this.flushHistoryBuffer);
+    window.removeEventListener("pagehide", this.flushPending);
     
     // Limpiar timer del tap hint
     if (this.showHintTimer) clearTimeout(this.showHintTimer);

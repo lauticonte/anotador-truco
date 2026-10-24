@@ -73,9 +73,31 @@ describe("home", () => {
     assert.equal(doc.querySelectorAll(".board .counter-title h2").map((h) => h.textContent).join("/"), "NOSOTROS/ELLOS");
   });
 
+  it("pasa de página con un fundido (view transitions), sin cambiar la publicidad", () => {
+    assert.ok(html("index.html").includes("@view-transition"));
+  });
+
   it("marca la partida guardada antes del primer dibujo", () => {
     const head = parse(html("index.html")).querySelector("head").toString();
     assert.ok(head.includes('classList.add("partida-guardada")'));
+  });
+});
+
+describe("resultado", () => {
+  for (const [archivo, mensaje, imagen] of [
+    ["resultado/nosotros.html", "¡GANAMOS NOSOTROS!", "happy.webp"],
+    ["resultado/ellos.html", "¡GANARON ELLOS!", "sadge.webp"],
+  ]) {
+    it(`${archivo} sale renderizado (sin cuadro en blanco al terminar la partida)`, () => {
+      const doc = parse(html(archivo));
+      assert.equal(doc.querySelector(".finished-message .winner p").textContent, mensaje);
+      assert.ok(doc.querySelector(`.winner img[src="/images/${imagen}"]`));
+      assert.equal(doc.querySelector('meta[name="robots"]').getAttribute("content"), "noindex");
+    });
+  }
+
+  it("resultado.html (cualquier otro /resultado/:winner) sigue existiendo con noindex", () => {
+    assert.equal(parse(html("resultado.html")).querySelector('meta[name="robots"]').getAttribute("content"), "noindex");
   });
 });
 
