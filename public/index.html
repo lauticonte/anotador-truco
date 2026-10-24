@@ -281,12 +281,15 @@
         };
     </script>
     <noscript><p style="margin: 0; padding: 0.5rem 1rem; color: #ecdbba; background: #2d4263; font-family: Outfit, system-ui, sans-serif; font-size: 0.85rem; text-align: center">Para usar el anotador necesitás activar JavaScript.</p></noscript>
+    <!-- Header fijo: React no lo reemplaza, solo dibuja el menú adentro (Header.js, con un portal).
+         El logo es el elemento LCP: así se dibuja apenas llega el HTML y no depende del JS. -->
+    <header id="app-header" class="header">
+      <div class="logo-container">
+        <img src="/images/main_logo.webp" alt="Truqito" class="logo" width="141" height="38" fetchpriority="high" />
+      </div>
+    </header>
     <div id="root">
       <!-- Contenido inicial: lo leen los buscadores sin ejecutar JavaScript. React lo reemplaza al cargar. -->
-      <!-- El logo va acá para que se dibuje sin esperar a React (es el elemento LCP de la home) -->
-      <div style="display: flex; justify-content: center; padding: 0.3em 0.5em 0.2em; background: #191919; border-bottom: 3px solid #ecdbba">
-        <img src="/images/main_logo.webp" alt="Truqito" width="141" height="38" fetchpriority="high" style="display: block; margin: 0.2em auto" />
-      </div>
       <main style="max-width: 640px; margin: 0 auto; padding: 2rem 1rem; color: #ecdbba; background: #191919; font-family: Outfit, system-ui, sans-serif; line-height: 1.5">
         <h1 style="font-size: 1.5rem; margin: 0 0 0.75rem">Anotador de Truco Argentino</h1>
         <p>Anotá los puntos de tu partida de truco desde el celular o la computadora, sin descargar nada ni registrarte.</p>

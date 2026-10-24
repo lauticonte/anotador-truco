@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.js";
 import { supabase } from "../config/supabaseClient.js";
@@ -34,13 +35,10 @@ const Header = React.memo(
       };
     }, []);
 
+    // El logo vive en el header fijo del HTML: acá solo se le aplica el desplazamiento
     useEffect(() => {
-      // Prioridad alta para la imagen
-      const logoImage = document.querySelector(".logo");
-      if (logoImage) {
-        logoImage.setAttribute("fetchpriority", "high");
-      }
-    }, []);
+      document.querySelector("#app-header .logo-container")?.classList.toggle("slide", logoSlide);
+    }, [logoSlide]);
 
     const toggleMenu = () => {
       setIsSidebarOpen(!isSidebarOpen);
@@ -75,21 +73,11 @@ const Header = React.memo(
       setIsProfileOpen(false); // Cerrar perfil después de cerrar sesión
     };
 
-    return (
-      <div className="header">
-        <div className={`logo-container ${logoSlide ? 'slide' : ''}`}>
-          <img
-            src="/images/main_logo.webp"
-            alt="Truqito"
-            className="logo"
-            width="141"
-            height="38"
-            decoding="async"
-            loading="eager"
-            fetchpriority="high"
-          />
-        </div>
+    // El header (con el logo) está fijo en public/index.html; el menú se dibuja adentro con un portal
+    const headerElement = document.getElementById("app-header");
 
+    return createPortal(
+      <>
         {showTooltip && (
           <div className={`menu-tooltip ${isSidebarOpen ? 'hide' : 'show'}`}>
             <img src="./images/var.svg" alt="VAR Icon" style={{ width: '30px', height: '20px', verticalAlign: 'top', marginRight: '1.25px' }}  /> REVISÁ 
@@ -181,7 +169,8 @@ const Header = React.memo(
             </div>
           </div>
         )}
-      </div>
+      </>,
+      headerElement
     );
   },
   (prevProps, nextProps) => {

@@ -18,6 +18,23 @@ body {
   padding: 0;
   background-color: #191919; /* Sin esto se ve blanco detrás de la app cuando el teclado achica la pantalla */
   overflow: hidden;
+  height: 100%;
+}
+
+/* Columna: header fijo del HTML (#app-header) arriba y la app de React ocupando el resto */
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#app-header {
+  flex-shrink: 0;
+}
+
+#root {
+  position: relative; /* .app se posiciona dentro de #root, debajo del header */
+  flex: 1;
+  min-height: 0;
 }
 
 main {
