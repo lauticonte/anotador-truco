@@ -6,6 +6,18 @@ import "../styles/Changelog.css";
 const Changelog = ({ isVisible, onClose }) => {
   const changelog = [
     {
+      version: "2.0.0",
+      date: "23/10/2026",
+      changes: [
+        "Truqito se renovó por dentro: carga mucho más rápido y el tablero aparece apenas abrís la página.",
+        "Al ganar, el último fósforo se prende antes de pasar al resultado.",
+        "Pasar del anotador a la guía o al resultado ahora es suave, sin cortes.",
+        "Tocá el © de abajo para ver de qué se trata el anotador.",
+        "Arreglo de las flechas del VAR y de la guía, que se veían con otra letra.",
+        "Arreglo: el último punto ya no se pierde si cambiás de pantalla justo después de sumar."
+      ]
+    },
+    {
       version: "1.5.0",
       date: "14/10/2026",
       changes: [
