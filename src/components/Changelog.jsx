@@ -6,6 +6,13 @@ import "../styles/Changelog.css";
 const Changelog = ({ isVisible, onClose }) => {
   const changelog = [
     {
+      version: "2.0.2",
+      date: "24/10/2026",
+      changes: [
+        "Arreglo: el anuncio de abajo ya no se duplica al cambiar de pantalla."
+      ]
+    },
+    {
       version: "2.0.1",
       date: "24/10/2026",
       changes: [
