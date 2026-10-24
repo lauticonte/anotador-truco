@@ -54,8 +54,19 @@ const AdComponent = ({ adId, type, siteId, formatId }) => {
       loadAdScripts();
     }, 100); // Retraso breve para sincronizar con el renderizado
 
+    // Moneytizer crea y rota sus iframes sin title: lectores de pantalla y Lighthouse los marcan
+    const titular = () => {
+      document.getElementById(adId)?.querySelectorAll("iframe:not([title])").forEach((iframe) => {
+        iframe.title = "Publicidad";
+      });
+    };
+    const contenedor = document.getElementById(adId);
+    const observador = contenedor ? new MutationObserver(titular) : null;
+    observador?.observe(contenedor, { childList: true, subtree: true });
+
     return () => {
       clearTimeout(timeout); // Limpiar el temporizador si el componente se desmonta
+      observador?.disconnect();
     };
   }, [adId, type, siteId, formatId]);
 
