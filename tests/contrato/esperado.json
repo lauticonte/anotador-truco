@@ -8,7 +8,7 @@
       "canonical": "https://truco.contelautaro.com.ar/",
       "robots": null,
       "openGraph": {
-        "og:image": "https://truco.contelautaro.com.ar/images/og.png",
+        "og:image": "https://truco.contelautaro.com.ar/images/og-truqito.png",
         "og:title": "Anotador de Truco Argentino online y gratis",
         "og:description": "Anotá los puntos del truco desde el celular, sin descargar nada: partidas a 15 o a 30, malas y buenas, con fósforos como en papel. Gratis.",
         "og:image:width": "1200",
@@ -22,7 +22,7 @@
         "twitter:site": "@lauticonte",
         "twitter:title": "Anotador de Truco Argentino online y gratis",
         "twitter:description": "Anotá los puntos del truco desde el celular, sin descargar nada: partidas a 15 o a 30, malas y buenas, con fósforos como en papel. Gratis.",
-        "twitter:image": "https://truco.contelautaro.com.ar/images/og.png"
+        "twitter:image": "https://truco.contelautaro.com.ar/images/og-truqito.png"
       },
       "jsonLd": [
         {
@@ -59,7 +59,7 @@
       "canonical": "https://truco.contelautaro.com.ar/guia-truco",
       "robots": null,
       "openGraph": {
-        "og:image": "https://truco.contelautaro.com.ar/images/og.png",
+        "og:image": "https://truco.contelautaro.com.ar/images/og-truqito.png",
         "og:title": "Valores del truco: tabla de cartas, envido y puntos | Truqito",
         "og:description": "Tabla de valores del truco argentino: el orden de las cartas de la más alta a la más baja, cómo se calcula el envido y cuántos puntos vale cada canto.",
         "og:image:width": "1200",
@@ -73,7 +73,7 @@
         "twitter:site": "@lauticonte",
         "twitter:title": "Valores del truco: tabla de cartas, envido y puntos | Truqito",
         "twitter:description": "Tabla de valores del truco argentino: el orden de las cartas de la más alta a la más baja, cómo se calcula el envido y cuántos puntos vale cada canto.",
-        "twitter:image": "https://truco.contelautaro.com.ar/images/og.png"
+        "twitter:image": "https://truco.contelautaro.com.ar/images/og-truqito.png"
       },
       "jsonLd": [
         {
@@ -149,7 +149,7 @@
       "canonical": "https://truco.contelautaro.com.ar/",
       "robots": null,
       "openGraph": {
-        "og:image": "https://truco.contelautaro.com.ar/images/og.png",
+        "og:image": "https://truco.contelautaro.com.ar/images/og-truqito.png",
         "og:title": "Anotador de Truco Argentino online y gratis",
         "og:description": "Anotá los puntos del truco desde el celular, sin descargar nada: partidas a 15 o a 30, malas y buenas, con fósforos como en papel. Gratis.",
         "og:image:width": "1200",
@@ -163,7 +163,7 @@
         "twitter:site": "@lauticonte",
         "twitter:title": "Anotador de Truco Argentino online y gratis",
         "twitter:description": "Anotá los puntos del truco desde el celular, sin descargar nada: partidas a 15 o a 30, malas y buenas, con fósforos como en papel. Gratis.",
-        "twitter:image": "https://truco.contelautaro.com.ar/images/og.png"
+        "twitter:image": "https://truco.contelautaro.com.ar/images/og-truqito.png"
       },
       "jsonLd": [
         {

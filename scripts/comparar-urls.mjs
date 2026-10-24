@@ -23,9 +23,17 @@ const esperadas = [
   // El texto SEO de la home y del resultado ya no está en el <main> sino en el <details> del footer:
   // se compara aparte, con el selector de cada versión
   (ruta, campo) => contenidoDe(ruta) === "#contenido-seo" && ["h1", "h2", "enlaces", "textoPrincipal"].includes(campo),
+  // OG nuevo con otro nombre (/images/* es immutable: con el mismo nombre se vería la imagen vieja)
+  (ruta, campo, a, b) => ["openGraph", "twitter"].includes(campo) && soloCambiaLaImagen(a, b),
   // Vercel agrega X-Robots-Tag: noindex a todos los deploys que no son de producción
   (ruta, campo, a, b) => esPreview && campo === "x-robots-tag" && a === null && b === "noindex",
 ];
+
+function soloCambiaLaImagen(a, b) {
+  const sinImagen = (meta) => JSON.stringify({ ...meta, "og:image": null, "twitter:image": null });
+  const imagen = (meta) => meta?.["og:image"] ?? meta?.["twitter:image"];
+  return sinImagen(a) === sinImagen(b) && imagen(a)?.endsWith("/images/og.png") && imagen(b)?.endsWith("/images/og-truqito.png");
+}
 
 // Todas las URLs de /resultado/* son la misma página que /resultado/nosotros
 const contenidoDe = (ruta) => (ruta.startsWith("/resultado/") ? "#contenido-seo" : PAGINAS[ruta]?.contenido);
