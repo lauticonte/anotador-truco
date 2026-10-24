@@ -4,11 +4,14 @@ import { parse } from "node-html-parser";
 
 export const SITE_URL = "https://truco.contelautaro.com.ar";
 
-// Páginas HTML del contrato: ruta pública → archivo que genera el build de Astro
+// Páginas HTML del contrato: ruta pública → archivo que genera el build de Astro y dónde está su texto.
+// En la versión CRA el texto estaba en el primer <main>. En la de Astro, el de la home (y el del resultado,
+// que comparte el HTML de la home) vive en el <details> "Sobre el anotador" (#contenido-seo), porque el
+// <main> tiene el tablero.
 export const PAGINAS = {
-  "/": "index.html",
-  "/guia-truco": "guia-truco.html",
-  "/resultado/nosotros": "resultado.html",
+  "/": { archivo: "index.html", contenido: "#contenido-seo" },
+  "/guia-truco": { archivo: "guia-truco.html", contenido: "main" },
+  "/resultado/nosotros": { archivo: "resultado.html", contenido: "#contenido-seo" },
 };
 
 const normalizar = (texto) => texto.replace(/\s+/g, " ").trim();
@@ -20,7 +23,7 @@ const textoVisible = (nodo) => {
   return normalizar(copia.textContent);
 };
 
-export const extraerContrato = (html) => {
+export const extraerContrato = (html, selectorContenido = "main") => {
   const doc = parse(html, { comment: false });
   const head = doc.querySelector("head");
   const meta = (selector) => head?.querySelector(selector)?.getAttribute("content") ?? null;
@@ -31,8 +34,8 @@ export const extraerContrato = (html) => {
         .map((el) => [el.getAttribute(atributo), el.getAttribute("content")])
     );
 
-  // El contenido principal es el primer <main>: el bloque SEO en la home y la guía en /guia-truco
-  const main = doc.querySelector("main");
+  // El contenido principal: el bloque SEO en la home y la guía en /guia-truco
+  const main = doc.querySelector(selectorContenido);
 
   return {
     title: normalizar(head?.querySelector("title")?.textContent ?? ""),

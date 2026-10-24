@@ -22,7 +22,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:contrato": "node --test tests/contrato/*.test.mjs"
   },
   "eslintConfig": {
     "extends": [

@@ -8,7 +8,8 @@ export default defineConfig({
   site: "https://truco.contelautaro.com.ar",
   output: "static",
   // guia-truco.html y no guia-truco/index.html: así /guia-truco no redirige y vercel.json no cambia
-  build: { format: "file" },
+  // inlineStylesheets: el CSS va dentro del HTML, sin una hoja aparte que bloquee el primer dibujo
+  build: { format: "file", inlineStylesheets: "always" },
   trailingSlash: "never",
   integrations: [react(), directivas()],
 });
