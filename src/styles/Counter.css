@@ -223,8 +223,8 @@
   opacity: 0.75;
 }
 
-/* Fósforo que gana la partida: se coloca de la cola a la cabeza, la cabeza se prende y el número late.
-   Board espera a que termine (DURACION_FINAL en Board.jsx) antes de pasar al resultado. */
+/* Fósforo que gana la partida: se coloca, se enciende con un chispazo y arde con una llama que titila
+   mientras la cabeza se quema. Board espera a que se vea (DURACION_FINAL en Board.jsx) y pasa al resultado. */
 .match-place.match-ganador {
   transform-origin: left center;
   animation: matchGanador 0.35s cubic-bezier(0.2, 0.8, 0.3, 1) both;
@@ -234,7 +234,7 @@
   transform-origin: center;
   animation:
     matchGanador 0.35s cubic-bezier(0.2, 0.8, 0.3, 1) both,
-    matchEncendido 0.6s ease-out 0.3s both;
+    cabezaQuemada 1.1s ease-out 0.3s both;
 }
 
 @keyframes matchGanador {
@@ -248,10 +248,102 @@
   }
 }
 
-@keyframes matchEncendido {
+/* La cabeza se prende (brilla) y se va carbonizando */
+@keyframes cabezaQuemada {
   0% { filter: none; }
-  35% { filter: drop-shadow(0 0 4px #ffe08a) drop-shadow(0 0 10px #ff8a3d) brightness(1.5); }
-  100% { filter: drop-shadow(0 0 3px rgba(255, 170, 80, 0.7)); }
+  15% { filter: brightness(1.8) saturate(1.3); }
+  100% { filter: brightness(0.45) saturate(0.5); }
+}
+
+.llama circle,
+.llama-cuerpo,
+.llama-exterior,
+.llama-interior {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Luz: se suma al fondo en vez de taparlo */
+.llama-halo,
+.llama-destello {
+  mix-blend-mode: screen;
+}
+
+/* Chispazo del encendido */
+.llama-destello {
+  opacity: 0;
+  animation: llamaDestello 0.35s ease-out 0.3s both;
+}
+
+@keyframes llamaDestello {
+  0% { opacity: 1; transform: scale(0.2); }
+  100% { opacity: 0; transform: scale(2.6); }
+}
+
+/* Luz cálida alrededor de la llama */
+.llama-halo {
+  animation:
+    llamaHaloEntrada 0.4s ease-out 0.3s both,
+    llamaHaloLatido 0.9s ease-in-out 0.7s infinite alternate;
+}
+
+@keyframes llamaHaloEntrada {
+  0% { opacity: 0; transform: scale(0.3); }
+  60% { opacity: 1; transform: scale(1.35); }
+  100% { opacity: 0.85; transform: scale(1); }
+}
+
+@keyframes llamaHaloLatido {
+  0% { opacity: 0.7; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1.12); }
+}
+
+/* La llama nace en la cabeza y crece hacia arriba */
+.llama-cuerpo {
+  transform-origin: 50% 88%;
+  animation: llamaCrece 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) 0.32s both;
+}
+
+@keyframes llamaCrece {
+  0% { opacity: 0; transform: scale(0.3, 0); }
+  60% { opacity: 1; transform: scale(1.1, 1.18); }
+  100% { opacity: 1; transform: scale(1, 1); }
+}
+
+/* Titileo: cada capa con su propio ritmo irregular, así no se nota el loop */
+.llama-exterior {
+  transform-origin: 50% 90%;
+  animation: llamaTitilaExterior 0.72s ease-in-out 0.7s infinite;
+}
+
+.llama-interior {
+  transform-origin: 50% 90%;
+  animation: llamaTitilaInterior 0.47s ease-in-out 0.7s infinite;
+}
+
+@keyframes llamaTitilaExterior {
+  0%, 100% { transform: scale(1, 1) skewX(0deg); }
+  20% { transform: scale(0.94, 1.08) skewX(-5deg); }
+  45% { transform: scale(1.04, 0.93) skewX(3deg); }
+  70% { transform: scale(0.97, 1.1) skewX(-2deg); }
+  85% { transform: scale(1.02, 0.97) skewX(4deg); }
+}
+
+@keyframes llamaTitilaInterior {
+  0%, 100% { transform: scale(1, 1) skewX(0deg); opacity: 1; }
+  30% { transform: scale(0.92, 1.12) skewX(4deg); opacity: 0.9; }
+  60% { transform: scale(1.05, 0.9) skewX(-3deg); opacity: 1; }
+}
+
+/* Chispas que saltan al encenderse */
+.llama-chispa {
+  opacity: 0;
+  animation: llamaChispa 0.55s ease-out 0.3s both;
+}
+
+@keyframes llamaChispa {
+  0% { opacity: 1; transform: rotate(var(--angulo)) translateX(0) scale(1); }
+  100% { opacity: 0; transform: rotate(var(--angulo)) translateX(var(--distancia)) scale(0.4); }
 }
 
 .counter-points h1.puntos-ganador {
@@ -270,8 +362,16 @@
   .tap-ripple,
   .match-place.match-ganador,
   .match-place.match-ganador-cabeza,
-  .counter-points h1.puntos-ganador {
+  .counter-points h1.puntos-ganador,
+  .llama *,
+  .llama-cuerpo {
     animation: none;
+  }
+
+  /* Sin movimiento: la llama aparece quieta, sin chispazo ni chispas */
+  .llama-destello,
+  .llama-chispa {
+    display: none;
   }
 
   .match-ghost {

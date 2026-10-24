@@ -76,7 +76,7 @@ describe("Board", () => {
     expect(puntosDe(container, "ellos")).toBe(15);
     expect(document.head.querySelector('link[rel="prefetch"][href="/resultado/ellos"]')).not.toBeNull();
     expect(asignar).not.toHaveBeenCalled();
-    act(() => vi.advanceTimersByTime(950));
+    act(() => vi.advanceTimersByTime(1400));
     expect(asignar).toHaveBeenCalledWith("/resultado/ellos");
     // Sin pantalla intermedia: siguen los dos tableros (antes se veía "GANARON ELLOS" cruzado por la línea)
     expect(container.querySelectorAll(".counter-points")).toHaveLength(2);

@@ -4,8 +4,8 @@ import Counter from "./Counter.jsx";
 import { Analytics } from "@vercel/analytics/react";
 import { cargarPartida, maxPoints as maxPointsStore, partidaCargada, teamNames as teamNamesStore } from "../stores/partida.js";
 
-// Cuánto se ve el fósforo ganador antes de pasar al resultado (las animaciones de Counter.css duran 0,9 s)
-const DURACION_FINAL = 950;
+// Cuánto se ve el fósforo ganador antes de pasar al resultado (chispazo y llama de Counter.css)
+const DURACION_FINAL = 1400;
 const DURACION_FINAL_SIN_ANIMACION = 300;
 
 // En el build no hay layout: useLayoutEffect solo avisa. En el navegador corre antes del dibujo.

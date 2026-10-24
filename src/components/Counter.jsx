@@ -374,6 +374,66 @@ class Counter extends Component {
     );
   };
 
+  // Centro de la cabeza del fósforo i, en coordenadas del tablero (la cabeza está cerca del final del palito)
+  headPosition = (i) => {
+    const match = this.mask[i % 5];
+    const box = Math.floor(i / 5);
+    const tx = match.x + this.offsetX;
+    const ty = match.y + this.offsetY + box * (this.offsetY + this.lineLength + this.stackSpacing);
+    const length = match.diagonal ? this.diagonalLength : this.matchLength;
+    const angle = (match.angle * Math.PI) / 180;
+    return { x: tx + (length - 7) * Math.cos(angle), y: ty + (length - 7) * Math.sin(angle) };
+  };
+
+  // Llama del fósforo que gana: chispazo, halo, llama en tres capas que titila y chispas.
+  // Siempre apunta hacia arriba (sin la rotación del fósforo). Las animaciones están en Counter.css.
+  renderFlame = () => {
+    const { x, y } = this.headPosition(this.state.points);
+    const id = this.props.title;
+    return (
+      <g className="llama" transform={`translate(${x} ${y}) scale(1.5)`} pointerEvents="none">
+        <defs>
+          <radialGradient id={`llama-halo-${id}`}>
+            <stop offset="0" stopColor="#FFD27A" stopOpacity="0.75" />
+            <stop offset="0.45" stopColor="#FF8A3D" stopOpacity="0.3" />
+            <stop offset="1" stopColor="#FF6A00" stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id={`llama-destello-${id}`}>
+            <stop offset="0" stopColor="#FFFFFF" />
+            <stop offset="0.35" stopColor="#FFE9A8" stopOpacity="0.9" />
+            <stop offset="1" stopColor="#FF9A3D" stopOpacity="0" />
+          </radialGradient>
+          <linearGradient id={`llama-ext-${id}`} x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stopColor="#FF7A1A" />
+            <stop offset="0.55" stopColor="#F2451C" />
+            <stop offset="1" stopColor="#C2200F" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id={`llama-int-${id}`} x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0" stopColor="#FFFBEA" />
+            <stop offset="0.4" stopColor="#FFE27A" />
+            <stop offset="1" stopColor="#FFB433" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <circle className="llama-halo" cy="-6" r="18" fill={`url(#llama-halo-${id})`} />
+        <circle className="llama-destello" r="9" fill={`url(#llama-destello-${id})`} />
+        <g className="llama-cuerpo">
+          <path className="llama-exterior" d="M0 3 C-6.5 0 -6 -8 -1 -15 C0 -18 0.5 -21 0 -25 C3 -20 6.5 -12 6 -5 C5.6 0 3 3 0 3 Z" fill={`url(#llama-ext-${id})`} />
+          <path className="llama-interior" d="M0 2.5 C-3.6 1 -3.4 -4.5 -0.6 -9 C0 -11 0.3 -13 0 -15 C2 -11.5 3.8 -7 3.5 -3 C3.3 0.4 1.8 2.5 0 2.5 Z" fill={`url(#llama-int-${id})`} />
+          <ellipse className="llama-base" cx="0.3" cy="1.2" rx="2.2" ry="1.6" fill="#7FB2FF" opacity="0.75" />
+        </g>
+        {[-60, -25, 10, 35, 70].map((angulo, i) => (
+          <circle
+            key={angulo}
+            className="llama-chispa"
+            r={i % 2 ? 0.8 : 1.1}
+            fill="#FFD27A"
+            style={{ "--angulo": `${angulo - 90}deg`, "--distancia": `${10 + (i % 3) * 3}px` }}
+          />
+        ))}
+      </g>
+    );
+  };
+
   matchTransform = ({ x, y, angle }, box) => {
     const tx = x + this.offsetX;
     const ty =
@@ -492,6 +552,7 @@ class Counter extends Component {
             {this.renderMatchDefs()}
             {this.renderLines()}
             {this.state.showTapHint && this.renderTapHint()}
+            {this.state.winning && this.renderFlame()}
           </svg>
         </div>
         <div className="counter-buttons-container">

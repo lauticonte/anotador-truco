@@ -91,6 +91,9 @@ describe("Counter: partida a 30 (malas y buenas)", () => {
     expect([puntos(container), etapa(container)]).toEqual([15, "Buenas"]);
     expect(fosforos(container)).toBe(15);
     expect(container.querySelectorAll(".match-ganador")).toHaveLength(2);
+    // La llama sale de la cabeza del fósforo ganador y apunta hacia arriba (sin rotación)
+    expect(container.querySelector(".llama")).toHaveAttribute("transform", expect.stringMatching(/^translate\([\d.]+ [\d.]+\) scale\(1\.5\)$/));
+    expect(container.querySelectorAll(".llama-chispa")).toHaveLength(5);
     act(() => window.dispatchEvent(new Event("pagehide")));
     expect(localStorage.getItem("points-NOSOTROS")).toBe("14");
   });
