@@ -1,0 +1,113 @@
+{
+  "fecha": "2026-10-24T00:57:00.852Z",
+  "resultados": {
+    "https://truco.contelautaro.com.ar/": {
+      "mediana": {
+        "performance": 90,
+        "lcp": 3221.702748897936,
+        "fcp": 759.6991119957618,
+        "tbt": 125,
+        "cls": 0.007400869441851169,
+        "si": 5254.574110735923,
+        "bytes": 1814483
+      },
+      "lcpElementos": [
+        "(sin elemento: no se pintó)",
+        "body > header#app-header > div.logo-container > img.logo <img src=\"/images/main_logo.webp\" alt=\"Truqito\" class=\"logo\" width=\"141\" height=\"38\" fetchpriority=\"high\">"
+      ],
+      "campo": {
+        "lcp": 4701,
+        "inp": 312,
+        "cls": 0.01,
+        "fcp": 2442,
+        "ttfb": 721
+      },
+      "corridas": [
+        {
+          "performance": 90,
+          "lcp": 3221.702748897936,
+          "fcp": 759.6991119957618,
+          "tbt": 115.5,
+          "cls": 0.007400869441851169,
+          "si": 4297.967363646428,
+          "bytes": 1814483,
+          "lcpElemento": "(sin elemento: no se pintó)"
+        },
+        {
+          "performance": 91,
+          "lcp": 2622.702417669207,
+          "fcp": 756.6990921439051,
+          "tbt": 125,
+          "cls": 0.007400869441851169,
+          "si": 5360.252519680296,
+          "bytes": 1792055,
+          "lcpElemento": "(sin elemento: no se pintó)"
+        },
+        {
+          "performance": 67,
+          "lcp": 5279.772043612431,
+          "fcp": 1367.3963695979705,
+          "tbt": 367.00000000000273,
+          "cls": 0.007400869441851169,
+          "si": 5254.574110735923,
+          "bytes": 2032766,
+          "lcpElemento": "body > header#app-header > div.logo-container > img.logo <img src=\"/images/main_logo.webp\" alt=\"Truqito\" class=\"logo\" width=\"141\" height=\"38\" fetchpriority=\"high\">"
+        }
+      ]
+    },
+    "https://truco.contelautaro.com.ar/guia-truco": {
+      "mediana": {
+        "performance": 59,
+        "lcp": 5563.3031324434105,
+        "fcp": 1363.5763725249385,
+        "tbt": 895.5000000000018,
+        "cls": 0.18548271740642963,
+        "si": 3227.473709766856,
+        "bytes": 1943908
+      },
+      "lcpElementos": [
+        "div.guia > div.guia-panels > section#panel-cartas > p <p>",
+        "(sin elemento: no se pintó)"
+      ],
+      "campo": {
+        "lcp": 2778,
+        "inp": 295,
+        "cls": 0.25,
+        "fcp": 2163,
+        "ttfb": 611
+      },
+      "corridas": [
+        {
+          "performance": 65,
+          "lcp": 5619.277941382171,
+          "fcp": 1363.5763725249385,
+          "tbt": 201.5,
+          "cls": 0.18548271740642963,
+          "si": 3909.8515368274757,
+          "bytes": 1463173,
+          "lcpElemento": "div.guia > div.guia-panels > section#panel-cartas > p <p>"
+        },
+        {
+          "performance": 48,
+          "lcp": 5563.3031324434105,
+          "fcp": 1380.2973520981695,
+          "tbt": 1026.5000000000018,
+          "cls": 0.18548271740642963,
+          "si": 3227.473709766856,
+          "bytes": 1943908,
+          "lcpElemento": "div.guia > div.guia-panels > section#panel-cartas > p <p>"
+        },
+        {
+          "performance": 59,
+          "lcp": 3862.703232684732,
+          "fcp": 758.6988651963163,
+          "tbt": 895.5000000000018,
+          "cls": 0.18548271740642963,
+          "si": 1893.5890052483064,
+          "bytes": 2000045,
+          "lcpElemento": "(sin elemento: no se pintó)"
+        }
+      ]
+    }
+  }
+}

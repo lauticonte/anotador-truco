@@ -1,0 +1,111 @@
+{
+  "fecha": "2026-10-24T19:10:40.040Z",
+  "resultados": {
+    "https://truco.contelautaro.com.ar/": {
+      "mediana": {
+        "performance": 47,
+        "lcp": 8773.258555243488,
+        "fcp": 2290.5416962037198,
+        "tbt": 948.0000000000036,
+        "cls": 0.007381936990738621,
+        "si": 6901.353391642012,
+        "bytes": 2206167
+      },
+      "lcpElementos": [
+        "body > header#app-header > div.logo-container > img.logo <img src=\"/images/main_logo.webp\" alt=\"Truqito\" class=\"logo\" width=\"141\" height=\"38\" fetchpriority=\"high\" data-astro-cid-hkbrpulz=\"\">"
+      ],
+      "campo": {
+        "lcp": 4621,
+        "inp": 316,
+        "cls": 0.01,
+        "fcp": 2425,
+        "ttfb": 722
+      },
+      "corridas": [
+        {
+          "performance": 39,
+          "lcp": 8800.983640047958,
+          "fcp": 2369.584388476732,
+          "tbt": 1799,
+          "cls": 0.007381936990738621,
+          "si": 7070.686583982377,
+          "bytes": 2206167,
+          "lcpElemento": "body > header#app-header > div.logo-container > img.logo <img src=\"/images/main_logo.webp\" alt=\"Truqito\" class=\"logo\" width=\"141\" height=\"38\" fetchpriority=\"high\" data-astro-cid-hkbrpulz=\"\">"
+        },
+        {
+          "performance": 47,
+          "lcp": 8773.258555243488,
+          "fcp": 2290.5416962037198,
+          "tbt": 801.9999999999973,
+          "cls": 0.007381936990738621,
+          "si": 6901.353391642012,
+          "bytes": 2056301,
+          "lcpElemento": "body > header#app-header > div.logo-container > img.logo <img src=\"/images/main_logo.webp\" alt=\"Truqito\" class=\"logo\" width=\"141\" height=\"38\" fetchpriority=\"high\" data-astro-cid-hkbrpulz=\"\">"
+        },
+        {
+          "performance": 71,
+          "lcp": 3233.040025710893,
+          "fcp": 1077.0471475708703,
+          "tbt": 948.0000000000036,
+          "cls": 0.007381936990738621,
+          "si": 2879.9090066198823,
+          "bytes": 2218254,
+          "lcpElemento": "body > header#app-header > div.logo-container > img.logo <img src=\"/images/main_logo.webp\" alt=\"Truqito\" class=\"logo\" width=\"141\" height=\"38\" fetchpriority=\"high\" data-astro-cid-hkbrpulz=\"\">"
+        }
+      ]
+    },
+    "https://truco.contelautaro.com.ar/guia-truco": {
+      "mediana": {
+        "performance": 52,
+        "lcp": 7374.457357403498,
+        "fcp": 2297.0403856136645,
+        "tbt": 810.9999999999991,
+        "cls": 0.007381936990738621,
+        "si": 4441.179352395371,
+        "bytes": 1797785
+      },
+      "lcpElementos": [
+        "div.guia > div.guia-panels > section#panel-cartas > p <p>"
+      ],
+      "campo": {
+        "lcp": 2810,
+        "inp": 294,
+        "cls": 0.25,
+        "fcp": 2171,
+        "ttfb": 611
+      },
+      "corridas": [
+        {
+          "performance": 52,
+          "lcp": 7374.457357403498,
+          "fcp": 2297.0403856136645,
+          "tbt": 810.9999999999991,
+          "cls": 0.007381936990738621,
+          "si": 4441.179352395371,
+          "bytes": 1797785,
+          "lcpElemento": "div.guia > div.guia-panels > section#panel-cartas > p <p>"
+        },
+        {
+          "performance": 52,
+          "lcp": 7374.457357403498,
+          "fcp": 2297.0403856136645,
+          "tbt": 810.9999999999991,
+          "cls": 0.007381936990738621,
+          "si": 4441.179352395371,
+          "bytes": 1797785,
+          "lcpElemento": "div.guia > div.guia-panels > section#panel-cartas > p <p>"
+        },
+        {
+          "performance": 52,
+          "lcp": 7374.457357403498,
+          "fcp": 2297.0403856136645,
+          "tbt": 810.9999999999991,
+          "cls": 0.007381936990738621,
+          "si": 4441.179352395371,
+          "bytes": 1797785,
+          "lcpElemento": "div.guia > div.guia-panels > section#panel-cartas > p <p>"
+        }
+      ]
+    }
+  }
+}

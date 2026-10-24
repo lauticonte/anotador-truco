@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Truqito · Documentación</title>
+<link rel="icon" href="../public/favicon/favicon.ico">
+<link rel="apple-touch-icon" href="../public/favicon/apple-touch-icon.png">
+<meta name="description" content="Design system de Truqito, análisis de Search Console y GA4, y migración de CRA a Astro + React (v2.0.0).">
+<style>
+  /* Fuentes del propio sitio: este archivo vive en docs/, las fuentes en public/fonts/ */
+  @font-face { font-family: "Outfit"; src: url("../public/fonts/outfit-latin.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: "Magnifika"; src: url("../public/fonts/Magnifika.woff2") format("woff2"); font-display: swap; }
+  @font-face { font-family: "MBF"; src: url("../public/fonts/MBF-m.woff2") format("woff2"); font-display: swap; }
+
+  :root {
+    /* Paleta de Truqito (src/styles/*.css) */
+    --carbon: #191919;
+    --carbon-2: #2a2a2a;
+    --crema: #ecdbba;
+    --marino: #2d4263;
+    --tinta: #042d4f;
+    --malas: #c84b31;
+    --malas-osc: #a33e28;
+    --correccion: #e0745c;
+    --buenas: #4287f5;
+    --modo15: #6a9f58;
+
+    /* Papel del documento */
+    --papel: #fbf6ea;
+    --papel-2: #f3e8d0;
+    --linea: #dfcfae;
+    --texto: #191919;
+    --texto-2: #5b544a;
+    --ok: #3f7d35;
+    --warn: #b7791f;
+    --bad: #c84b31;
+  }
+
+  @page { size: A4 portrait; margin: 0; }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #8a857c;
+    font-family: "Outfit", system-ui, sans-serif;
+    color: var(--texto);
+    font-size: 9.6pt;
+    line-height: 1.42;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    counter-reset: pagina;
+  }
+
+  .page {
+    position: relative;
+    width: 210mm;
+    height: 297mm;
+    margin: 10mm auto;
+    padding: 22mm 16mm 18mm;
+    background: var(--papel);
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,.35);
+    counter-increment: pagina;
+    break-after: page;
+  }
+  .page:last-child { break-after: auto; }
+
+  @media print {
+    body { background: none; }
+    .page { margin: 0; box-shadow: none; }
+  }
+  @media screen and (max-width: 220mm) {
+    .page { margin: 0 auto 4mm; }
+  }
+
+  /* Encabezado y pie de cada página */
+  /* Franja superior igual al header de la app: carbón, logo crema y borde de 3 px */
+  .run-head {
+    position: absolute; top: 0; left: 0; right: 0; height: 13mm;
+    padding: 0 16mm; background: var(--carbon); border-bottom: 3px solid var(--crema);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 7.5pt; letter-spacing: .08em; text-transform: uppercase; color: rgba(236,219,186,.7);
+  }
+  .run-head img { height: 7.5mm; width: auto; display: block; }
+  .run-head .meta { display: flex; gap: 4mm; align-items: center; }
+  .run-head .sec { color: var(--crema); font-weight: 700; }
+  .run-foot {
+    position: absolute; bottom: 8mm; left: 16mm; right: 16mm;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 7.5pt; color: var(--texto-2);
+    border-top: 1px solid var(--linea); padding-top: 2mm;
+  }
+  .run-foot .conte { font-family: "MBF", sans-serif; font-size: 11pt; line-height: 1; color: var(--texto); text-decoration: none; }
+  .cover .run-foot .conte { color: var(--crema); }
+  .run-foot .der { display: flex; align-items: center; gap: 4mm; }
+  .run-foot .num::after { content: counter(pagina); font-weight: 700; color: var(--texto); }
+
+  h1, h2, h3, h4 { margin: 0; line-height: 1.15; }
+  h2 {
+    font-size: 19pt; font-weight: 800; letter-spacing: -.01em; color: var(--carbon);
+    margin-bottom: 1.5mm;
+  }
+  h2 + .lead { margin-top: 0; }
+  h3 {
+    font-size: 11.5pt; font-weight: 700; color: var(--marino);
+    margin: 5.5mm 0 2mm;
+    display: flex; align-items: center; gap: 2mm;
+  }
+  h3::before { content: ""; width: 3mm; height: 3mm; border-radius: 50%; background: var(--malas); flex-shrink: 0; }
+  h4 { font-size: 9.6pt; font-weight: 700; margin: 0 0 1mm; }
+  p { margin: 0 0 2mm; }
+  .lead { font-size: 10.5pt; color: var(--texto-2); margin-bottom: 3mm; max-width: 160mm; }
+  .kicker {
+    font-size: 7.5pt; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--malas);
+    margin-bottom: 1mm;
+  }
+  code {
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    font-size: .86em; background: var(--papel-2); padding: .1em .35em; border-radius: 3px;
+  }
+  strong { font-weight: 700; }
+  ul { margin: 0 0 2mm; padding-left: 4.5mm; }
+  li { margin-bottom: .8mm; }
+  li::marker { color: var(--malas); }
+
+  .tabular { font-variant-numeric: tabular-nums; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 8.6pt; margin-bottom: 2mm; }
+  th {
+    text-align: left; font-weight: 700; font-size: 7.4pt; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--crema); background: var(--marino); padding: 1.6mm 2mm;
+  }
+  th:first-child { border-radius: 4px 0 0 0; }
+  th:last-child { border-radius: 0 4px 0 0; }
+  td { padding: 1.4mm 2mm; border-bottom: 1px solid var(--linea); vertical-align: top; font-variant-numeric: tabular-nums; }
+  tr:nth-child(even) td { background: rgba(236,219,186,.28); }
+  td.n, th.n { text-align: right; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+
+  /* Etiquetas de estado */
+  .b { display: inline-block; font-size: 7.2pt; font-weight: 700; padding: .3mm 1.8mm; border-radius: 999px; letter-spacing: .03em; white-space: nowrap; }
+  .b-ok { background: #dcebd5; color: var(--ok); }
+  .b-warn { background: #f6e5c5; color: #8a5a10; }
+  .b-bad { background: #f5d4cb; color: #9c2f18; }
+  .b-info { background: #d7e3f6; color: #234a8a; }
+  .b-mute { background: var(--papel-2); color: var(--texto-2); }
+
+  /* Cifras clave */
+  .stat {
+    background: #fff; border: 1px solid var(--linea); border-radius: 10px; padding: 3mm 3.5mm;
+  }
+  .stat .v { font-size: 20pt; font-weight: 800; line-height: 1; color: var(--carbon); font-variant-numeric: tabular-nums; }
+  .stat .v small { font-size: 10pt; font-weight: 600; color: var(--texto-2); }
+  .stat .l { font-size: 8pt; color: var(--texto-2); margin-top: 1.2mm; line-height: 1.3; }
+  .stat.alerta { border-color: var(--malas); border-width: 1.5px; }
+  .stat.alerta .v { color: var(--malas); }
+
+  .callout {
+    background: var(--carbon); color: var(--crema); border-radius: 10px; padding: 3.5mm 4.5mm; margin: 3mm 0;
+    font-size: 9.4pt;
+  }
+  .callout strong { color: #fff; }
+  .callout code { background: rgba(236,219,186,.15); color: var(--crema); }
+  .callout .kicker { color: var(--correccion); }
+  .nota {
+    border-left: 3px solid var(--marino); background: rgba(45,66,99,.07); padding: 2mm 3.5mm; border-radius: 0 6px 6px 0;
+    font-size: 8.6pt; color: var(--texto-2); margin: 2mm 0;
+  }
+
+  /* ---------- Portada ---------- */
+  .cover { background: var(--carbon); color: var(--crema); padding: 0; }
+  .cover-top {
+    border-bottom: 3px solid var(--crema); padding: 9mm 16mm 6mm; display: flex; justify-content: space-between; align-items: center;
+  }
+  .cover-top img { height: 13mm; width: auto; display: block; }
+  .cover-top .meta { text-align: right; font-size: 8pt; letter-spacing: .1em; text-transform: uppercase; opacity: .7; }
+  .cover-body { padding: 26mm 16mm 0; }
+  .cover h1 {
+    font-family: "Outfit", sans-serif; font-weight: 800; font-size: 44pt; line-height: 1; letter-spacing: -.02em;
+    margin: 4mm 0 6mm;
+  }
+  .cover .kicker { color: var(--correccion); font-size: 9pt; }
+  .cover .sub { font-size: 13pt; line-height: 1.45; max-width: 140mm; opacity: .85; }
+  .cover-art { position: absolute; right: 16mm; top: 112mm; width: 62mm; }
+  .toc {
+    position: absolute; left: 16mm; right: 16mm; bottom: 26mm;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm;
+  }
+  .toc > div {
+    border: 1.5px solid rgba(236,219,186,.35); border-radius: 12px; padding: 4mm;
+  }
+  .toc .n { font-family: "Outfit", sans-serif; font-weight: 800; font-size: 20pt; color: var(--correccion); line-height: 1; }
+  .toc h4 { font-size: 11pt; margin: 2mm 0 1mm; color: var(--crema); }
+  .toc p { font-size: 8.4pt; opacity: .7; margin: 0; }
+  .toc .pg { font-size: 7.5pt; letter-spacing: .1em; text-transform: uppercase; opacity: .55; margin-top: 2mm; }
+  .cover .run-foot { color: rgba(236,219,186,.55); border-top-color: rgba(236,219,186,.2); }
+  .cover .run-foot .num::after { color: var(--crema); }
+
+  /* ---------- Design system ---------- */
+  .swatches { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3mm; }
+  .sw { border-radius: 10px; overflow: hidden; border: 1px solid var(--linea); background: #fff; }
+  .sw .chip { height: 19mm; display: flex; align-items: flex-end; padding: 1.5mm 2mm; font-size: 7pt; font-weight: 700; letter-spacing: .05em; }
+  .sw .info { padding: 1.8mm 2mm 2.2mm; }
+  .sw .name { font-weight: 700; font-size: 8.6pt; }
+  .sw .hex { font-family: ui-monospace, Menlo, monospace; font-size: 7.6pt; color: var(--texto-2); }
+  .sw .use { font-size: 7.4pt; color: var(--texto-2); line-height: 1.3; margin-top: .8mm; }
+
+  .alpha-row { display: flex; border-radius: 8px; overflow: hidden; border: 1px solid var(--linea); }
+  .alpha-row div { flex: 1; height: 11mm; background: linear-gradient(var(--a), var(--a)), var(--carbon); position: relative; }
+  .alpha-row div span {
+    position: absolute; inset: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 1mm;
+    font-size: 6.8pt; font-weight: 600; color: var(--crema); font-variant-numeric: tabular-nums;
+  }
+
+  .type-spec { display: grid; grid-template-columns: 38mm 1fr; gap: 3mm 5mm; align-items: center; padding: 1.8mm 0; border-bottom: 1px solid var(--linea); }
+  .type-spec:last-child { border-bottom: none; }
+  .type-spec .who { font-size: 8pt; color: var(--texto-2); line-height: 1.35; }
+  .type-spec .who strong { display: block; color: var(--texto); font-size: 9.4pt; }
+  .dark-sample { background: var(--carbon); color: var(--crema); border-radius: 10px; padding: 2.2mm 4.5mm; }
+  table.compact td { padding: .9mm 2mm; }
+  table.compact th { padding: 1.3mm 2mm; }
+
+  .scale { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2mm; text-align: center; }
+  .scale div { background: #fff; border: 1px solid var(--linea); border-radius: 8px; padding: 1.5mm 1mm; }
+  .scale .s { font-weight: 700; color: var(--carbon); line-height: 1.1; display: block; }
+  .scale .k { font-size: 7pt; color: var(--texto-2); display: block; margin-top: 1mm; }
+
+  .tokens td:first-child { font-family: ui-monospace, Menlo, monospace; font-size: 8pt; white-space: nowrap; }
+
+  /* Muestras de componentes, con el CSS real del sitio */
+  .demo {
+    background: var(--carbon); color: var(--crema); border-radius: 12px; padding: 4mm;
+    display: flex; flex-direction: column; gap: 2.5mm; min-height: 38mm;
+  }
+  .demo-label { font-size: 7.2pt; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(236,219,186,.55); }
+  .demo-note { font-size: 7.6pt; color: var(--texto-2); margin-top: 1.5mm; line-height: 1.35; }
+  /* Tarjetas de componentes del mismo alto: la muestra crece y la nota reserva 4 líneas */
+  .comp-grid > div { display: flex; flex-direction: column; }
+  .comp-grid > div > .demo { flex: 1; }
+  .comp-grid .demo-note { min-height: 4.1em; }
+  .demo-row { display: flex; align-items: center; gap: 3mm; flex-wrap: wrap; }
+
+  .counter-btn {
+    width: 15mm; height: 15mm; border-radius: 50%; background: var(--marino); color: var(--crema);
+    display: inline-flex; align-items: center; justify-content: center; font-size: 15pt; font-weight: 700;
+  }
+  .team-title { background: var(--marino); text-align: center; font-weight: 700; font-size: 11pt; padding: 1.6mm; letter-spacing: .02em; }
+  .stage { display: inline-block; font-size: 7.4pt; font-weight: 600; letter-spacing: .03em; color: var(--crema); border-radius: 999px; padding: .6mm 2.4mm; }
+  .stage.m { background: var(--malas); }
+  .stage.bu { background: var(--buenas); }
+  .stage.q { background: var(--modo15); }
+  .pill-primary {
+    background: var(--marino); color: var(--crema); border-radius: 999px; padding: 2.4mm 4mm; font-weight: 700; font-size: 9pt; text-align: center;
+  }
+  .pill-danger { background: var(--malas); color: var(--crema); border-radius: 999px; padding: 2mm 4mm; font-weight: 600; font-size: 8.6pt; }
+  .pill-ghost { color: var(--crema); opacity: .7; font-size: 8.6pt; text-decoration: underline; text-underline-offset: 2px; }
+  .close-x {
+    width: 9mm; height: 9mm; border-radius: 50%; border: 1px solid var(--crema); display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11pt; line-height: 1;
+  }
+  .tabs { display: flex; gap: 1.5mm; background: rgba(236,219,186,.08); border-radius: 999px; padding: 1mm; }
+  .tabs span { flex: 1; text-align: center; font-size: 8pt; font-weight: 600; padding: 1.4mm 0; border-radius: 999px; color: rgba(236,219,186,.6); }
+  .tabs span.on { background: var(--marino); color: var(--crema); }
+  .tooltip {
+    position: relative; display: inline-block; background: var(--crema); color: var(--tinta); border: 2px solid var(--marino);
+    border-radius: 13px; padding: 1.4mm 3mm; font-weight: 600; font-size: 8.4pt;
+  }
+  .sheet-mini {
+    background: var(--carbon); border: 2px solid var(--crema); border-bottom: none; border-radius: 16px 16px 0 0;
+    padding: 2.5mm 3mm 3mm; position: relative; margin-top: auto;
+  }
+  .sheet-mini::before {
+    content: ""; position: absolute; top: 1.4mm; left: 50%; transform: translateX(-50%);
+    width: 9mm; height: 1mm; border-radius: 2px; background: var(--crema); opacity: .3;
+  }
+  .input-mini {
+    background: var(--carbon-2); border: 1px solid var(--crema); border-radius: 8px; padding: 2mm 2.5mm; font-weight: 700; font-size: 10pt;
+  }
+  .input-mini.focus { border-color: var(--buenas); box-shadow: 0 0 0 2px rgba(66,135,245,.25); }
+
+  /* ---------- Gráficos de barras ---------- */
+  .bars { display: flex; flex-direction: column; gap: 1.8mm; }
+  .bar-row { display: grid; grid-template-columns: 30mm 1fr 15mm; gap: 2.5mm; align-items: center; font-size: 8.4pt; }
+  .bar-row .lbl { color: var(--texto-2); text-align: right; line-height: 1.2; }
+  .bar-track { height: 4.6mm; background: var(--papel-2); border-radius: 3px; position: relative; overflow: visible; }
+  .bar-fill { height: 100%; border-radius: 3px; background: var(--marino); }
+  .bar-fill.rojo { background: var(--malas); }
+  .bar-fill.gris { background: #b9ad97; }
+  .bar-row .val { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .umbral { position: absolute; top: -1.2mm; bottom: -1.2mm; width: 0; border-left: 1.5px dashed var(--ok); }
+  .umbral span { position: absolute; top: -3.6mm; left: -10mm; width: 20mm; text-align: center; font-size: 6.6pt; color: var(--ok); font-weight: 700; }
+  .chart-card { background: #fff; border: 1px solid var(--linea); border-radius: 10px; padding: 3.5mm 4mm 3mm; }
+  .chart-card h4 { margin-bottom: 6mm; }
+  .legend { display: flex; gap: 4mm; font-size: 7.6pt; color: var(--texto-2); margin-top: 2.5mm; }
+  .legend i { display: inline-block; width: 2.6mm; height: 2.6mm; border-radius: 2px; margin-right: 1.2mm; vertical-align: -.3mm; }
+
+  /* Línea de tiempo de posición */
+  .rank { display: flex; align-items: stretch; gap: 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--linea); }
+  .rank > div { padding: 3mm 3.5mm; flex: 1; }
+  .rank .antes { background: #fff; }
+  .rank .despues { background: rgba(200,75,49,.08); border-left: 1px solid var(--linea); }
+  .rank .pos { font-size: 24pt; font-weight: 800; line-height: 1; }
+  .rank .antes .pos { color: var(--ok); }
+  .rank .despues .pos { color: var(--malas); }
+  .rank .per { font-size: 7.6pt; color: var(--texto-2); text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+  .rank .ctr { font-size: 9pt; margin-top: 1mm; }
+
+  /* ---------- Migración ---------- */
+  .arq {
+    background: var(--carbon); color: var(--crema); border-radius: 12px; padding: 4mm; font-size: 8.2pt;
+  }
+  .arq .cap { font-size: 7.2pt; letter-spacing: .1em; text-transform: uppercase; color: rgba(236,219,186,.55); font-weight: 700; margin-bottom: 2mm; }
+  .arq .box { border: 1.5px solid rgba(236,219,186,.5); border-radius: 8px; padding: 2mm 2.5mm; margin-bottom: 2mm; }
+  .arq .box:last-child { margin-bottom: 0; }
+  .arq .box.isla { border-color: var(--buenas); border-style: dashed; background: rgba(66,135,245,.1); }
+  .arq .box.estatico { background: rgba(236,219,186,.06); }
+  .arq .t { font-weight: 700; display: flex; justify-content: space-between; gap: 2mm; }
+  .arq .t em { font-style: normal; font-weight: 600; font-size: 7pt; opacity: .7; }
+  .arq .inner { display: flex; gap: 2mm; margin-top: 1.5mm; }
+  .arq .inner .box { flex: 1; margin: 0; }
+
+  .flow { display: flex; align-items: stretch; gap: 0; margin: 2mm 0; }
+  .flow > div {
+    flex: 1; background: #fff; border: 1px solid var(--linea); padding: 2.5mm 3mm; position: relative; font-size: 8pt;
+  }
+  .flow > div:first-child { border-radius: 8px 0 0 8px; }
+  .flow > div:last-child { border-radius: 0 8px 8px 0; }
+  .flow > div + div { border-left: none; }
+  .flow .t { font-size: 7pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--marino); }
+  .flow .ms { font-weight: 800; font-size: 11pt; color: var(--carbon); }
+
+  .steps { counter-reset: paso; display: grid; grid-template-columns: 1fr 1fr; gap: 1.8mm 5mm; }
+  .steps div { counter-increment: paso; display: grid; grid-template-columns: 6mm 1fr; gap: 2mm; font-size: 8.4pt; align-items: start; }
+  .steps div::before {
+    content: counter(paso); width: 6mm; height: 6mm; border-radius: 50%; background: var(--marino); color: var(--crema);
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 7.6pt;
+  }
+  .steps div.hecho::before { background: var(--ok); }
+  .steps div.pend::before { background: #fff; color: var(--marino); border: 1.5px solid var(--marino); }
+
+  .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; margin-top: 2mm; }
+  .timeline::before { content: ""; position: absolute; left: 4mm; right: 4mm; top: 3mm; height: 2px; background: var(--linea); }
+  .timeline div { position: relative; padding-top: 8mm; padding-right: 3mm; font-size: 8pt; }
+  .timeline div::before {
+    content: ""; position: absolute; top: 1mm; left: 2mm; width: 4mm; height: 4mm; border-radius: 50%;
+    background: var(--papel); border: 2px solid var(--marino);
+  }
+  .timeline div.hecho::before { background: var(--ok); border-color: var(--ok); }
+  .timeline strong { display: block; font-size: 8.8pt; }
+</style>
+</head>
+<body>
+
+<!-- Fósforo reutilizable: el mismo dibujo que Counter.jsx (palito, vetas, cabeza con brillo) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="madera" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F8E6C0"/><stop offset=".35" stop-color="#EBCB94"/>
+      <stop offset=".75" stop-color="#D2A867"/><stop offset="1" stop-color="#A87A42"/>
+    </linearGradient>
+    <radialGradient id="cabeza" cx=".62" cy=".32" r=".75">
+      <stop offset="0" stop-color="#F2846A"/><stop offset=".45" stop-color="#C4361F"/><stop offset="1" stop-color="#6B170C"/>
+    </radialGradient>
+    <g id="fosforo">
+      <rect x="0" y="-2.75" width="52" height="5.5" rx="1" fill="url(#madera)" stroke="#8A6232" stroke-width=".35"/>
+      <path d="M3 -1.1 L42 -0.8 M7 1.2 L38 1.5" stroke="#B98C52" stroke-width=".4" stroke-linecap="round" opacity=".5"/>
+      <path d="M45 -2.9 C49 -5.4 56 -5.8 58.8 -3 C60.5 -1.1 60.5 1.1 58.8 3 C56 5.8 49 5.4 45 2.9 Z" fill="url(#cabeza)" stroke="#4A0E07" stroke-width=".45"/>
+      <ellipse cx="53.5" cy="-2.4" rx="3.4" ry="1.2" fill="#fff" opacity=".38"/>
+    </g>
+    <g id="fosforo-diag">
+      <rect x="0" y="-2.75" width="76" height="5.5" rx="1" fill="url(#madera)" stroke="#8A6232" stroke-width=".35"/>
+      <path d="M3 -1.1 L66 -0.8 M7 1.2 L62 1.5" stroke="#B98C52" stroke-width=".4" stroke-linecap="round" opacity=".5"/>
+      <path d="M69 -2.9 C73 -5.4 80 -5.8 82.8 -3 C84.5 -1.1 84.5 1.1 82.8 3 C80 5.8 73 5.4 69 2.9 Z" fill="url(#cabeza)" stroke="#4A0E07" stroke-width=".45"/>
+      <ellipse cx="77.5" cy="-2.4" rx="3.4" ry="1.2" fill="#fff" opacity=".38"/>
+    </g>
+    <!-- Cuadrado de 5 puntos: cuatro lados y la diagonal -->
+    <g id="caja">
+      <use href="#fosforo" transform="translate(2 4)"/>
+      <use href="#fosforo" transform="translate(64 2) rotate(90)"/>
+      <use href="#fosforo" transform="translate(62 64) rotate(180)"/>
+      <use href="#fosforo" transform="translate(0 62) rotate(-90)"/>
+      <use href="#fosforo-diag" transform="translate(5 5) rotate(45)"/>
+    </g>
+  </defs>
+</svg>
+
+<!-- ============ 1. PORTADA ============ -->
+<section class="page cover">
+  <div class="cover-top">
+    <img src="../public/images/main_logo.webp" alt="Truqito" width="422" height="114">
+    <div class="meta">truco.contelautaro.com.ar<br>v2.0.0 · 24 oct 2026</div>
+  </div>
+  <div class="cover-body">
+    <div class="kicker">Documentación del proyecto</div>
+    <h1>El anotador,<br>por dentro</h1>
+    <p class="sub">Cómo se ve Truqito, qué dicen Search Console y GA4 sobre su tráfico, y cómo se migró de Create React App a Astro + React con islas para recuperar el puesto 1 en “anotador de truco”.</p>
+  </div>
+
+  <svg class="cover-art" viewBox="-6 -6 78 78" aria-hidden="true"><use href="#caja"/></svg>
+
+  <div class="toc">
+    <div>
+      <div class="n">01</div>
+      <h4>Design system</h4>
+      <p>Paleta, tipografías, forma, movimiento y componentes de la app.</p>
+      <div class="pg">Páginas 2–4</div>
+    </div>
+    <div>
+      <div class="n">02</div>
+      <h4>Análisis SEO y velocidad</h4>
+      <p>Search Console, GA4, CrUX y Lighthouse. Qué nos sacó el puesto 1.</p>
+      <div class="pg">Páginas 5–7</div>
+    </div>
+    <div>
+      <div class="n">03</div>
+      <h4>Migración a Astro</h4>
+      <p>Arquitectura de islas, decisiones, salida a producción y mediciones.</p>
+      <div class="pg">Páginas 8–11</div>
+    </div>
+  </div>
+  <div class="run-foot"><span>Truqito · Documentación técnica · Rama <code style="background:rgba(236,219,186,.12);color:inherit">feat/astro</code></span><span class="der"><span class="num">Página </span><a class="conte" href="https://contelautaro.com.ar">Conte</a></span></div>
+</section>
+
+<!-- ============ 2. DESIGN SYSTEM: COLOR ============ -->
+<section class="page">
+  <div class="run-head"><img src="../public/images/main_logo.webp" alt="Truqito" width="422" height="114"><span class="meta"><span class="sec">01 · Design system</span><span>Color e iconografía</span></span></div>
+
+  <div class="kicker">Design system</div>
+  <h2>Una mesa de truco de noche</h2>
+  <p class="lead">Truqito se juega en la mesa, muchas veces con poca luz y el teléfono apoyado. Por eso es oscuro, de alto contraste, con un solo color de texto (crema, como el papel de un anotador) y colores fuertes reservados para lo que cambia el juego: la etapa y las acciones.</p>
+
+  <h3>Principios</h3>
+  <div class="grid-3">
+    <div><h4>Una pantalla, sin scroll</h4><p style="font-size:8.6pt">El tablero ocupa todo el alto disponible. Menú, VAR y ajustes abren hojas inferiores encima: nunca se scrollea la página.</p></div>
+    <div><h4>Se toca, no se lee</h4><p style="font-size:8.6pt">Botones de 65 px, toque en todo el tablero para sumar, y fósforos en vez de números: se cuenta como en la mesa, de a cinco.</p></div>
+    <div><h4>Color con significado</h4><p style="font-size:8.6pt">Crema y carbón son la base. Rojo, azul y verde solo marcan la etapa (Malas, Buenas, partida a 15) o una acción que borra.</p></div>
+  </div>
+
+  <h3>Paleta base</h3>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:#191919;color:#ecdbba">Fondo</div><div class="info"><div class="name">Carbón</div><div class="hex">#191919</div><div class="use">Fondo de toda la app, del header y de las hojas.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#ecdbba;color:#191919">Texto</div><div class="info"><div class="name">Crema</div><div class="hex">#ECDBBA</div><div class="use">Texto, bordes de 2–3 px, línea divisoria y manija de hoja.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#2d4263;color:#ecdbba">Superficie</div><div class="info"><div class="name">Marino</div><div class="hex">#2D4263</div><div class="use">Botones +/−, nombre del equipo, pestaña activa, botón principal.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#2a2a2a;color:#ecdbba">Campo</div><div class="info"><div class="name">Carbón 2</div><div class="hex">#2A2A2A</div><div class="use">Fondo de los inputs de Editar nombres.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#042d4f;color:#ecdbba">Tinta</div><div class="info"><div class="name">Tinta</div><div class="hex">#042D4F</div><div class="use">Texto sobre crema: el tooltip “Tocá el menú”.</div></div></div>
+  </div>
+
+  <h3>Colores de estado</h3>
+  <div class="swatches">
+    <div class="sw"><div class="chip" style="background:#c84b31;color:#ecdbba">MALAS</div><div class="info"><div class="name">Malas</div><div class="hex">#C84B31</div><div class="use">Etapa Malas (0–15 a 30), acción peligrosa, punto de corrección en el VAR.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#4287f5;color:#ecdbba">BUENAS</div><div class="info"><div class="name">Buenas</div><div class="hex">#4287F5</div><div class="use">Etapa Buenas y foco de los inputs (con halo al 20 %).</div></div></div>
+    <div class="sw"><div class="chip" style="background:#6a9f58;color:#ecdbba">A 15</div><div class="info"><div class="name">Modo 15</div><div class="hex">#6A9F58</div><div class="use">Indicador de etapa cuando la partida es a 15.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#e0745c;color:#191919">−1</div><div class="info"><div class="name">Corrección</div><div class="hex">#E0745C</div><div class="use">Monto de una resta en la línea de tiempo del VAR.</div></div></div>
+    <div class="sw"><div class="chip" style="background:#a33e28;color:#ecdbba">Activo</div><div class="info"><div class="name">Malas oscuro</div><div class="hex">#A33E28</div><div class="use">Estado presionado del rojo.</div></div></div>
+  </div>
+
+  <h3>Crema con transparencia</h3>
+  <p style="font-size:8.6pt;margin-bottom:2.5mm">En lugar de grises, la jerarquía sale de la crema con distinta opacidad sobre el carbón. Es la escala que usan el VAR, la guía y Novedades:</p>
+  <div class="alpha-row">
+    <div style="--a:rgba(236,219,186,.08)"><span>8 % · fondo tabs</span></div>
+    <div style="--a:rgba(236,219,186,.15)"><span>15 % · presionado</span></div>
+    <div style="--a:rgba(236,219,186,.25)"><span>25 % · bordes</span></div>
+    <div style="--a:rgba(236,219,186,.4)"><span>40 %</span></div>
+    <div style="--a:rgba(236,219,186,.55)"><span style="color:#191919">55 % · etiquetas</span></div>
+    <div style="--a:rgba(236,219,186,.7)"><span style="color:#191919">70 % · secundario</span></div>
+    <div style="--a:rgba(236,219,186,.85)"><span style="color:#191919">85 %</span></div>
+    <div style="--a:#ecdbba"><span style="color:#191919">100 % · texto</span></div>
+  </div>
+  <div class="nota" style="margin-top:3mm">Superposiciones: <code>rgba(0,0,0,.7)</code> con <code>backdrop-filter: blur(5px)</code> detrás de cada hoja. Los colores viven hoy como literales en <code>src/styles/*.css</code>; el primer paso para consolidarlos es pasarlos a variables en <code>App.css</code> con estos mismos nombres.</div>
+
+  <h3>Iconografía</h3>
+  <p style="font-size:8.6pt">Siete íconos (menú, +, −, cerrar, editar, intercambiar, info) dibujados como máscaras SVG en <code>src/styles/Icons.css</code>, con las mismas clases <code>bx bx-*</code> que tenía Boxicons. Toman el color con <code>currentColor</code>. No se carga ninguna hoja externa de íconos.</p>
+
+  <div class="run-foot"><span>Truqito · Design system</span><span class="der"><span class="num">Página </span><a class="conte" href="https://contelautaro.com.ar">Conte</a></span></div>
+</section>
+
+<!-- ============ 3. DESIGN SYSTEM: TIPO Y FORMA ============ -->
+<section class="page">
+  <div class="run-head"><img src="../public/images/main_logo.webp" alt="Truqito" width="422" height="114"><span class="meta"><span class="sec">01 · Design system</span><span>Tipografía, forma y movimiento</span></span></div>
+
+  <h2>Tipografía</h2>
+  <p class="lead">Dos familias, servidas desde el propio sitio en woff2 con <code>font-display: swap</code>. Outfit tiene <code>preload</code> porque está en el primer dibujo; Magnifika no.</p>
+
+  <div class="type-spec">
+    <div class="who"><strong>Outfit</strong>Texto de toda la app<br><code>/fonts/outfit-latin.woff2</code> · 32 KB</div>
+    <div class="dark-sample" style="font-family:'Outfit',sans-serif">
+      <div style="font-size:16pt;font-weight:800;line-height:1.1">NOSOTROS 15 · ELLOS 12</div>
+      <div style="font-size:9pt;opacity:.75;margin-top:.5mm">Tocá el tablero para sumar. Regular 400 · Semibold 600 · Bold 700 · Black 900</div>
+    </div>
+  </div>
+  <div class="type-spec">
+    <div class="who"><strong>Magnifika</strong>Header de la app<br><code>/fonts/Magnifika.woff2</code> · 46 KB</div>
+    <div class="dark-sample" style="font-family:'Magnifika',sans-serif;font-size:18pt;line-height:1.1">Anotador de Truco</div>
+  </div>
+
+  <h3>Escala</h3>
+  <div class="scale">
+    <div><span class="s" style="font-size:7pt">9 px</span><span class="k">“Tocá” del tablero</span></div>
+    <div><span class="s" style="font-size:8.5pt">0,7–0,75 rem</span><span class="k">Etiquetas, fechas, chips</span></div>
+    <div><span class="s" style="font-size:9.5pt">0,85–0,9 rem</span><span class="k">Texto secundario</span></div>
+    <div><span class="s" style="font-size:11pt">1–1,15 rem</span><span class="k">Texto, ítems del menú</span></div>
+    <div><span class="s" style="font-size:13pt">1,3–1,5 rem</span><span class="k">Equipo, título de hoja</span></div>
+    <div><span class="s" style="font-size:17pt">2,2–2,6 rem</span><span class="k">Marcador del VAR</span></div>
+  </div>
+  <p style="font-size:8.4pt;margin-top:2.5mm">Etiquetas en mayúsculas con <code>letter-spacing</code> de 0,03–0,08 em. Los números (puntos, fechas, tiempos) siempre con <code>font-variant-numeric: tabular-nums</code>. Outfit no trae las flechas → y ←: se dibujan con la fuente del sistema, y cualquier glifo nuevo hay que verificarlo antes de usarlo.</p>
+
+  <h3>Forma</h3>
+  <table class="tokens compact">
+    <tr><th>Token</th><th>Valor</th><th>Dónde</th></tr>
+    <tr><td>radio-pill</td><td>999px</td><td>Botón principal, pestañas, chips de etapa, versión en Novedades</td></tr>
+    <tr><td>radio-hoja</td><td style="white-space:nowrap">20px 20px 0 0</td><td>Hojas inferiores (VAR, Editar nombres, Novedades)</td></tr>
+    <tr><td>radio-tooltip</td><td>13px</td><td>Tooltip del menú</td></tr>
+    <tr><td>radio-tarjeta</td><td>8–10px</td><td>Inputs, cajas de la guía</td></tr>
+    <tr><td>radio-circulo</td><td>50%</td><td>Botones +/− (65 px), cerrar (36–40 px), puntos del VAR</td></tr>
+    <tr><td>borde</td><td style="white-space:nowrap">2–3 px crema</td><td>Borde de hojas (2 px) y línea bajo el header (3 px). Divisoria central de 4 px que se desvanece 48 px antes del anuncio</td></tr>
+    <tr><td>área táctil</td><td>≥ 36px</td><td>Mínimo de cualquier control; los del juego son de 65 px</td></tr>
+  </table>
+
+  <h3>Movimiento</h3>
+  <table class="tokens compact">
+    <tr><th>Token</th><th>Valor</th><th>Uso</th></tr>
+    <tr><td>hoja</td><td>0,3 s cubic-bezier(.4, 0, .2, 1)</td><td>Abrir y cerrar hojas (translateY) y su overlay</td></tr>
+    <tr><td>presión</td><td>0,15 s, scale(.94)</td><td>Botones +/−; el botón principal baja a .98</td></tr>
+    <tr><td>tablero</td><td>200 ms ease-in-out</td><td>Fundidos y transform del tablero</td></tr>
+    <tr><td>logo</td><td>0,8 s ease, translateX(−25 %)</td><td>Logo que se corre para dejar ver el tooltip a los 6,5 s</td></tr>
+    <tr><td>tooltip</td><td>0,5 s + pulso de 2 s (scale 1,02)</td><td>“Tocá el menú”, aparece y late</td></tr>
+    <tr><td>fósforo ganador</td><td>1,4 s</td><td>Se coloca, chispazo y llama; mientras, se precarga el resultado</td></tr>
+    <tr><td>entre páginas</td><td>ClientRouter, 0,25 s</td><td>Fundido del contenido; header y anuncio quedan fijos (sin animación)</td></tr>
+  </table>
+
+
+  <div class="run-foot"><span>Truqito · Design system</span><span class="der"><span class="num">Página </span><a class="conte" href="https://contelautaro.com.ar">Conte</a></span></div>
+</section>
+
+<!-- ============ 4. DESIGN SYSTEM: COMPONENTES ============ -->
+<section class="page">
+  <div class="run-head"><img src="../public/images/main_logo.webp" alt="Truqito" width="422" height="114"><span class="meta"><span class="sec">01 · Design system</span><span>Componentes</span></span></div>
+
+  <h2>Componentes</h2>
+  <p class="lead">Las piezas que arman cada pantalla, dibujadas con los valores reales del CSS. Entre paréntesis, el componente o la hoja de estilo de origen.</p>
+
+  <div class="grid-2 comp-grid">
+    <div>
+      <div class="demo" style="padding:0;overflow:hidden;min-height:0">
+        <div style="display:grid;grid-template-columns:1fr 4px 1fr">
+          <div>
+            <div class="team-title">NOSOTROS</div>
+            <div style="text-align:center;padding:2mm 0 1mm"><span class="stage m">MALAS</span></div>
+            <svg viewBox="-6 -6 78 78" style="width:22mm;display:block;margin:1mm auto" aria-hidden="true"><use href="#caja"/></svg>
+          </div>
+          <div style="background:linear-gradient(#ecdbba 70%, rgba(236,219,186,0))"></div>
+          <div>
+            <div class="team-title">ELLOS</div>
+            <div style="text-align:center;padding:2mm 0 1mm"><span class="stage bu">BUENAS</span></div>
+            <svg viewBox="-6 -6 78 78" style="width:22mm;display:block;margin:1mm auto" aria-hidden="true">
+              <use href="#fosforo" transform="translate(2 4)"/><use href="#fosforo" transform="translate(64 2) rotate(90)"/>
+            </svg>
+          </div>
+        </div>
+        <div class="demo-row" style="justify-content:space-around;padding:2mm 0 3.5mm;margin-top:auto">
+          <span><span class="counter-btn">−</span> <span class="counter-btn">+</span></span>
+          <span><span class="counter-btn">−</span> <span class="counter-btn">+</span></span>
+        </div>
+      </div>
+      <div class="demo-note"><strong>Tablero</strong> (<code>Board</code>, <code>Counter</code>). Dos columnas de 50 vw, nombre sobre marino y etapa en pill. Los puntos se dibujan como fósforos en cuadrados de cinco; tocar el área suma, los botones circulares suman y restan.</div>
+    </div>
+
+    <div>
+      <div class="demo">
+        <div class="demo-label">Hoja inferior</div>
+        <div class="sheet-mini">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2mm">
+            <strong style="font-size:12pt">Editar nombres</strong><span class="close-x">×</span>
+          </div>
+          <div style="font-size:7pt;opacity:.55;letter-spacing:.04em;font-weight:600;margin:2.5mm 0 1mm">EQUIPO 1</div>
+          <div class="input-mini focus">LOS PIBES</div>
+          <div class="pill-primary" style="margin-top:3mm">Guardar</div>
+          <div style="text-align:center;margin-top:2mm"><span class="pill-ghost">Restaurar nombres</span></div>
+        </div>
+      </div>
+      <div class="demo-note"><strong>Hoja</strong> (<code>Sheet.css</code>). Base de VAR, Editar nombres y Novedades: 80 dvh como máximo, borde crema de 2 px, manija al 30 %, cerrar circular. Una acción principal en pill marino y una secundaria como texto.</div>
+    </div>
+  </div>
+
+  <div class="grid-2 comp-grid" style="margin-top:5mm">
+    <div>
+      <div class="demo" style="min-height:0">
+        <div class="demo-label">Botones y chips</div>
+        <div class="demo-row"><span class="pill-primary" style="flex:1">Comenzar</span><span class="pill-danger">Borrar historial</span></div>
+        <div class="demo-row"><span class="stage m">MALAS</span><span class="stage bu">BUENAS</span><span class="stage q">A 15</span><span class="stage" style="background:#2d4263">v2.0.0</span></div>
+        <div class="demo-row"><span class="close-x">×</span><span class="counter-btn" style="width:11mm;height:11mm;font-size:12pt">+</span><span class="pill-ghost">Acción secundaria</span></div>
+      </div>
+      <div class="demo-note"><strong>Botones</strong>. Principal: pill marino, ocupa el ancho. Peligro: pill rojo, siempre con confirmación. Secundario: texto subrayado. Ningún botón usa sombra.</div>
+    </div>
+    <div>
+      <div class="demo" style="min-height:0">
+        <div class="demo-label">Guía y tooltip</div>
+        <div class="tabs"><span class="on">Cartas</span><span>Puntos</span><span>El anotador</span></div>
+        <div style="background:#2d4263;border-radius:10px;padding:2mm 3mm;font-size:8.4pt">Truco <span style="opacity:.75">2 · Retruco 3 · Vale cuatro 4</span></div>
+        <div style="display:flex;justify-content:flex-end;align-items:center;gap:3mm">
+          <span class="tooltip">Tocá el menú</span>
+          <span style="display:inline-flex;flex-direction:column;gap:1.3mm;width:6mm"><i style="height:.9mm;background:#ecdbba;border-radius:1mm"></i><i style="height:.9mm;background:#ecdbba;border-radius:1mm"></i><i style="height:.9mm;background:#ecdbba;border-radius:1mm"></i></span>
+        </div>
+      </div>
+      <div class="demo-note"><strong>Pestañas</strong> (<code>guia-truco.astro</code>): pill marino para la activa sobre crema al 8 %. <strong>Tooltip</strong>: único elemento crema con texto tinta y borde marino; aparece a los 6,5 s.</div>
+    </div>
+  </div>
+
+  <h3>Fósforo</h3>
+  <div class="grid-2" style="align-items:center">
+    <div style="background:var(--carbon);border-radius:12px;padding:4mm;display:flex;gap:5mm;align-items:center;justify-content:center">
+      <svg viewBox="-2 -8 64 16" style="width:40mm" aria-hidden="true"><use href="#fosforo"/></svg>
+      <svg viewBox="-6 -6 78 78" style="width:20mm" aria-hidden="true"><use href="#caja"/></svg>
+    </div>
+    <p style="font-size:8.6pt;margin:0">Dibujado en SVG en <code>Counter.jsx</code> y reutilizado con <code>&lt;use&gt;</code>: palito con degradé de madera (<code>#F8E6C0 → #A87A42</code>) y vetas, cabeza con degradé radial (<code>#F2846A → #6B170C</code>) y un brillo blanco al 38 %. Cuatro lados y una diagonal forman cinco puntos. El fósforo que gana se coloca y se enciende con llama.</p>
+  </div>
+
+  <h3>Reglas de layout</h3>
+  <ul style="font-size:8.6pt">
+    <li><strong>Columna fija:</strong> header (logo 141×38) → <code>main</code> con el tablero (flex 1) → <code>.ad-slot</code> → footer de 28 px. <code>html</code> y <code>body</code> con <code>overflow: hidden</code>.</li>
+    <li><strong>Anuncio con espacio propio:</strong> <code>.ad-slot</code> reserva 50 px en mobile y 90 px desde 728 px, para que el tablero nunca quede tapado. En la guía el anuncio flota sobre el contenido y el panel deja al final un margen igual a <code>--ad-slot-height</code>.</li>
+    <li><strong>Escritorio:</strong> desde 768 px las hojas se centran con un ancho máximo de 600 px. El resto de la app no cambia.</li>
+  </ul>
+
+  <div class="run-foot"><span>Truqito · Design system</span><span class="der"><span class="num">Página </span><a class="conte" href="https://contelautaro.com.ar">Conte</a></span></div>
+</section>
+
+<!-- ============ 5. ANÁLISIS: BÚSQUEDA Y TRÁFICO ============ -->
+<section class="page">
+  <div class="run-head"><img src="../public/images/main_logo.webp" alt="Truqito" width="422" height="114"><span class="meta"><span class="sec">02 · Análisis</span><span>Search Console y GA4</span></span></div>
+
+  <div class="kicker">Análisis · 23 de octubre de 2026</div>
+  <h2>El sitio vive de Google</h2>
+  <p class="lead">Datos de Search Console y GA4 (MCP), CrUX y Lighthouse 12, con mediciones que salen por la red de Oracle (a1) para que la publicidad cargue como para cualquier usuario.</p>
+
+  <div class="grid-3" style="grid-template-columns:repeat(4,1fr)">
+    <div class="stat"><div class="v">94<small>%</small></div><div class="l">de las sesiones llegan por búsqueda orgánica</div></div>
+    <div class="stat alerta"><div class="v">2°</div><div class="l">en “anotador de truco” desde mayo de 2026. Antes, 1°</div></div>
+    <div class="stat alerta"><div class="v">0,24<small>%</small></div><div class="l">de CTR en la guía, con 120 mil impresiones en 28 días</div></div>
+    <div class="stat alerta"><div class="v">4,7<small> s</small></div><div class="l">de LCP en mobile (p75, usuarios reales). El rival: 2,6 s</div></div>
+  </div>
+
+  <h3>“anotador de truco”: el puesto 1 que se perdió</h3>
+  <div class="rank">
+    <div class="antes"><div class="per">Sep 2025 – 7 may 2026</div><div class="pos">1,0</div><div class="ctr">CTR <strong>65–80 %</strong></div></div>
+    <div class="despues"><div class="per">Desde mediados de may 2026</div><div class="pos">2,0–2,3</div><div class="ctr">CTR <strong>20–25 %</strong></div></div>
+    <div class="despues"><div class="per">14 al 23 oct 2026</div><div class="pos">2,0</div><div class="ctr">CTR <strong>21 %</strong></div></div>
+  </div>
+  <p style="font-size:8.6pt;margin-top:2.5mm">Entre el 8 y el 21 de mayo nos pasó <strong>trucogame.com/anotador-truco</strong>. No hubo commits entre enero y octubre de 2026: la caída vino del competidor, no de un cambio nuestro. Con el puesto se fue cerca de dos tercios del CTR de esa búsqueda.</p>
+
+  <h3>Search Console: últimas 4 semanas contra las 4 anteriores</h3>
+  <table>
+    <tr><th>Página</th><th class="n">Clics</th><th class="n">Impresiones</th><th class="n">CTR</th><th class="n">Posición</th></tr>
+    <tr><td>Home <code>/</code></td><td class="n">19.283 <span class="b b-ok">+28 %</span></td><td class="n">115.817 <span class="b b-ok">+40 %</span></td><td class="n">16,7 %</td><td class="n">3,3</td></tr>
+    <tr><td>Guía <code>/guia-truco</code></td><td class="n">293 <span class="b b-ok">+95 %</span></td><td class="n">120.184 <span class="b b-ok">+89 %</span></td><td class="n">0,24 % <span class="b b-bad">bajo</span></td><td class="n">6,9</td></tr>
+    <tr><td><code>/?ref</code></td><td class="n">1</td><td class="n">262</td><td class="n">—</td><td class="n">13,1</td></tr>
+  </table>
+  <p style="font-size:8.6pt">Período: 23 de septiembre al 21 de octubre de 2026. <strong>La guía ya recibe más impresiones que la home</strong>, pero casi nadie hace clic: aparece para “tabla de valores del truco” y similares con un título y un contenido que no responden directo a eso.</p>
+
+  <h3>GA4: últimos 28 días contra los 28 anteriores</h3>
+  <div class="grid-2" style="grid-template-columns:1.25fr 1fr;align-items:start">
+    <table>
+      <tr><th>Canal</th><th class="n">Sesiones</th><th class="n">Usuarios</th><th class="n">Duración</th></tr>
+      <tr><td>Búsqueda orgánica</td><td class="n">26.661 <span class="b b-ok">+21 %</span></td><td class="n">12.826 <span class="b b-ok">+28 %</span></td><td class="n">8,1 min</td></tr>
+      <tr><td>Directo</td><td class="n">1.383 <span class="b b-mute">=</span></td><td class="n">781</td><td class="n">5,7 min</td></tr>
+    </table>
+    <div class="chart-card" style="padding:3mm 3.5mm">
+      <h4 style="margin-bottom:2mm;font-size:8.6pt">Sesiones por canal</h4>
+      <div style="display:flex;height:6mm;border-radius:3px;overflow:hidden">
+        <div style="width:95.1%;background:var(--marino)"></div><div style="width:4.9%;background:var(--malas)"></div>
+      </div>
+      <div class="legend"><span><i style="background:var(--marino)"></i>Orgánica 95 %</span><span><i style="background:var(--malas)"></i>Directo 5 %</span></div>
+    </div>
+  </div>
+  <div class="callout"><div class="kicker">Lectura</div>El tráfico crece, pero crece <strong>en el puesto 2</strong>. Una sesión media de 8 minutos confirma que quien entra usa el anotador durante toda la partida: el problema no es el producto, es <strong>llegar primero</strong> en Google. Y lo que Google mide de nosotros, en mobile, es velocidad.</div>
+
+  <div class="run-foot"><span>Truqito · Análisis SEO y velocidad</span><span class="der"><span class="num">Página </span><a class="conte" href="https://contelautaro.com.ar">Conte</a></span></div>
+</section>
+
+<!-- ============ 6. ANÁLISIS: VELOCIDAD ============ -->
+<section class="page">
+  <div class="run-head"><img src="../public/images/main_logo.webp" alt="Truqito" width="422" height="114"><span class="meta"><span class="sec">02 · Análisis</span><span>Velocidad</span></span></div>
+
+  <h2>Dónde perdemos contra el rival</h2>
+  <p class="lead">CrUX es el percentil 75 de las visitas reales en Chrome durante 28 días: es lo que Google usa para posicionar. El servidor no es el problema (TTFB igual o mejor que el del rival); lo que pesa es lo que pasa en el navegador.</p>
+
+  <div class="grid-2">
+    <div class="chart-card">
+      <h4>LCP mobile, p75 (segundos)</h4>
+      <div class="bars">
+        <div class="bar-row"><span class="lbl">Truqito · home</span><div class="bar-track"><div class="bar-fill rojo" style="width:94%"></div><span class="umbral" style="left:50%"><span>2,5 s bueno</span></span></div><span class="val">4,7 s</span></div>
+        <div class="bar-row"><span class="lbl">Truqito · guía</span><div class="bar-track"><div class="bar-fill" style="width:56%"></div><span class="umbral" style="left:50%"></span></div><span class="val">2,8 s</span></div>
+        <div class="bar-row"><span class="lbl">trucogame.com</span><div class="bar-track"><div class="bar-fill gris" style="width:52%"></div><span class="umbral" style="left:50%"></span></div><span class="val">2,6 s</span></div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <h4>INP mobile, p75 (milisegundos)</h4>
+      <div class="bars">
+        <div class="bar-row"><span class="lbl">Truqito · home</span><div class="bar-track"><div class="bar-fill rojo" style="width:89%"></div><span class="umbral" style="left:57%"><span>200 ms bueno</span></span></div><span class="val">312</span></div>
+        <div class="bar-row"><span class="lbl">Truqito · guía</span><div class="bar-track"><div class="bar-fill" style="width:84%"></div><span class="umbral" style="left:57%"></span></div><span class="val">295</span></div>
+        <div class="bar-row"><span class="lbl">trucogame.com</span><div class="bar-track"><div class="bar-fill gris" style="width:52%"></div><span class="umbral" style="left:57%"></span></div><span class="val">182</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Usuarios reales (CrUX, mobile, p75)</h3>
+  <table>
+    <tr><th>Métrica</th><th class="n">Home</th><th class="n">Guía</th><th class="n">trucogame.com</th><th class="n">Bueno</th></tr>
+    <tr><td><strong>LCP</strong> · dibujo del elemento principal</td><td class="n">4,7 s <span class="b b-bad">malo</span></td><td class="n">2,8 s <span class="b b-warn">mejorable</span></td><td class="n">2,6 s</td><td class="n">&lt; 2,5 s</td></tr>
+    <tr><td><strong>INP</strong> · respuesta a un toque</td><td class="n">312 ms <span class="b b-warn">mejorable</span></td><td class="n">295 ms <span class="b b-warn">mejorable</span></td><td class="n">182 ms</td><td class="n">&lt; 200 ms</td></tr>
+    <tr><td><strong>CLS</strong> · saltos de diseño</td><td class="n">0,00 <span class="b b-ok">bueno</span></td><td class="n">0,25 <span class="b b-bad">malo</span></td><td class="n">0,00</td><td class="n">&lt; 0,1</td></tr>
+    <tr><td><strong>FCP</strong> · primer dibujo</td><td class="n">2,4 s</td><td class="n">2,2 s</td><td class="n">2,4 s</td><td class="n">&lt; 1,8 s</td></tr>
+    <tr><td><strong>TTFB</strong> · respuesta del servidor</td><td class="n">0,72 s <span class="b b-ok">bueno</span></td><td class="n">0,61 s</td><td class="n">0,77 s</td><td class="n">&lt; 0,8 s</td></tr>
+  </table>
+
+  <div class="grid-2" style="grid-template-columns:1fr 1fr;margin-top:4mm">
+    <div>
+      <h3 style="margin-top:0">Lighthouse mobile, con publicidad</h3>
+      <table>
+        <tr><th></th><th class="n">Home</th><th class="n">Sin anuncios</th><th class="n">Guía</th></tr>
+        <tr><td>Performance</td><td class="n">51</td><td class="n">58</td><td class="n">26</td></tr>
+        <tr><td>LCP</td><td class="n">3,1 s</td><td class="n">5,6 s*</td><td class="n">6,5 s</td></tr>
+        <tr><td>TBT</td><td class="n"><strong>3.057 ms</strong></td><td class="n">631 ms</td><td class="n"><strong>3.229 ms</strong></td></tr>
+        <tr><td>CLS</td><td class="n">0,007</td><td class="n">0,000</td><td class="n">0,186</td></tr>
+        <tr><td>Speed Index</td><td class="n">12,1 s</td><td class="n">3,8 s</td><td class="n">9,6 s</td></tr>
+        <tr><td>Peso</td><td class="n">1.783 KB</td><td class="n">666 KB</td><td class="n">1.830 KB</td></tr>
+        <tr><td>Pedidos</td><td class="n">794</td><td class="n">32</td><td class="n">909</td></tr>
+      </table>
+      <p style="font-size:7.6pt;color:var(--texto-2)">Mediana de 3 corridas, CPU 4× y 4G simuladas. * Varía de 1,9 a 7,3 s entre corridas porque el logo esperaba a React.</p>
+    </div>
+    <div>
+      <h3 style="margin-top:0">Qué ocupa el hilo principal</h3>
+      <div class="chart-card" style="padding:3mm 3.5mm">
+        <div class="bars">
+          <div class="bar-row" style="grid-template-columns:24mm 1fr 10mm"><span class="lbl">Clarity</span><div class="bar-track"><div class="bar-fill rojo" style="width:100%"></div></div><span class="val">3,1 s</span></div>
+          <div class="bar-row" style="grid-template-columns:24mm 1fr 10mm"><span class="lbl">Onfocus / Adagio</span><div class="bar-track"><div class="bar-fill gris" style="width:39%"></div></div><span class="val">1,2 s</span></div>
+          <div class="bar-row" style="grid-template-columns:24mm 1fr 10mm"><span class="lbl">Moneytizer</span><div class="bar-track"><div class="bar-fill gris" style="width:35%"></div></div><span class="val">1,1 s</span></div>
+          <div class="bar-row" style="grid-template-columns:24mm 1fr 10mm"><span class="lbl">Código propio</span><div class="bar-track"><div class="bar-fill" style="width:29%"></div></div><span class="val">0,9 s</span></div>
+          <div class="bar-row" style="grid-template-columns:24mm 1fr 10mm"><span class="lbl">GTM (GA4)</span><div class="bar-track"><div class="bar-fill gris" style="width:26%"></div></div><span class="val">0,8 s</span></div>
+          <div class="bar-row" style="grid-template-columns:24mm 1fr 10mm"><span class="lbl">Smart AdServer</span><div class="bar-track"><div class="bar-fill gris" style="width:23%"></div></div><span class="val">0,7 s</span></div>
+          <div class="bar-row" style="grid-template-columns:24mm 1fr 10mm"><span class="lbl">InMobi (CMP)</span><div class="bar-track"><div class="bar-fill gris" style="width:13%"></div></div><span class="val">0,4 s</span></div>
+        </div>
+        <div class="legend"><span><i style="background:var(--malas)"></i>Analítica de sesión</span><span><i style="background:#b9ad97"></i>Publicidad y medición</span><span><i style="background:var(--marino)"></i>Truqito</span></div>
+      </div>
+      <p style="font-size:8.4pt;margin-top:2.5mm">Los scripts de subastas dentro de los iframes suman ~22 s acumulados más. <strong>Publicidad y Clarity explican cerca del 80 % del bloqueo</strong> (TBT 3,0 s → 0,6 s sin ellos): si alguien toca “+” mientras corren, el navegador tarda en responder. Eso es el INP de 312 ms.</p>
+    </div>
+  </div>
+
+  <div class="run-foot"><span>Truqito · Análisis SEO y velocidad</span><span class="der"><span class="num">Página </span><a class="conte" href="https://contelautaro.com.ar">Conte</a></span></div>
+</section>
+
+<!-- ============ 7. ANÁLISIS: CAUSAS Y RECOMENDACIONES ============ -->
+<section class="page">
+  <div class="run-head"><img src="../public/images/main_logo.webp" alt="Truqito" width="422" height="114"><span class="meta"><span class="sec">02 · Análisis</span><span>Causas y recomendaciones</span></span></div>
+
+  <h2>Por qué tarda, y qué se hizo</h2>
+
+  <div class="grid-2">
+    <div>
+      <h3 style="margin-top:2mm">El LCP de la home esperaba a React</h3>
+      <p style="font-size:8.6pt">El elemento LCP es el logo del header. Llegaba rápido (TTFB 0,26 s, descarga 0,19 s) pero <strong>esperaba de 0,97 a 3,75 s para dibujarse</strong>: el <code>&lt;img&gt;</code> estaba en <code>Header.js</code> y no existía hasta que React montaba. Además medía 3936×1063 px para mostrarse a 141×38.</p>
+    </div>
+    <div>
+      <h3 style="margin-top:2mm">El CLS de la guía es el anuncio</h3>
+      <p style="font-size:8.6pt">En la guía el contenido sigue debajo del anuncio y el alto del bloque se calcula con <code>ResizeObserver</code> <strong>después</strong> de que el banner carga. La página salta: 0,19 en laboratorio y 0,25 en usuarios reales. En la home el anuncio tiene su propio espacio y el salto es mínimo (0,007).</p>
+    </div>
+  </div>
+  <p style="font-size:8.6pt">En las dos páginas, tres hojas bloqueaban el render: Google Fonts por <code>@import</code> (~1–2 s), Boxicons desde unpkg (~1 s) y <code>main.css</code>.</p>
+
+  <h3>El competidor: trucogame.com/anotador-truco</h3>
+  <p style="font-size:8.6pt">Sitio completo de truco en Next.js (juego online, app, reglas). Debajo del tablero tiene ~120 palabras con todas las variantes de búsqueda (contador, planilla, tanteador, a 15 y a 30, buenas y malas, porotos o fósforos) y cuatro links internos grandes. Ofrece porotos y fósforos.</p>
+
+  <h3>Recomendaciones y estado al 24 de octubre</h3>
+  <table>
+    <tr><th style="width:8mm">#</th><th>Cambio</th><th>Mueve</th><th style="width:30mm">Estado</th></tr>
+    <tr><td>A1</td><td>Sacar Microsoft Clarity</td><td>INP, TBT −3 s</td><td><span class="b b-ok">En producción</span></td></tr>
+    <tr><td>A2</td><td>Diferir la publicidad: Moneytizer 2,5 s después del <code>load</code></td><td>INP, TBT, LCP</td><td><span class="b b-warn">Pendiente</span> 2.0.4</td></tr>
+    <tr><td>A3</td><td>Logo en el HTML inicial con <code>fetchpriority="high"</code></td><td>LCP −1 a −3 s</td><td><span class="b b-ok">En producción</span></td></tr>
+    <tr><td>A4</td><td>Logo de 3936×1063 a 422×114 px (57 → 15 KB)</td><td>LCP</td><td><span class="b b-ok">En producción</span></td></tr>
+    <tr><td>A5</td><td>Outfit servida desde el sitio con <code>preload</code></td><td>FCP, LCP</td><td><span class="b b-ok">En producción</span></td></tr>
+    <tr><td>A6</td><td>Boxicons → 7 máscaras SVG locales</td><td>FCP, LCP</td><td><span class="b b-ok">En producción</span></td></tr>
+    <tr><td>A7</td><td>Reservar el alto del anuncio en la guía</td><td>CLS 0,25 → ~0</td><td><span class="b b-mute">En pausa</span></td></tr>
+    <tr><td>B1</td><td>Guía como “Tabla de valores del truco”: title y H1 alineados, tabla visible, FAQ con schema</td><td>CTR de 120 mil impresiones</td><td><span class="b b-warn">Pendiente</span></td></tr>
+    <tr><td>B2</td><td>Texto debajo del tablero con las variantes de búsqueda</td><td>Relevancia</td><td><span class="b b-ok">v2.0.0</span> en <code>&lt;details&gt;</code></td></tr>
+    <tr><td>B3</td><td>Links internos visibles de la home a la guía</td><td>Autoridad de la guía</td><td><span class="b b-warn">Parcial</span></td></tr>
+    <tr><td>B4</td><td>Modo porotos</td><td>Paridad con el rival</td><td><span class="b b-mute">Descartado</span></td></tr>
+    <tr><td>C</td><td>404 real, <code>/guia-truco/</code> → 308, <code>noindex</code> en <code>/resultado/*</code>, schema de la guía</td><td>Indexación</td><td><span class="b b-ok">En producción</span></td></tr>
+    <tr><td>D</td><td>Prerender de todo con un framework (era “Vite”, terminó siendo Astro)</td><td>LCP, escalar páginas</td><td><span class="b b-ok">En producción</span> v2.0.3</td></tr>
+  </table>
+
+  <h3>Lo que mostró la primera ronda en producción</h3>
+  <div class="grid-3">
+    <div class="stat"><div class="v">90</div><div class="l">Performance de PageSpeed en la home (mediana de 3, con anuncios). Antes 51</div></div>
+    <div class="stat"><div class="v">0,76<small> s</small></div><div class="l">FCP de laboratorio. TBT 125 ms (antes 3.057 ms)</div></div>
+    <div class="stat"><div class="v">2,6–5,3<small> s</small></div><div class="l">LCP según la corrida: PageSpeed mide en escalones (ver página 10)</div></div>
+  </div>
+  <div class="nota">CRA ya optimizada, 24-10-2026 (<code>docs/mediciones/psi-produccion-cra.json</code>). PageSpeed dibuja de a saltos de ~1 s: el mismo código da LCP de ~3, ~5 o ~9 s. Comparación entre versiones en la <strong>página 10</strong>.</div>
+
+  <div class="run-foot"><span>Truqito · Análisis SEO y velocidad</span><span class="der"><span class="num">Página </span><a class="conte" href="https://contelautaro.com.ar">Conte</a></span></div>
+</section>
+
+<!-- ============ 8. MIGRACIÓN: ARQUITECTURA ============ -->
+<section class="page">
+  <div class="run-head"><img src="../public/images/main_logo.webp" alt="Truqito" width="422" height="114"><span class="meta"><span class="sec">03 · Migración</span><span>Arquitectura</span></span></div>
+
+  <div class="kicker">Migración · v2.0.0 · rama feat/astro</div>
+  <h2>De CRA a Astro + React con islas</h2>
+  <p class="lead">Cada página llega con su HTML completo desde el build y React solo activa lo interactivo, sin reemplazar nada. Mismas URLs, mismo <code>&lt;head&gt;</code> por página, todo el texto en el HTML inicial y el LCP en HTML estático.</p>
+
+  <div class="flow">
+    <div><div class="t">Antes · CRA</div><div class="ms">#root vacío</div>HTML con un div. React descarga, monta y recién ahí dibuja el tablero y el logo.</div>
+    <div><div class="t">Después · Astro</div><div class="ms">HTML completo</div>Logo, tablero 0-0, footer y texto SEO salen del build. Se ven en el primer dibujo, con o sin JS.</div>
+    <div><div class="t">Hidratación</div><div class="ms">tras el dibujo</div>Directiva propia <code>client:tras-dibujo</code>: <code>requestAnimationFrame</code> + <code>setTimeout(0)</code>.</div>
+    <div><div class="t">Partida guardada</div><div class="ms">después</div><code>localStorage</code> se lee al hidratar, así el HTML del build y el primer render de React coinciden.</div>
+  </div>
+
+  <div class="grid-2" style="grid-template-columns:1.05fr 1fr;margin-top:4mm">
+    <div class="arq">
+      <div class="cap">Base.astro · home</div>
+      <div class="box estatico"><div class="t">header#app-header <em>estático · logo 141×38 · LCP</em></div>
+        <div class="inner"><div class="box isla"><div class="t">Menu <em>isla</em></div></div></div>
+      </div>
+      <div class="box estatico"><div class="t">main <em>estático</em></div>
+        <div class="inner"><div class="box isla"><div class="t">Board + 2 Counter <em>isla · render 0-0</em></div></div></div>
+      </div>
+      <div class="box estatico"><div class="t">.ad-slot <em>estático · 50/90 px</em></div>
+        <div class="inner"><div class="box isla"><div class="t">Ads <em>isla · Moneytizer</em></div></div></div>
+      </div>
+      <div class="box estatico"><div class="t">Footer.astro <em>estático</em></div>
+        <div style="font-size:7.4pt;opacity:.75;margin-top:1mm">&lt;details&gt; “Sobre el anotador” con h1, texto y link a la guía</div>
+      </div>
+      <div style="display:flex;gap:4mm;margin-top:2.5mm;font-size:7pt;opacity:.75">
+        <span><span style="display:inline-block;width:3mm;height:3mm;border:1.5px solid rgba(236,219,186,.5);border-radius:2px;vertical-align:-.5mm"></span> HTML del build</span>
+        <span><span style="display:inline-block;width:3mm;height:3mm;border:1.5px dashed #4287f5;border-radius:2px;vertical-align:-.5mm"></span> isla de React</span>
+      </div>
+    </div>
+    <div>
+      <table>
+        <tr><th>Página</th><th>Qué es</th></tr>
+        <tr><td><code>index.astro</code></td><td>Layout + <code>Board</code> renderizado en 0-0</td></tr>
+        <tr><td><code>guia-truco.astro</code></td><td>Estático; las tres pestañas en el HTML, las inactivas con <code>hidden</code>. Un script de ~20 líneas alterna <code>hidden</code> y <code>aria-selected</code></td></tr>
+        <tr><td><code>resultado/[ganador]</code></td><td><code>nosotros</code> y <code>ellos</code> salen del build; cualquier otro valor usa <code>resultado.html</code>. Con <code>noindex</code></td></tr>
+        <tr><td>404</td><td>Sin cambios: <code>api/not-found.js</code> + <code>404.html</code></td></tr>
+      </table>
+      <p style="font-size:8.2pt">Estado compartido entre islas con <strong>nanostores</strong> (<code>stores/partida.js</code>): <code>maxPoints</code>, <code>teamNames</code> y <code>partidaCargada</code>. La lógica de <code>App.js</code> pasó tal cual.</p>
+    </div>
+  </div>
+
+  <h3>Decisiones</h3>
+  <table class="compact">
+    <tr><th style="width:44mm">Decisión</th><th>Motivo</th></tr>
+    <tr><td><strong>ClientRouter con swap propio</strong> (desde 2.0.1)</td><td>En la 2.0.0 (páginas separadas) cada navegación re-subastaba el anuncio. Solo cambian <code>&lt;head&gt;</code> y <code>&lt;main&gt;</code>; el anuncio no se mueve. <code>transition:persist</code> no sirve: sin <code>moveBefore()</code> (iOS) recarga el iframe.</td></tr>
+    <tr><td><strong>Islas renderizadas en el build</strong>, no <code>client:only</code></td><td>Un elemento borrado del DOM sigue siendo candidato a LCP (Chrome 88+) y Google indexa el HTML ya renderizado: el tablero y el texto SEO tienen que estar desde el principio y no borrarse al montar.</td></tr>
+    <tr><td><strong>Hidratar después del primer dibujo</strong></td><td><code>client:load</code> puede correr antes del primer dibujo; en producción eso lo atrasaba hasta 2,3 s.</td></tr>
+    <tr><td><strong>Texto SEO en un <code>&lt;details&gt;</code></strong></td><td>La app no tiene scroll. El bloque se abre tocando el © del footer, funciona sin JS y React no lo toca.</td></tr>
+    <tr><td><strong>Sin cambios en publicidad ni GA4</strong></td><td>Mismo código y orden. Diferir la publicidad sale aparte (2.0.4).</td></tr>
+    <tr><td><strong>Sin <code>@astrojs/vercel</code></strong></td><td>Salida estática con <code>build.format: "file"</code>; <code>api/</code> y <code>vercel.json</code> conviven igual que con CRA.</td></tr>
+    <tr><td><strong>Supabase fuera</strong></td><td>El login estaba apagado y los archivos de <code>api/</code> que lo usaban estaban vacíos.</td></tr>
+  </table>
+
+  <div class="run-foot"><span>Truqito · Migración a Astro</span><span class="der"><span class="num">Página </span><a class="conte" href="https://contelautaro.com.ar">Conte</a></span></div>
+</section>
+
+<!-- ============ 9. MIGRACIÓN: RIESGOS, PRUEBAS Y SALIDA ============ -->
+<section class="page">
+  <div class="run-head"><img src="../public/images/main_logo.webp" alt="Truqito" width="422" height="114"><span class="meta"><span class="sec">03 · Migración</span><span>Riesgos, pruebas y salida</span></span></div>
+
+  <h2>Que nadie pierda su partida</h2>
+  <p class="lead">Renderizar el tablero en el build trae un riesgo concreto: el HTML siempre dice 0-0, pero quien vuelve tiene una partida guardada en <code>localStorage</code> con las mismas claves que la versión CRA.</p>
+
+  <div class="grid-2">
+    <div>
+      <h4>Riesgo crítico: borrar la partida al cargarla</h4>
+      <p style="font-size:8.4pt">El contador reinicia los puntos cuando cambia <code>maxPoints</code>. Al cargar una partida a 15, el store pasa de 30 (valor por defecto) a 15 y la habría borrado. El átomo <code>partidaCargada</code> hace que <code>Counter</code> lea su estado recién después de la carga e ignore ese cambio: solo una acción del usuario reinicia. Tiene tests propios.</p>
+    </div>
+    <div>
+      <h4>Sin parpadeo de 0-0</h4>
+      <p style="font-size:8.4pt">Un script inline de tres líneas en el <code>&lt;head&gt;</code> revisa antes del primer dibujo si hay partida guardada y agrega <code>partida-guardada</code> a <code>&lt;html&gt;</code>. Con esa clase, fósforos, puntos, etapa y nombres quedan en <code>visibility: hidden</code> (sin cambiar el tamaño: no hay CLS) hasta que la partida se carga.</p>
+    </div>
+  </div>
+
+  <h3>Pruebas</h3>
+  <div class="grid-2" style="gap:3mm 5mm">
+    <div><h4>Unitarias · Vitest + Testing Library</h4><p style="font-size:8.2pt">Caracterización de Counter, VAR y Editar nombres escrita sobre el código CRA antes de refactorizar; store, Board, Menu, ResultPage, pestañas de la guía y la directiva <code>tras-dibujo</code>.</p></div>
+    <div><h4>Contrato SEO · sobre <code>dist/</code></h4><p style="font-size:8.2pt">title, description, canonical, OG, Twitter, robots y JSON-LD idénticos a producción; todo el texto de la guía en el HTML; head sin Clarity, unpkg ni Google Fonts; presupuesto de JS.</p></div>
+    <div><h4>Comparación URL por URL</h4><p style="font-size:8.2pt"><code>scripts/comparar-urls.mjs</code> compara 15 URLs entre dos deploys: status, <code>Location</code>, <code>X-Robots-Tag</code>, head, texto visible sin JS y <code>ads.txt</code>. Cualquier diferencia fuera de la lista permitida bloquea el merge.</p></div>
+    <div><h4>E2E · Playwright, solo en CI</h4><p style="font-size:8.2pt">Partida completa a 30, persistencia, partida guardada por la versión CRA, sin scroll, sin JS. Con la publicidad bloqueada para no generar impresiones falsas.</p></div>
+  </div>
+
+  <h3>Resultado de la 2.0.0</h3>
+  <div class="grid-3" style="grid-template-columns:repeat(4,1fr)">
+    <div class="stat"><div class="v">~55<small> KB</small></div><div class="l">JS inicial de la home (gzip). Antes 108,8 KB</div></div>
+    <div class="stat"><div class="v">60<small> KB</small></div><div class="l">de fuentes en woff2. Antes 118 KB</div></div>
+    <div class="stat"><div class="v">0</div><div class="l">vulnerabilidades en <code>npm audit</code>, sin Supabase ni react-scripts</div></div>
+    <div class="stat"><div class="v">0-0</div><div class="l">tablero visible en el primer dibujo, también sin JS</div></div>
+  </div>
+
+  <h3>Salida a producción</h3>
+  <div class="timeline">
+    <div class="hecho"><strong>24/10 04:30 · 2.0.0</strong>La despliega el script de a1. A los 3 min se vuelve a la CRA: cada página recargaba el anuncio.</div>
+    <div class="hecho"><strong>24/10 · 2.0.1</strong>ClientRouter con swap propio: el anuncio queda vivo entre páginas. OG nuevo.</div>
+    <div class="hecho"><strong>24/10 · 2.0.2 y 2.0.3</strong>Sin anuncio duplicado ni subasta extra al navegar. El menú vuelve a verse encima del tablero.</div>
+    <div><strong>Semanas 1–4</strong>CrUX semanal, posición y CTR en Search Console, web vitals en GA4 e ingresos de Moneytizer. Después, la publicidad diferida.</div>
+  </div>
+
+  <div class="grid-2" style="margin-top:4mm">
+    <div class="callout" style="margin:0"><div class="kicker">Vuelta atrás</div>Promover en Vercel el deploy anterior (segundos) y después revertir el merge. <strong>Se dispara</strong> con cualquier diferencia de SEO en producción, anuncios que no cargan o ingreso por sesión <strong>15 % abajo</strong> sostenido una semana.</div>
+    <div>
+      <h4>Pendiente</h4>
+      <ul style="font-size:8.4pt">
+        <li>CI en GitHub Actions con los e2e de Playwright.</li>
+        <li>Publicidad diferida (rama <code>release/2.0.1</code>, pasa a 2.0.4) después de 7 días de datos.</li>
+        <li>Confirmar en GA4 que cuenta las páginas por cambios del historial.</li>
+      </ul>
+      <h4 style="margin-top:2mm">Después, en PRs aparte</h4>
+      <ul style="font-size:8.4pt">
+        <li>Guía como “Tabla de valores del truco” (B1) y alto reservado del anuncio (A7).</li>
+        <li>Páginas nuevas (reglas, envido, señas, truco uruguayo) y <code>/pt</code>.</li>
+        <li>React 19 y pnpm, cada uno por separado.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="run-foot"><span>Truqito · Migración a Astro · Fuentes: <code>docs/analisis-seo.md</code>, <code>docs/plan-migracion-astro.md</code>, <code>CHANGELOG.md</code></span><span class="der"><span class="num">Página </span><a class="conte" href="https://contelautaro.com.ar">Conte</a></span></div>
+</section>
+
+<!-- ============ 10. MEDICIONES ============ -->
+<section class="page">
+  <div class="run-head"><img src="../public/images/main_logo.webp" alt="Truqito" width="422" height="114"><span class="meta"><span class="sec">03 · Migración</span><span>Mediciones</span></span></div>
+
+  <div class="kicker">Mediciones · 24 de octubre de 2026</div>
+  <h2>Qué mejoró y qué es ruido</h2>
+  <p class="lead">La misma página se midió de cuatro formas. Dan números muy distintos porque miden cosas distintas: solo una decide el posicionamiento, y solo una sirve para comparar versiones en el día.</p>
+
+  <h3>Cómo se midió</h3>
+  <table class="compact">
+    <tr><th style="width:45mm">Método</th><th>Qué es</th><th style="width:30mm">Sirve para</th></tr>
+    <tr><td><strong>Chrome real + celular lento</strong></td><td>Chromium 155 manejado por DevTools (CDP), CPU 4× más lenta y 4G lento (los valores de Lighthouse mobile). Mediana de 5 cargas por versión, contra los deploys reales de Vercel.</td><td><span class="b b-ok">Comparar versiones</span></td></tr>
+    <tr><td><strong>PageSpeed Insights (API)</strong></td><td>Lighthouse 13.5 en un servidor de Google, Moto G simulado. Su Chrome headless dibuja de a <strong>saltos de ~1 s</strong>: el primer dibujo cae en ~0,3, ~1,4 o ~2,4 s según la corrida.</td><td><span class="b b-warn">Diagnóstico</span>, no comparar con pocas corridas</td></tr>
+    <tr><td><strong>Lighthouse en a1</strong></td><td>La misma versión que PSI, en un contenedor temporal, guardando el trace completo para ver qué hace el navegador cuadro por cuadro.</td><td><span class="b b-info">Ver el porqué</span></td></tr>
+    <tr><td><strong>Usuarios reales</strong></td><td>CrUX: percentil 75 de 28 días de visitas reales en Chrome. GA4: web vitals de cada visita (<code>reportWebVitals.js</code>).</td><td><span class="b b-ok">Lo que usa Google</span></td></tr>
+  </table>
+
+  <h3>Comparación (segundos; menos es mejor)</h3>
+  <table>
+    <tr><th>Método</th><th>Métrica</th><th class="n">CRA</th><th class="n">2.0.0</th><th class="n">2.0.3</th></tr>
+    <tr><td rowspan="2"><strong>Chrome real + celular lento</strong></td><td>Primer dibujo (FCP)</td><td class="n">0,61</td><td class="n">0,45</td><td class="n">0,46</td></tr>
+    <tr><td>Logo visible (LCP)</td><td class="n">0,61</td><td class="n">0,66</td><td class="n">0,76</td></tr>
+    <tr><td rowspan="2"><strong>Lighthouse en a1</strong> (1 corrida)</td><td>Primer dibujo observado</td><td class="n">—</td><td class="n">2,46</td><td class="n">2,45</td></tr>
+    <tr><td>LCP simulado</td><td class="n">—</td><td class="n">7,1</td><td class="n">7,8</td></tr>
+    <tr><td><strong>PageSpeed</strong></td><td>LCP</td><td colspan="3" style="text-align:center">depende del escalón: ver la tabla de abajo</td></tr>
+    <tr><td rowspan="2"><strong>Usuarios reales · GA4</strong> (home, 23–24/10)</td><td>Visitas en verde: LCP · INP · CLS</td><td class="n">94 % · <strong style="color:var(--bad)">71 %</strong> · 97 %</td><td class="n">—</td><td class="n">pendiente</td></tr>
+    <tr><td>Promedio: LCP · INP</td><td class="n">1,04 s · ~0,12 s</td><td class="n">—</td><td class="n">pendiente</td></tr>
+    <tr><td><strong>Usuarios reales · CrUX</strong> (p75, 28 días)</td><td>LCP · INP</td><td class="n">4,7 s · 312 ms</td><td class="n">—</td><td class="n">pendiente</td></tr>
+  </table>
+
+  <h3>Los escalones de PageSpeed</h3>
+  <div class="grid-2" style="grid-template-columns:1.2fr 1fr;align-items:start">
+    <table class="compact">
+      <tr><th>Primer dibujo</th><th class="n">LCP en PSI</th><th>Corridas por versión</th></tr>
+      <tr><td>~0,3 s</td><td class="n">~3,2 s</td><td>2.0.0 ×1 · sin router ×2</td></tr>
+      <tr><td>~1,4 s</td><td class="n">~5,3 s</td><td>CRA ×2 · 2.0.0 ×2 · sin router ×1 · solo router ×1</td></tr>
+      <tr><td>~2,4 s</td><td class="n">~9 s</td><td><strong>2.0.3 ×5</strong> · 2.0.0 ×2 · solo router ×1</td></tr>
+    </table>
+    <p style="font-size:8.4pt;margin:0">Todas las versiones caen en los mismos tres escalones, así que una sola corrida no dice nada. Pero la 2.0.3 cayó <strong>5 de 5</strong> veces en el más alto: coincide con el LCP ~0,1 s más tarde que muestra el Chrome real. Ese efecto chico, PageSpeed lo agranda a un salto de ~1 s.</p>
+  </div>
+
+  <div class="grid-2" style="margin-top:4mm">
+    <div class="callout" style="margin:0"><div class="kicker">Conclusión</div>El tablero aparece <strong>igual de rápido</strong> que en la 2.0.0 y antes que en la CRA. El logo (LCP), <strong>~0,1 s más tarde</strong> en celulares lentos. Los 8–9 s de PageSpeed son ruido de laboratorio.</div>
+    <div>
+      <h4>Pendiente</h4>
+      <ul style="font-size:8.4pt">
+        <li>Google aprueba una métrica con ≥ 75 % de visitas en verde: hoy aprueban LCP, FCP, CLS y TTFB; <strong>INP no (71 %)</strong>. La palanca es la publicidad diferida (2.0.4).</li>
+        <li>GA4: 2.0.3 contra la CRA por hora en cuanto se procesen los datos. CrUX baja de 4,7 s cuando su ventana de 28 días deje atrás octubre.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="run-foot"><span>Truqito · Mediciones · Datos: <code>docs/mediciones/</code>, traces de Lighthouse en a1</span><span class="der"><span class="num">Página </span><a class="conte" href="https://contelautaro.com.ar">Conte</a></span></div>
+</section>
+
+<!-- ============ 11. ¿SON BUENOS NÚMEROS? ============ -->
+<section class="page">
+  <div class="run-head"><img src="../public/images/main_logo.webp" alt="Truqito" width="422" height="114"><span class="meta"><span class="sec">03 · Migración</span><span>Usuarios reales</span></span></div>
+
+  <div class="kicker">Usuarios reales · GA4 · home · 23 y 24 de octubre de 2026</div>
+  <h2>¿Son buenos números?</h2>
+  <p class="lead">Sí, menos uno. Google aprueba una métrica cuando <strong>al menos el 75 % de las visitas</strong> la tienen en verde. Estos son los datos de las visitas reales a la home, que cada una manda a GA4 (<code>reportWebVitals.js</code>), sin contar los eventos sin calificación.</p>
+
+  <table>
+    <tr><th style="width:18mm">Métrica</th><th>Qué mide</th><th class="n">Visitas en verde</th><th class="n">Promedio</th><th class="n">Verde si</th><th style="width:20mm">¿Aprueba?</th></tr>
+    <tr><td><strong>LCP</strong></td><td>Cuánto tarda en verse lo principal (el logo)</td><td class="n">94 %</td><td class="n">1,04 s</td><td class="n">&lt; 2,5 s</td><td><span class="b b-ok">Aprueba</span></td></tr>
+    <tr><td><strong>FCP</strong></td><td>Cuándo aparece algo en pantalla</td><td class="n">89 %</td><td class="n">1,04 s</td><td class="n">&lt; 1,8 s</td><td><span class="b b-ok">Aprueba</span></td></tr>
+    <tr><td><strong>CLS</strong></td><td>Si la pantalla salta mientras carga</td><td class="n">97 %</td><td class="n">0,01</td><td class="n">&lt; 0,1</td><td><span class="b b-ok">Aprueba</span></td></tr>
+    <tr><td><strong>TTFB</strong></td><td>Cuánto tarda en responder el servidor</td><td class="n">88 %</td><td class="n">0,47 s</td><td class="n">&lt; 0,8 s</td><td><span class="b b-ok">Aprueba</span></td></tr>
+    <tr><td><strong>INP</strong></td><td>Qué tan rápido responde al tocar</td><td class="n" style="color:var(--bad);font-weight:700">71 %</td><td class="n">~0,12 s</td><td class="n">&lt; 0,2 s</td><td><span class="b b-bad">No, por poco</span></td></tr>
+  </table>
+
+  <div class="chart-card" style="margin-top:4mm">
+    <h4>Visitas en verde (la línea es el 75 % que pide Google)</h4>
+    <div class="bars">
+      <div class="bar-row"><span class="lbl">CLS</span><div class="bar-track"><div class="bar-fill" style="width:97%"></div><span class="umbral" style="left:75%"><span>75 %</span></span></div><span class="val">97 %</span></div>
+      <div class="bar-row"><span class="lbl">LCP</span><div class="bar-track"><div class="bar-fill" style="width:94%"></div><span class="umbral" style="left:75%"></span></div><span class="val">94 %</span></div>
+      <div class="bar-row"><span class="lbl">FCP</span><div class="bar-track"><div class="bar-fill" style="width:89%"></div><span class="umbral" style="left:75%"></span></div><span class="val">89 %</span></div>
+      <div class="bar-row"><span class="lbl">TTFB</span><div class="bar-track"><div class="bar-fill" style="width:88%"></div><span class="umbral" style="left:75%"></span></div><span class="val">88 %</span></div>
+      <div class="bar-row"><span class="lbl">INP</span><div class="bar-track"><div class="bar-fill rojo" style="width:71%"></div><span class="umbral" style="left:75%"></span></div><span class="val">71 %</span></div>
+    </div>
+  </div>
+
+  <h3>Qué quiere decir</h3>
+  <div class="grid-2">
+    <div>
+      <h4>La carga ya está bien</h4>
+      <p style="font-size:8.6pt">El 94 % de las visitas ve la página en menos de 2,5 s. El LCP de 4,7 s del análisis ya no es lo que viven los usuarios: CrUX promedia 28 días y todavía arrastra lo de antes del 23/10. Debería verse en verde a mediados de noviembre.</p>
+    </div>
+    <div>
+      <h4>Falta el INP</h4>
+      <p style="font-size:8.6pt">De cada 100 toques, unos 29 tardan más de 0,2 s en responder. Faltan ~4 puntos para aprobar. La causa son las subastas de la publicidad mientras se juega: la <strong>publicidad diferida (2.0.4)</strong> es la palanca.</p>
+    </div>
+  </div>
+
+  <div class="callout"><div class="kicker">Cómo leer estos datos</div>Son de la versión CRA (los datos procesados de la 2.0.x llegan 24–48 h después). Los promedios salen del parámetro <code>value</code> que ya manda cada evento; Google mira el percentil 75, que siempre da más alto que el promedio. Siguiente paso: la misma tabla para la 2.0.3 y la evolución semanal del p75 con la API de CrUX History.</div>
+
+  <div class="run-foot"><span>Truqito · Usuarios reales · Fuente: GA4 (propiedad 451539738), eventos de web vitals</span><span class="der"><span class="num">Página </span><a class="conte" href="https://contelautaro.com.ar">Conte</a></span></div>
+</section>
+
+</body>
+</html>
