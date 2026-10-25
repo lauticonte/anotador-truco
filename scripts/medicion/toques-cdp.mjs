@@ -1,5 +1,7 @@
-// Mide la respuesta a toques reales en + y − (Event Timing, lo mismo que usa INP), con CPU 4× más lenta.
-// Uso: node scripts/medicion/toques-cdp.mjs <ws-del-navegador> <url> <con|sin> [toques]
+// Mide la respuesta a toques reales en + y − (Event Timing, lo mismo que usa INP) y desglosa los frames largos (LoAF).
+// Uso: [CPU=4] [PAUSA=700] node scripts/medicion/toques-cdp.mjs <ws-del-navegador> <url> <con|sin> [toques]
+//   CPU = cuántas veces más lenta (15 ≈ celular de gama baja); PAUSA = ms entre toques (250 ≈ cantar un envido)
+//   Arranca siempre con la partida limpia: con puntos guardados la partida puede terminar a mitad de la medición
 //   con = deja cargar la publicidad; sin = bloquea anuncios, CMP y analítica para ver solo el código propio
 const [wsUrl, url, modo, toquesArg] = process.argv.slice(2);
 const toques = Number(toquesArg ?? 12);
@@ -19,19 +21,53 @@ await s("Network.enable");
 if (modo === "sin") {
   await s("Network.setBlockedURLs", { urls: ["*themoneytizer*", "*sascdn*", "*smartadserver*", "*inmobi*", "*googletagmanager*", "*google-analytics*", "*doubleclick*", "*prebid*", "*criteo*", "*quantserve*", "*first-id*", "*pubmatic*", "*rubicon*", "*casalemedia*", "*adagio*", "*4dex*", "*amxrtb*", "*hyth.io*", "*pbxai*", "*33across*", "*id5-sync*", "*crwdcntrl*", "*onetag*", "*rlcdn*", "*a-mx*", "*a-mo.net*", "*pbstck*", "*adleadevent*", "*biddertmz*", "*_vercel/insights*"] });
 }
+// DIST=<carpeta del build>: las peticiones a la URL se responden con ese build, en el dominio real.
+// Así la publicidad corre igual que en producción, pero con el código nuevo (comparar antes de publicar).
+if (process.env.DIST) {
+  const { readFile } = await import("node:fs/promises");
+  const { join, extname } = await import("node:path");
+  const origen = new URL(url).origin;
+  const tipos = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".webp": "image/webp", ".woff2": "font/woff2", ".ico": "image/x-icon", ".txt": "text/plain", ".xml": "application/xml", ".webmanifest": "application/manifest+json" };
+  ws.addEventListener("message", async ({ data }) => {
+    const m = JSON.parse(data);
+    if (m.method !== "Fetch.requestPaused" || m.sessionId !== sessionId) return;
+    const { requestId, request } = m.params;
+    const ruta = decodeURIComponent(new URL(request.url).pathname);
+    for (const archivo of [ruta, join(ruta, "index.html"), `${ruta}.html`]) {
+      try {
+        const cuerpo = await readFile(join(process.env.DIST, archivo));
+        if (!extname(archivo)) continue;
+        return cdp("Fetch.fulfillRequest", { requestId, responseCode: 200, body: cuerpo.toString("base64"), responseHeaders: [{ name: "Content-Type", value: tipos[extname(archivo)] ?? "application/octet-stream" }, { name: "Cache-Control", value: "no-store" }] }, sessionId);
+      } catch (_) {}
+    }
+    cdp("Fetch.continueRequest", { requestId }, sessionId);
+  });
+  await s("Fetch.enable", { patterns: [{ urlPattern: `${origen}/*`, requestStage: "Request" }] });
+}
+// Chrome de Android: sin "HeadlessChrome", que la publicidad trata distinto
+await s("Emulation.setUserAgentOverride", { userAgent: "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36" });
 await s("Emulation.setDeviceMetricsOverride", { width: 412, height: 823, deviceScaleFactor: 1.75, mobile: true });
-await s("Emulation.setCPUThrottlingRate", { rate: 4 });
+await s("Emulation.setCPUThrottlingRate", { rate: Number(process.env.CPU ?? 4) });
 await s("Runtime.evaluate", { expression: "1" });
 await s("Page.navigate", { url: `${url}?inp=${Date.now()}` });
+await esperar(4000);
+await s("Runtime.evaluate", { expression: `localStorage.clear(); localStorage.setItem("tapHintSessions","10")` });
+await s("Page.reload");
 await esperar(modo === "con" ? 15000 : 6000); // con publicidad: dejar que arranquen las subastas
 
+const { result: ver } = await s("Runtime.evaluate", { returnByValue: true, expression: `document.body.innerText.match(/versión [0-9.]+/)?.[0] + " · anuncio " + (document.querySelector("[id^=sas_]") ? "sí" : "no")` });
+console.log(`[${ver.value}]`);
 // Observador de Event Timing: cada interacción con su demora de entrada, procesamiento y presentación
 await s("Runtime.evaluate", { expression: `
   localStorage.setItem("tapHintSessions", "10");
   window.__inp = [];
   new PerformanceObserver((l) => { for (const e of l.getEntries()) if (e.interactionId && (e.name === "pointerup" || e.name === "click" || e.name === "pointerdown"))
-    window.__inp.push({ id: e.interactionId, dur: e.duration, entrada: e.processingStart - e.startTime, proceso: e.processingEnd - e.processingStart, presentacion: e.startTime + e.duration - e.processingEnd, nombre: e.name }); })
+    window.__inp.push({ id: e.interactionId, t0: e.startTime, fin: e.startTime + e.duration, ps: e.processingStart, pe: e.processingEnd, nombre: e.name }); })
     .observe({ type: "event", durationThreshold: 16, buffered: false });
+  window.__loaf = [];
+  new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__loaf.push({ start: e.startTime, dur: e.duration, render: e.renderStart, sl: e.styleAndLayoutStart, block: e.blockingDuration,
+    scripts: e.scripts.map((x) => ({ d: x.duration, src: (x.sourceURL || x.invoker || "").slice(0, 80), inv: x.invokerType, quien: x.invoker, fn: x.sourceFunctionName, url: (x.sourceURL||"").split("/").pop() })) }); })
+    .observe({ type: "long-animation-frame", buffered: false });
 ` });
 const centro = async (sel) => (await s("Runtime.evaluate", { returnByValue: true, expression: `(() => { const r = document.querySelector('${sel}').getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; })()` })).result.value;
 const tocar = async ({ x, y }) => {
@@ -40,17 +76,25 @@ const tocar = async ({ x, y }) => {
 };
 const mas = await centro(".counter-body-nos button.counter-button:last-child");
 const menos = await centro(".counter-body-nos button.counter-button:first-child");
-for (let i = 0; i < toques; i++) { await tocar(i % 3 === 2 ? menos : mas); await esperar(700); }
+for (let i = 0; i < toques; i++) { await tocar(i % 4 === 3 ? menos : mas); await esperar(Number(process.env.PAUSA ?? 700)); }
 await esperar(1500);
 const { result } = await s("Runtime.evaluate", { returnByValue: true, expression: "window.__inp" });
-// Por interacción, la entrada más larga (como INP)
+// Por interacción, como web-vitals: todas las entradas del mismo toque juntas
 const porId = {};
-for (const e of result.value) if (!porId[e.id] || e.dur > porId[e.id].dur) porId[e.id] = e;
-const v = Object.values(porId).sort((a, b) => a.dur - b.dur);
+for (const e of result.value) { const x = (porId[e.id] ??= { t0: e.t0, fin: e.fin, ps: e.ps, pe: e.pe }); x.t0 = Math.min(x.t0, e.t0); x.fin = Math.max(x.fin, e.fin); x.ps = Math.min(x.ps, e.ps); x.pe = Math.max(x.pe, e.pe); }
+const v = Object.values(porId).map((x) => ({ dur: x.fin - x.t0, entrada: x.ps - x.t0, proceso: x.pe - x.ps, presentacion: x.fin - x.pe })).sort((a, b) => a.dur - b.dur);
 const r = (x) => Math.round(x);
 const p = (q) => v[Math.min(v.length - 1, Math.floor(q * v.length))];
 console.log(`${modo === "con" ? "CON publicidad" : "SIN publicidad"}: ${v.length} toques · mediana ${r(p(0.5).dur)} ms · p75 ${r(p(0.75).dur)} ms · máximo ${r(v[v.length - 1].dur)} ms · lentos (>200 ms): ${v.filter((x) => x.dur > 200).length}`);
 const prom = (k) => r(v.reduce((a, x) => a + x[k], 0) / v.length);
 console.log(`  promedio por fase: demora de entrada ${prom("entrada")} ms · procesamiento (nuestro JS) ${prom("proceso")} ms · presentación (dibujar) ${prom("presentacion")} ms`);
+const { result: lf } = await s("Runtime.evaluate", { returnByValue: true, expression: "window.__loaf" });
+let sc = 0, est = 0, pin = 0; const fuentes = {};
+for (const f of lf.value) { const fin = f.start + f.dur; const sl = f.sl || fin; const rs = f.render || sl;
+  pin += fin - sl; est += sl - rs; for (const x of f.scripts) { sc += x.d; const k = x.src.replace(/^https?:\/\/([^/]+).*/, "$1") || x.inv; fuentes[k] = (fuentes[k] ?? 0) + x.d; } }
+console.log(`  LoAF: ${lf.value.length} frames largos · scripts ${r(sc)} ms · render (rAF/estilos) ${r(est)} ms · estilos+layout+pintado ${r(pin)} ms`);
+const inv = {}; for (const f of lf.value) for (const x of f.scripts) { const k = `${x.inv} ${x.quien} ${x.url} ${x.fn}`; inv[k] = (inv[k] ?? 0) + x.d; }
+console.log("  por invocador:\n   " + Object.entries(inv).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([k, d]) => `${r(d)} ms  ${k}`).join("\n   "));
+console.log("  scripts por origen:", Object.entries(fuentes).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, d]) => `${k} ${r(d)}`).join(" · "));
 await cdp("Target.closeTarget", { targetId });
 ws.close();

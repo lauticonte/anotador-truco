@@ -2,6 +2,16 @@
 
 Todas las versiones de Truqito. Sigue [Semantic Versioning](https://semver.org/). Lo que ven los usuarios está en **Novedades** dentro de la app (`src/components/Changelog.jsx`).
 
+## [2.0.5] - 2026-10-25
+
+### Para los usuarios
+- Los botones responden más rápido en celulares lentos, sobre todo el primer toque de la partida.
+
+### Técnico
+- INP: cada toque guardaba la hora en el historial con `toLocaleTimeString("es-AR", …)`, que arma un formateador de fechas nuevo. Era más de la mitad del JS de cada toque y, en el primero, ~800 ms con CPU 15×. Ahora el `Intl.DateTimeFormat` se crea una vez, en un momento libre después de montar, y se reutiliza (mismo texto). Peor toque en laboratorio (CPU 15×, sin publicidad): ~820 → ~180 ms; JS por toque sin limitar: 10,4 → 4,5 ms.
+- Los `<defs>` del SVG de cada tablero se arman una sola vez: React ya no los vuelve a comparar en cada toque.
+- Web vitals: el evento INP manda también `inp_script` (fase, origen y tipo del script más largo, de Long Animation Frames), `inp_script_ms`, `inp_style_layout`, `inp_paint` e `inp_unattributed`, para separar el dibujo propio de la publicidad. Dimensión y métricas registradas en GA4 el 25/10.
+
 ## [2.0.4] - 2026-10-24
 
 ### Para los usuarios
