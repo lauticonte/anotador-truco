@@ -67,6 +67,21 @@ Rama `perf/inp-dibujo`, desde `origin/master`. Tests y build en verde.
 
 **Resultado en laboratorio** (CPU 15×, 20 toques, 2 corridas): peor toque **~820 → ~180 ms**; procesamiento promedio 100 → 57 ms; JS por toque sin limitar 10,4 → 4,5 ms. La mediana casi no cambia: lo que mejora es el primer toque.
 
+**Con publicidad real, desde fuera de casa (25/10).** Túnel SOCKS por SSH a a1 (DNS de Oracle, sin AdGuard), Chromium con `--disable-site-isolation-trials` (los iframes de los anuncios en el mismo proceso, como en la mayoría de los Android), CPU 15×, 60 toques cada 600 ms, 3 corridas de cada versión alternadas. La 2.0.5 se sirvió **en el dominio real** con `DIST=dist` (ver `toques-cdp.mjs`), así la publicidad la trata igual que a producción. Desde la IP de Oracle corre toda la subasta (~35 bidders), pero no gana ningún anuncio pagado.
+
+| | 2.0.4 | 2.0.5 |
+|---|---|---|
+| JS del clic de React (total de la sesión) | 1,8–1,9 s | 0,5–0,8 s (**−60 %**) |
+| Procesamiento promedio por toque | 77–82 ms | 48–63 ms |
+| Demora de entrada promedio | 83–97 ms | 88–111 ms |
+| Mediana / p75 | 128–136 / 151–164 ms | 112–131 / 140–159 ms |
+| **Peor toque** | **2,8–3,3 s** | **2,9–3,3 s** |
+
+- **Prebid de Moneytizer (`cdn.themoneytizer.fr/…/prebid.js`, `setTimeout`) es ~2/3 de todo el JS de los frames largos:** 5,2–5,7 s por sesión, contra 1,4–2,9 s de todo lo nuestro. El peor toque de cada sesión (~3 s con CPU 15×, unos 200 ms en un celular normal) es igual en las dos versiones: es un toque que cae encima de una tarea de la subasta. **Ese es el INP de las visitas largas, y no depende de nuestro código.**
+- Sin publicidad, la demora de entrada era ~20 ms; con publicidad, ~90–110 ms. La presentación da ~55 ms en las dos versiones: este laboratorio **no** reproduce los ~430 ms de presentación de GA4 (sin anuncio gráfico pagado ni GPU de celular barato). Eso lo va a decir `inp_script`/`inp_unattributed` en GA4.
+- Fallas del método: con 45 sumas y 15 restas la partida termina cerca del toque 40 y los últimos toques caen en `/resultado` (aparece `ViewTransitionCallback`). Les pasa igual a las dos versiones. Para la próxima: más restas o menos toques.
+- **Conclusión:** la 2.0.5 baja nuestro costo por toque a menos de la mitad y elimina el primer toque lento, pero **el peor toque con publicidad es de Prebid**. Para que el INP pase el 75 % casi seguro hay que hablar con Moneytizer (menos bidders, `timeout`/refresco más largo, o pausar el refresco mientras se toca). Es decisión del dueño, por ingresos.
+
 **Siguiente paso después de publicar:** a las 48 h, en GA4 filtrar `INP` con calificación mejorable/mala y abrir por `inp_script`. Si domina `presentation-delay` con un dominio de publicidad, o `inp_unattributed` alto, es Moneytizer (decisión del dueño). Si domina `propio` con `inp_style_layout`/`inp_paint`, siguen los fósforos: animación `match-place` en elementos SVG (no se compone en GPU), gradientes de las cabezas y la llama.
 
 ## 4. Pendientes, por prioridad
@@ -76,7 +91,7 @@ Rama `perf/inp-dibujo`, desde `origin/master`. Tests y build en verde.
 | 1 | **Seguridad:** borrar la copia de la clave de la cuenta de servicio que quedó en el servidor del despliegue automático, y apagar ese timer | Comando en las notas privadas (`truqito-operacion.md`, en la carpeta de la doc de la red) | Dueño (el auto mode lo bloquea) |
 | 2 | **Seguridad:** CVE-2026-111497 (Brotli) | Plan en la carpeta de la doc de la red (pendiente #41) | Con OK del dueño |
 | 3 | ~~Comparar CRA contra 2.0.x~~ | Hecho el 25/10, ver la sección 2 | — |
-| 4 | **INP: publicar la 2.0.5 y leer LoAF** | Fases ya medidas (domina la presentación, sección 2). PR de `perf/inp-dibujo` → producción → a las 48 h abrir el INP por `inp_script` (sección 3). Si es la publicidad, hablar con Moneytizer (frecuencia de refresco o bidders): decisión del dueño por ingresos | Agente y dueño |
+| 4 | **INP: publicar la 2.0.5 y leer LoAF** | Fases ya medidas (domina la presentación, sección 2). Con publicidad real, el peor toque es de Prebid (sección 3): preparar el pedido a Moneytizer con los datos de GA4. PR de `perf/inp-dibujo` → producción → a las 48 h abrir el INP por `inp_script` (sección 3). Si es la publicidad, hablar con Moneytizer (frecuencia de refresco o bidders): decisión del dueño por ingresos | Agente y dueño |
 | 5 | **LCP +0,1 s en celulares lentos** | Confirmar con `lcp_render_delay` en GA4. Si se confirma: cargar el JS del router después del logo (prioridad baja o `import()` diferido) | Agente |
 | 6 | **Publicidad diferida** (rama `release/2.0.1`, sobre la 2.0.0) | El dueño dijo "la sacaría por ahora", **sin aclarar si es pausarla o publicarla**: preguntar. Si es publicarla, hay que rehacerla sobre `master` (sería la 2.0.5) | Dueño decide |
 | 7 | **Search Console:** solicitar indexación de `/` y `/guia-truco` (el contenido cambió) | Solo desde la web: Inspeccionar URL → Solicitar indexación. No hay API para páginas comunes | Dueño |
@@ -131,6 +146,7 @@ Para no repetir los errores de esta semana:
 14. **Event Timing: agrupar por interacción.** La versión vieja de `toques-cdp.mjs` tomaba la entrada más larga (`pointerup`), cuyo procesamiento termina antes del `click`: el trabajo de React aparecía como "presentación". web-vitals junta todas las entradas del toque; el script ahora también.
 15. **CPU 4× esconde lo que pasa en celulares lentos:** con 4× el peor toque era ~200 ms y "nuestro código no es lo lento". Con 15× apareció el primer toque de ~800 ms. Medir el **máximo** con `CPU=15` y perfilar con `perfil-cdp.mjs` antes de culpar a terceros.
 16. **`pgrep -f`/`pkill -f` con el patrón en la misma línea de comandos se encuentran a sí mismos.** Usar `pgrep -f '[a]stro preview'`, o guardar el PID al lanzar.
+18. **Para probar con publicidad desde casa:** `ssh -f -N -D 127.0.0.1:1088 -i ~/.ssh/oracle-free ubuntu@10.10.210.2` y `agent-browser --proxy socks5://127.0.0.1:1088 --args "--disable-site-isolation-trials"`. Con SOCKS5 el DNS también se resuelve en a1. Para cerrarlo, matar el PID del `ssh` (no `pkill -f`).
 17. **GA4: el nombre visible de una dimensión no puede repetir el de una métrica** (409 "already exists").
 
 ## 8. Accesos y herramientas

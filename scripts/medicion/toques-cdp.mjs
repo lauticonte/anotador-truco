@@ -21,6 +21,31 @@ await s("Network.enable");
 if (modo === "sin") {
   await s("Network.setBlockedURLs", { urls: ["*themoneytizer*", "*sascdn*", "*smartadserver*", "*inmobi*", "*googletagmanager*", "*google-analytics*", "*doubleclick*", "*prebid*", "*criteo*", "*quantserve*", "*first-id*", "*pubmatic*", "*rubicon*", "*casalemedia*", "*adagio*", "*4dex*", "*amxrtb*", "*hyth.io*", "*pbxai*", "*33across*", "*id5-sync*", "*crwdcntrl*", "*onetag*", "*rlcdn*", "*a-mx*", "*a-mo.net*", "*pbstck*", "*adleadevent*", "*biddertmz*", "*_vercel/insights*"] });
 }
+// DIST=<carpeta del build>: las peticiones a la URL se responden con ese build, en el dominio real.
+// Así la publicidad corre igual que en producción, pero con el código nuevo (comparar antes de publicar).
+if (process.env.DIST) {
+  const { readFile } = await import("node:fs/promises");
+  const { join, extname } = await import("node:path");
+  const origen = new URL(url).origin;
+  const tipos = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".webp": "image/webp", ".woff2": "font/woff2", ".ico": "image/x-icon", ".txt": "text/plain", ".xml": "application/xml", ".webmanifest": "application/manifest+json" };
+  ws.addEventListener("message", async ({ data }) => {
+    const m = JSON.parse(data);
+    if (m.method !== "Fetch.requestPaused" || m.sessionId !== sessionId) return;
+    const { requestId, request } = m.params;
+    const ruta = decodeURIComponent(new URL(request.url).pathname);
+    for (const archivo of [ruta, join(ruta, "index.html"), `${ruta}.html`]) {
+      try {
+        const cuerpo = await readFile(join(process.env.DIST, archivo));
+        if (!extname(archivo)) continue;
+        return cdp("Fetch.fulfillRequest", { requestId, responseCode: 200, body: cuerpo.toString("base64"), responseHeaders: [{ name: "Content-Type", value: tipos[extname(archivo)] ?? "application/octet-stream" }, { name: "Cache-Control", value: "no-store" }] }, sessionId);
+      } catch (_) {}
+    }
+    cdp("Fetch.continueRequest", { requestId }, sessionId);
+  });
+  await s("Fetch.enable", { patterns: [{ urlPattern: `${origen}/*`, requestStage: "Request" }] });
+}
+// Chrome de Android: sin "HeadlessChrome", que la publicidad trata distinto
+await s("Emulation.setUserAgentOverride", { userAgent: "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Mobile Safari/537.36" });
 await s("Emulation.setDeviceMetricsOverride", { width: 412, height: 823, deviceScaleFactor: 1.75, mobile: true });
 await s("Emulation.setCPUThrottlingRate", { rate: Number(process.env.CPU ?? 4) });
 await s("Runtime.evaluate", { expression: "1" });
@@ -30,6 +55,8 @@ await s("Runtime.evaluate", { expression: `localStorage.clear(); localStorage.se
 await s("Page.reload");
 await esperar(modo === "con" ? 15000 : 6000); // con publicidad: dejar que arranquen las subastas
 
+const { result: ver } = await s("Runtime.evaluate", { returnByValue: true, expression: `document.body.innerText.match(/versión [0-9.]+/)?.[0] + " · anuncio " + (document.querySelector("[id^=sas_]") ? "sí" : "no")` });
+console.log(`[${ver.value}]`);
 // Observador de Event Timing: cada interacción con su demora de entrada, procesamiento y presentación
 await s("Runtime.evaluate", { expression: `
   localStorage.setItem("tapHintSessions", "10");
