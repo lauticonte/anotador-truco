@@ -6,6 +6,13 @@ import "../styles/Changelog.css";
 const Changelog = ({ isVisible, onClose }) => {
   const changelog = [
     {
+      version: "2.0.5",
+      date: "25/10/2026",
+      changes: [
+        "Los botones responden más rápido en celulares lentos, sobre todo el primer toque de la partida."
+      ]
+    },
+    {
       version: "2.0.4",
       date: "24/10/2026",
       changes: [

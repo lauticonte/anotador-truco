@@ -1,6 +1,6 @@
 # Handoff: Truqito
 
-Actualizado: **2026-10-24, ~19 h**. Producción: **v2.0.4** (`master` = `dc87d17`), en https://truco.contelautaro.com.ar.
+Actualizado: **2026-10-25, ~18 h**. Producción: **v2.0.4** (`master` = `b688bf5`), en https://truco.contelautaro.com.ar. **En curso: v2.0.5** (rama `perf/inp-dibujo`, INP), ver [sección 3](#3-en-curso-v205-inp).
 
 Este documento alcanza para retomar el trabajo. El detalle histórico está en los documentos de la [tabla del final](#documentos).
 
@@ -13,6 +13,7 @@ Este documento alcanza para retomar el trabajo. El detalle histórico está en l
 | 2.0.2 | 24/10 | Los scripts del anuncio se marcan con `data-astro-exec` antes del swap: sin anuncio duplicado ni subasta extra al navegar |
 | 2.0.3 | 24/10 | Sin `view-transition-name` en el header: el menú lateral volvía a quedar tapado por el tablero |
 | 2.0.4 | 24/10 | `title="Publicidad"` en los iframes de Moneytizer (accesibilidad) |
+| 2.0.5 | *en PR* | INP: el formateador de la hora del historial se crea una vez (era ~800 ms el primer toque con CPU 15×). GA4 recibe el desglose de Long Animation Frames del INP |
 
 Releases en GitHub: v2.0.0 a v2.0.4 (la v2.0.4 todavía no tiene release, ver pendientes). `CHANGELOG.md` y Novedades (`src/components/Changelog.jsx`) están al día.
 
@@ -34,14 +35,48 @@ Releases en GitHub: v2.0.0 a v2.0.4 (la v2.0.4 todavía no tiene release, ver pe
 - **Laboratorio, Chrome real con CPU 4× y 4G** (`carga-cdp.mjs`, mediana de 5): CRA FCP 0,61 / LCP 0,61 s · 2.0.0 0,45 / 0,66 · 2.0.3 0,46 / 0,76. El tablero sale antes que en la CRA; **el logo, ~0,1 s más tarde**.
 - **Toques en el laboratorio** (`toques-cdp.mjs`, CPU 4×): mediana 24–32 ms sin publicidad y 48 ms con publicidad; ningún toque pasó de 200 ms. Nuestro código no es lo lento.
 
-## 3. Pendientes, por prioridad
+### Usuarios reales con la 2.0.x (medido el 25/10)
+
+% en verde **solo sobre eventos calificados** (en la CRA hay ~15 % de eventos sin calificación; el script `ga4-calificaciones.mjs` los cuenta en el total y baja los porcentajes). CRA = hasta el 24/10 16 h; 2.0.x = 24/10 16 h al 25/10 ~17 h. Ojo: la 2.0.x se midió en fin de semana (otro público y otras redes; el TTFB malo también subió, y eso no depende del código).
+
+| Métrica | CRA | 2.0.x | |
+|---|---|---|---|
+| LCP | 94 % | 91–92 % | ✅ un poco peor (pendiente 5: `lcp_render_delay` en celulares ~270 ms) |
+| FCP | 89 % | 83–85 % | no cuenta para Google |
+| CLS | 97 % | 99–100 % | ✅ mejor |
+| TTFB | 86–90 % | 86 % | ✅ igual |
+| **INP** | **72 %** | **69–70 %** | ❌ igual que antes |
+
+- **CrUX (25/10):** LCP 4,52 s, INP 317 ms, FCP 2,4 s, CLS 0,01, TTFB 0,72 s. Casi no se movió (ventana de 28 días). Se consulta sin la API de CrUX: `runPagespeed` con `PSI_KEY` trae `loadingExperience`.
+- **Search Console:** datos hasta el 23/10 (2 días de atraso), posición 2,0 sin cambios.
+- **Fases del INP** (toques lentos con `load_state=complete`, n=369): **presentación ~430 ms**, demora de entrada ~250 ms, procesamiento ~105 ms. La columna "valor" del INP en GA4 es la suma de `delta`, no el valor final: no sirve para promedios por calificación (da números negativos).
+
+## 3. En curso: v2.0.5 (INP)
+
+Rama `perf/inp-dibujo`, desde `origin/master`. Tests y build en verde.
+
+**Qué se encontró en el laboratorio** (`toques-cdp.mjs` con `CPU=15 PAUSA=250`, sin publicidad, y `perfil-cdp.mjs`):
+- `registerHistory` era **más de la mitad del JS de cada toque**: `toLocaleTimeString("es-AR", …)` arma un `Intl.DateTimeFormat` nuevo. El primero de la partida costaba **~800 ms con CPU 15×**, y como el INP es el peor toque de la visita, pesa directo en la métrica.
+- El resto del procesamiento es el render de React del `Counter` (~3–4 ms por toque sin limitar).
+- La presentación en el laboratorio es ~50 ms con CPU 15×. En usuarios reales es ~430 ms: la diferencia no está en nuestro dibujo sin publicidad. Sospecha: publicidad y GPU de celulares lentos. **Se va a confirmar con los datos de LoAF** (ver abajo).
+
+**Cambios:**
+1. El `Intl.DateTimeFormat` se crea una vez, en `requestIdleCallback` después de montar, y se reutiliza (mismo texto, lo cubre el test del historial).
+2. Los `<defs>` del SVG se arman una vez por tablero (React ya no los compara).
+3. `reportWebVitals.js` manda, en el INP: `inp_script` (fase, origen `propio`/dominio y tipo del script más largo), `inp_script_ms`, `inp_style_layout`, `inp_paint` e `inp_unattributed`. **Registrados en GA4 el 25/10** (`ga4-definiciones.mjs --crear`).
+
+**Resultado en laboratorio** (CPU 15×, 20 toques, 2 corridas): peor toque **~820 → ~180 ms**; procesamiento promedio 100 → 57 ms; JS por toque sin limitar 10,4 → 4,5 ms. La mediana casi no cambia: lo que mejora es el primer toque.
+
+**Siguiente paso después de publicar:** a las 48 h, en GA4 filtrar `INP` con calificación mejorable/mala y abrir por `inp_script`. Si domina `presentation-delay` con un dominio de publicidad, o `inp_unattributed` alto, es Moneytizer (decisión del dueño). Si domina `propio` con `inp_style_layout`/`inp_paint`, siguen los fósforos: animación `match-place` en elementos SVG (no se compone en GPU), gradientes de las cabezas y la llama.
+
+## 4. Pendientes, por prioridad
 
 | # | Qué | Cómo | Quién |
 |---|---|---|---|
 | 1 | **Seguridad:** borrar la copia de la clave de la cuenta de servicio que quedó en el servidor del despliegue automático, y apagar ese timer | Comando en las notas privadas (`truqito-operacion.md`, en la carpeta de la doc de la red) | Dueño (el auto mode lo bloquea) |
 | 2 | **Seguridad:** CVE-2026-111497 (Brotli) | Plan en la carpeta de la doc de la red (pendiente #41) | Con OK del dueño |
-| 3 | **Comparar CRA contra 2.0.x con usuarios reales** (desde el 25/10, cuando GA4 procese las horas) | `CORTE=2026102416 node scripts/medicion/ga4-calificaciones.mjs 451539738`, más `ga4-promedios.mjs` y `ga4-inp.mjs` | Agente |
-| 4 | **INP: en qué fase se va el tiempo** (desde el 26/10) | Métricas registradas el 24/10: `inp_input_delay`, `inp_processing`, `inp_presentation` y la dimensión `load_state`. Si domina la **demora de entrada** con `load_state=complete`, es la publicidad durante la partida y hay que hablar con Moneytizer (frecuencia de refresco o bidders); es decisión del dueño por ingresos. Si domina la **presentación**, es el dibujo de los fósforos y lo optimizamos nosotros | Agente y dueño |
+| 3 | ~~Comparar CRA contra 2.0.x~~ | Hecho el 25/10, ver la sección 2 | — |
+| 4 | **INP: publicar la 2.0.5 y leer LoAF** | Fases ya medidas (domina la presentación, sección 2). PR de `perf/inp-dibujo` → producción → a las 48 h abrir el INP por `inp_script` (sección 3). Si es la publicidad, hablar con Moneytizer (frecuencia de refresco o bidders): decisión del dueño por ingresos | Agente y dueño |
 | 5 | **LCP +0,1 s en celulares lentos** | Confirmar con `lcp_render_delay` en GA4. Si se confirma: cargar el JS del router después del logo (prioridad baja o `import()` diferido) | Agente |
 | 6 | **Publicidad diferida** (rama `release/2.0.1`, sobre la 2.0.0) | El dueño dijo "la sacaría por ahora", **sin aclarar si es pausarla o publicarla**: preguntar. Si es publicarla, hay que rehacerla sobre `master` (sería la 2.0.5) | Dueño decide |
 | 7 | **Search Console:** solicitar indexación de `/` y `/guia-truco` (el contenido cambió) | Solo desde la web: Inspeccionar URL → Solicitar indexación. No hay API para páginas comunes | Dueño |
@@ -50,7 +85,7 @@ Releases en GitHub: v2.0.0 a v2.0.4 (la v2.0.4 todavía no tiene release, ver pe
 | 10 | Limpieza | Borrar las ramas mergeadas `fix/primer-dibujo`, `seo-tecnico` y `fix/titulo-iframe-anuncio`. En Vercel → Settings → General, cambiar Node.js de 20.x a 24.x (es solo para que no aparezca el aviso: `engines` ya fuerza 24.x) | Dueño |
 | 11 | Siguientes mejoras de SEO | B1: guía como "Tabla de valores del truco" (CTR 0,24 % sobre 120 mil impresiones). A7: alto reservado del anuncio en la guía (CLS 0,25). Páginas nuevas: reglas, señas, truco uruguayo, `/pt`. CI con e2e | Agente |
 
-## 4. Cómo desplegar (decisión del dueño: desde la notebook, no con a1)
+## 5. Cómo desplegar (decisión del dueño: desde la notebook, no con a1)
 
 1. Rama desde `origin/master` → commits con gitmoji → `npm test`, `npm run build`, `npm run test:contrato`.
 2. Subir la versión (`npm version X.Y.Z --no-git-tag-version`), con su entrada en `CHANGELOG.md` y en Novedades.
@@ -62,10 +97,10 @@ Releases en GitHub: v2.0.0 a v2.0.4 (la v2.0.4 todavía no tiene release, ver pe
    - `node scripts/comparar-urls.mjs <deploy-anterior> https://truco.contelautaro.com.ar`. Ojo: si la base es un `*.vercel.app`, todas las URLs muestran `x-robots-tag: noindex` en la base; es ruido de Vercel
 5. **Vuelta atrás:** `vercel promote <url-del-deploy-anterior>` (el auto mode lo bloquea: que lo corra el dueño con `!`) o revertir el PR.
 
-## 5. Ver los datos en GA4 (web)
+## 6. Ver los datos en GA4 (web)
 
 **Exploraciones → En blanco**:
-- **Dimensiones:** Nombre del evento, Calificación web vital, Elemento web vital, Estado de carga, Ruta de la página, Fecha y hora.
+- **Dimensiones:** Nombre del evento, Calificación web vital, Elemento web vital, Estado de carga, INP origen del script (desde la 2.0.5), Ruta de la página, Fecha y hora.
 - **Métricas:** Recuento de eventos y las métricas calculadas creadas el 24/10 (todas en ms):
   - "Web vital: valor promedio (ms)"
   - "INP: demora de entrada promedio (ms)"
@@ -76,7 +111,7 @@ Releases en GitHub: v2.0.0 a v2.0.4 (la v2.0.4 todavía no tiene release, ver pe
 - **Ejemplos:** filas = Elemento web vital, columnas = Calificación web vital, valores = Recuento de eventos (qué botones fallan). O filas = Estado de carga, valores = las 3 fases del INP.
 - Los informes procesados tardan **24–48 h**. En Tiempo real los eventos aparecen enseguida, pero sin los parámetros.
 
-## 6. Lecciones aprendidas
+## 7. Lecciones aprendidas
 
 Para no repetir los errores de esta semana:
 
@@ -93,10 +128,14 @@ Para no repetir los errores de esta semana:
 11. **Un efecto chico puede ser real aunque el método sea ruidoso:** la 2.0.3 cayó 5 de 5 veces en el escalón alto de PSI. Era ruido amplificado de un +0,1 s real en el LCP. Cruzar siempre con un método preciso antes de decir "no cambió nada".
 12. **Shell:** en zsh, `set -- $var` no separa palabras (usar arrays). `pkill -f '<patrón>'` mata también el propio comando si el patrón aparece en él (usar el PID).
 13. **Medir desde casa:** AdGuard bloquea los anuncios. Para ver la página como un usuario real, usar datos móviles o un servidor fuera de casa.
+14. **Event Timing: agrupar por interacción.** La versión vieja de `toques-cdp.mjs` tomaba la entrada más larga (`pointerup`), cuyo procesamiento termina antes del `click`: el trabajo de React aparecía como "presentación". web-vitals junta todas las entradas del toque; el script ahora también.
+15. **CPU 4× esconde lo que pasa en celulares lentos:** con 4× el peor toque era ~200 ms y "nuestro código no es lo lento". Con 15× apareció el primer toque de ~800 ms. Medir el **máximo** con `CPU=15` y perfilar con `perfil-cdp.mjs` antes de culpar a terceros.
+16. **`pgrep -f`/`pkill -f` con el patrón en la misma línea de comandos se encuentran a sí mismos.** Usar `pgrep -f '[a]stro preview'`, o guardar el PID al lanzar.
+17. **GA4: el nombre visible de una dimensión no puede repetir el de una métrica** (409 "already exists").
 
-## 7. Accesos y herramientas
+## 8. Accesos y herramientas
 
-- **Credenciales:** en el gestor de contraseñas del dueño (cuenta de servicio de Google y clave de PageSpeed). Cómo pasarlas a los scripts: [`scripts/medicion/README.md`](../scripts/medicion/README.md). Los detalles operativos (servidores, cuenta de servicio, Telegram) están en las notas privadas `truqito-operacion.md`, fuera del repo.
+- **Credenciales:** en el gestor de contraseñas del dueño (con la sesión abierta, `BW_SESSION=$(cat ~/.config/bw-mcp/session)` y `bw get item` pasan la clave a la variable de entorno sin mostrarla) (cuenta de servicio de Google y clave de PageSpeed). Cómo pasarlas a los scripts: [`scripts/medicion/README.md`](../scripts/medicion/README.md). Los detalles operativos (servidores, cuenta de servicio, Telegram) están en las notas privadas `truqito-operacion.md`, fuera del repo.
 - **MCP `ga4` y `gsc`:** fallan al conectar (`CONNECTION_CLOSED`). Mientras tanto, los scripts de `scripts/medicion/` hacen lo mismo con la cuenta de servicio.
 - **Navegador:** `agent-browser`, una sola sesión con nombre propio. Recomendado instalar el MCP oficial `chrome-devtools-mcp` (`/plugin marketplace add ChromeDevTools/chrome-devtools-mcp` y `/plugin install chrome-devtools-mcp@chrome-devtools-plugins`, con `--no-usage-statistics --no-performance-crux`) para traces con análisis de DevTools.
 
