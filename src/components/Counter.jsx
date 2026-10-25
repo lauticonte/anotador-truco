@@ -25,6 +25,17 @@ const debounce = (fn, delay) => {
   return debounced;
 };
 
+// Hora de cada entrada del historial. Crear el formateador cuesta (toLocaleTimeString arma uno nuevo
+// en cada llamada) y en celulares lentos alargaba cada toque: se crea una vez y se reutiliza.
+let formateador;
+const formatoHora = () =>
+  (formateador ??= new Intl.DateTimeFormat("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }));
+
 
 class Counter extends Component {
   constructor(props) {
@@ -125,6 +136,10 @@ class Counter extends Component {
     window.addEventListener("pagehide", this.flushPending);
 
     if (this.props.cargada) this.restoreSavedGame();
+
+    // El formateador de la hora se prepara en un momento libre, así no lo paga el primer toque
+    const preparar = window.requestIdleCallback ?? ((fn) => setTimeout(fn, 1000));
+    preparar(() => formatoHora());
 
     // Reset hint si la URL tiene ?reset-hint (útil para testing en mobile)
     if (window.location.search.includes("reset-hint")) {
@@ -289,14 +304,8 @@ class Counter extends Component {
   registerHistory = (action, points) => {
     if (this.props.finished) return;
   
-    const currentTime = new Date();
-    const formattedTime = currentTime.toLocaleTimeString("es-AR", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-  
+    const formattedTime = formatoHora().format(new Date());
+
     const entry = {
       action,
       points,
@@ -549,7 +558,8 @@ class Counter extends Component {
             role="button"
             aria-label={`Sumar punto a ${displayName || title}`}
           >
-            {this.renderMatchDefs()}
+            {/* Siempre iguales para el equipo: el mismo elemento hace que React no los vuelva a comparar */}
+            {(this.matchDefs ??= this.renderMatchDefs())}
             {this.renderLines()}
             {this.state.showTapHint && this.renderTapHint()}
             {this.state.winning && this.renderFlame()}
