@@ -1,6 +1,6 @@
 # Handoff: Truqito
 
-Actualizado: **2026-10-25, ~18 h**. Producción: **v2.0.4** (`master` = `b688bf5`), en https://truco.contelautaro.com.ar. **En curso: v2.0.5** (rama `perf/inp-dibujo`, INP), ver [sección 3](#3-en-curso-v205-inp).
+Actualizado: **2026-10-25, ~19 h**. Producción: **v2.0.5** (`master` = `ae87a83`, PR #7, publicada el 25/10 ~18:40), en https://truco.contelautaro.com.ar. Lo que sigue del INP está en la [sección 3](#3-v205-inp-publicada-el-2510).
 
 Este documento alcanza para retomar el trabajo. El detalle histórico está en los documentos de la [tabla del final](#documentos).
 
@@ -13,7 +13,7 @@ Este documento alcanza para retomar el trabajo. El detalle histórico está en l
 | 2.0.2 | 24/10 | Los scripts del anuncio se marcan con `data-astro-exec` antes del swap: sin anuncio duplicado ni subasta extra al navegar |
 | 2.0.3 | 24/10 | Sin `view-transition-name` en el header: el menú lateral volvía a quedar tapado por el tablero |
 | 2.0.4 | 24/10 | `title="Publicidad"` en los iframes de Moneytizer (accesibilidad) |
-| 2.0.5 | *en PR* | INP: el formateador de la hora del historial se crea una vez (era ~800 ms el primer toque con CPU 15×). GA4 recibe el desglose de Long Animation Frames del INP |
+| 2.0.5 | 25/10 | INP: el formateador de la hora del historial se crea una vez (era ~800 ms el primer toque con CPU 15×). GA4 recibe el desglose de Long Animation Frames del INP |
 
 Releases en GitHub: v2.0.0 a v2.0.4 (la v2.0.4 todavía no tiene release, ver pendientes). `CHANGELOG.md` y Novedades (`src/components/Changelog.jsx`) están al día.
 
@@ -51,9 +51,9 @@ Releases en GitHub: v2.0.0 a v2.0.4 (la v2.0.4 todavía no tiene release, ver pe
 - **Search Console:** datos hasta el 23/10 (2 días de atraso), posición 2,0 sin cambios.
 - **Fases del INP** (toques lentos con `load_state=complete`, n=369): **presentación ~430 ms**, demora de entrada ~250 ms, procesamiento ~105 ms. La columna "valor" del INP en GA4 es la suma de `delta`, no el valor final: no sirve para promedios por calificación (da números negativos).
 
-## 3. En curso: v2.0.5 (INP)
+## 3. v2.0.5: INP (publicada el 25/10)
 
-Rama `perf/inp-dibujo`, desde `origin/master`. Tests y build en verde.
+PR #7 (`perf/inp-dibujo`), mergeado el 25/10 ~18:40. **Verificado en producción** (por el túnel a a1): versión 2.0.5, un solo `div#sas_30012` de 100 px (iPhone) que sigue siendo el mismo nodo al ir a la guía y volver, el menú queda arriba según `elementFromPoint`, y el evento INP sale con `inp_script`, `inp_script_ms`, `inp_style_layout`, `inp_paint` e `inp_unattributed`. Desde Oracle no gana ningún anuncio pagado: no hubo iframe para comparar.
 
 **Qué se encontró en el laboratorio** (`toques-cdp.mjs` con `CPU=15 PAUSA=250`, sin publicidad, y `perfil-cdp.mjs`):
 - `registerHistory` era **más de la mitad del JS de cada toque**: `toLocaleTimeString("es-AR", …)` arma un `Intl.DateTimeFormat` nuevo. El primero de la partida costaba **~800 ms con CPU 15×**, y como el INP es el peor toque de la visita, pesa directo en la métrica.
@@ -82,7 +82,7 @@ Rama `perf/inp-dibujo`, desde `origin/master`. Tests y build en verde.
 - Fallas del método: con 45 sumas y 15 restas la partida termina cerca del toque 40 y los últimos toques caen en `/resultado` (aparece `ViewTransitionCallback`). Les pasa igual a las dos versiones. Para la próxima: más restas o menos toques.
 - **Conclusión:** la 2.0.5 baja nuestro costo por toque a menos de la mitad y elimina el primer toque lento, pero **el peor toque con publicidad es de Prebid**. Para que el INP pase el 75 % casi seguro hay que hablar con Moneytizer (menos bidders, `timeout`/refresco más largo, o pausar el refresco mientras se toca). Es decisión del dueño, por ingresos.
 
-**Siguiente paso después de publicar:** a las 48 h, en GA4 filtrar `INP` con calificación mejorable/mala y abrir por `inp_script`. Si domina `presentation-delay` con un dominio de publicidad, o `inp_unattributed` alto, es Moneytizer (decisión del dueño). Si domina `propio` con `inp_style_layout`/`inp_paint`, siguen los fósforos: animación `match-place` en elementos SVG (no se compone en GPU), gradientes de las cabezas y la llama.
+**Siguiente paso: desde el 27/10 ~19 h** (48 h después de publicar), en GA4 filtrar `INP` con calificación mejorable/mala y abrir por `inp_script`. Si domina `presentation-delay` con un dominio de publicidad, o `inp_unattributed` alto, es Moneytizer (decisión del dueño). Si domina `propio` con `inp_style_layout`/`inp_paint`, siguen los fósforos: animación `match-place` en elementos SVG (no se compone en GPU), gradientes de las cabezas y la llama.
 
 ## 4. Pendientes, por prioridad
 
@@ -91,13 +91,13 @@ Rama `perf/inp-dibujo`, desde `origin/master`. Tests y build en verde.
 | 1 | **Seguridad:** borrar la copia de la clave de la cuenta de servicio que quedó en el servidor del despliegue automático, y apagar ese timer | Comando en las notas privadas (`truqito-operacion.md`, en la carpeta de la doc de la red) | Dueño (el auto mode lo bloquea) |
 | 2 | **Seguridad:** CVE-2026-111497 (Brotli) | Plan en la carpeta de la doc de la red (pendiente #41) | Con OK del dueño |
 | 3 | ~~Comparar CRA contra 2.0.x~~ | Hecho el 25/10, ver la sección 2 | — |
-| 4 | **INP: publicar la 2.0.5 y leer LoAF** | Fases ya medidas (domina la presentación, sección 2). Con publicidad real, el peor toque es de Prebid (sección 3): preparar el pedido a Moneytizer con los datos de GA4. PR de `perf/inp-dibujo` → producción → a las 48 h abrir el INP por `inp_script` (sección 3). Si es la publicidad, hablar con Moneytizer (frecuencia de refresco o bidders): decisión del dueño por ingresos | Agente y dueño |
+| 4 | **INP: leer LoAF en GA4 desde el 27/10** | Fases ya medidas (domina la presentación, sección 2). Con publicidad real, el peor toque es de Prebid (sección 3): preparar el pedido a Moneytizer con los datos de GA4. PR de `perf/inp-dibujo` → producción → a las 48 h abrir el INP por `inp_script` (sección 3). Si es la publicidad, hablar con Moneytizer (frecuencia de refresco o bidders): decisión del dueño por ingresos | Agente y dueño |
 | 5 | **LCP +0,1 s en celulares lentos** | Confirmar con `lcp_render_delay` en GA4. Si se confirma: cargar el JS del router después del logo (prioridad baja o `import()` diferido) | Agente |
 | 6 | **Publicidad diferida** (rama `release/2.0.1`, sobre la 2.0.0) | El dueño dijo "la sacaría por ahora", **sin aclarar si es pausarla o publicarla**: preguntar. Si es publicarla, hay que rehacerla sobre `master` (sería la 2.0.5) | Dueño decide |
 | 7 | **Search Console:** solicitar indexación de `/` y `/guia-truco` (el contenido cambió) | Solo desde la web: Inspeccionar URL → Solicitar indexación. No hay API para páginas comunes | Dueño |
 | 8 | **CrUX History** (p75 semanal) | Sumar "Chrome UX Report API" a las restricciones de la clave en Google Cloud → Credenciales | Dueño |
-| 9 | Release `v2.0.4` en GitHub | `gh release create v2.0.4 --target dc87d17 --title "Versión 2.0.4" --notes-file <(awk '/^## \[2.0.4\]/{f=1;next} /^## \[/{if(f)exit} f' CHANGELOG.md) --latest` | Dueño (el auto mode lo bloquea) |
-| 10 | Limpieza | Borrar las ramas mergeadas `fix/primer-dibujo`, `seo-tecnico` y `fix/titulo-iframe-anuncio`. En Vercel → Settings → General, cambiar Node.js de 20.x a 24.x (es solo para que no aparezca el aviso: `engines` ya fuerza 24.x) | Dueño |
+| 9 | ~~Releases `v2.0.4` y `v2.0.5`~~ | Hechos el 25/10 (v2.0.5 es la última) | — |
+| 10 | Limpieza | Borrar las ramas ya mergeadas (el auto mode lo bloquea): `R="docs/handoff docs/handoff-2.0.5 feat/astro fix/primer-dibujo fix/titulo-iframe-anuncio perf/inp-dibujo seo-tecnico"; git push origin --delete ${=R}; git branch -D ${=R}`. **No borrar `release/2.0.1`** (pendiente 6). En Vercel → Settings → General, cambiar Node.js de 20.x a 24.x (es solo para que no aparezca el aviso: `engines` ya fuerza 24.x) | Dueño |
 | 11 | Siguientes mejoras de SEO | B1: guía como "Tabla de valores del truco" (CTR 0,24 % sobre 120 mil impresiones). A7: alto reservado del anuncio en la guía (CLS 0,25). Páginas nuevas: reglas, señas, truco uruguayo, `/pt`. CI con e2e | Agente |
 
 ## 5. Cómo desplegar (decisión del dueño: desde la notebook, no con a1)
