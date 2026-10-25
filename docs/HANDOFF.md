@@ -146,8 +146,8 @@ Para no repetir los errores de esta semana:
 14. **Event Timing: agrupar por interacción.** La versión vieja de `toques-cdp.mjs` tomaba la entrada más larga (`pointerup`), cuyo procesamiento termina antes del `click`: el trabajo de React aparecía como "presentación". web-vitals junta todas las entradas del toque; el script ahora también.
 15. **CPU 4× esconde lo que pasa en celulares lentos:** con 4× el peor toque era ~200 ms y "nuestro código no es lo lento". Con 15× apareció el primer toque de ~800 ms. Medir el **máximo** con `CPU=15` y perfilar con `perfil-cdp.mjs` antes de culpar a terceros.
 16. **`pgrep -f`/`pkill -f` con el patrón en la misma línea de comandos se encuentran a sí mismos.** Usar `pgrep -f '[a]stro preview'`, o guardar el PID al lanzar.
-18. **Para probar con publicidad desde casa:** `ssh -f -N -D 127.0.0.1:1088 -i ~/.ssh/oracle-free ubuntu@10.10.210.2` y `agent-browser --proxy socks5://127.0.0.1:1088 --args "--disable-site-isolation-trials"`. Con SOCKS5 el DNS también se resuelve en a1. Para cerrarlo, matar el PID del `ssh` (no `pkill -f`).
 17. **GA4: el nombre visible de una dimensión no puede repetir el de una métrica** (409 "already exists").
+18. **Para probar con publicidad desde casa:** `ssh -f -N -D 127.0.0.1:1088 -i ~/.ssh/oracle-free ubuntu@10.10.210.2` y `agent-browser --proxy socks5://127.0.0.1:1088 --args "--disable-site-isolation-trials"`. Con SOCKS5 el DNS también se resuelve en a1. Para cerrarlo, matar el PID del `ssh` (no `pkill -f`).
 
 ## 8. Accesos y herramientas
 
