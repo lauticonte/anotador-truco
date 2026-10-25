@@ -28,7 +28,8 @@ WS=$(agent-browser get cdp-url | tail -1)
 | Script | Qué hace |
 |---|---|
 | `carga-cdp.mjs "$WS" 5 cra=<url> nueva=<url>` | FCP, LCP, DCL y `load` con CPU 4× y 4G lento (los valores de Lighthouse mobile). Mediana de N cargas por URL, cada una con 30 s de límite. **Es la forma confiable de comparar dos versiones.** |
-| `toques-cdp.mjs "$WS" <url> sin\|con [toques]` | Toques reales (eventos de mouse de CDP) en + y −, leídos con Event Timing: duración y fases (entrada, procesamiento, presentación). `sin` bloquea publicidad, CMP y analítica para medir solo el código propio. |
+| `[CPU=15] [PAUSA=250] toques-cdp.mjs "$WS" <url> sin\|con [toques]` | Toques reales (eventos de mouse de CDP) en + y −, leídos con Event Timing y agrupados por interacción como web-vitals: duración y fases (entrada, procesamiento, presentación), más el desglose de los frames largos (LoAF) por script e invocador. `sin` bloquea publicidad, CMP y analítica para medir solo el código propio. `CPU=15` se parece a un celular de gama baja; mirar el **máximo** (el INP es el peor toque). |
+| `perfil-cdp.mjs "$WS" <url> [toques]` | Perfil de CPU de los toques en +: tiempo propio por función. Así se encontró `toLocaleTimeString` en la 2.0.5. |
 
 ## Lighthouse con trace (en un servidor aparte, nunca en la notebook)
 

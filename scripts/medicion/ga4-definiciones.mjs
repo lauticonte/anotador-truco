@@ -13,8 +13,15 @@ const METRICAS = [
   { parameterName: "inp_processing", displayName: "INP procesamiento", description: "Web vitals: procesamiento del INP (ms)" },
   { parameterName: "inp_presentation", displayName: "INP presentación", description: "Web vitals: presentación del INP (ms)" },
   { parameterName: "lcp_render_delay", displayName: "LCP demora de dibujo", description: "Web vitals: demora entre la descarga del elemento LCP y su dibujo (ms)" },
+  { parameterName: "inp_script_ms", displayName: "INP script más largo", description: "Web vitals: duración del script más largo dentro del INP (ms, Long Animation Frames)" },
+  { parameterName: "inp_style_layout", displayName: "INP estilos y layout", description: "Web vitals: estilos y layout en los frames del INP (ms)" },
+  { parameterName: "inp_paint", displayName: "INP pintado", description: "Web vitals: pintado en los frames del INP (ms)" },
+  { parameterName: "inp_unattributed", displayName: "INP sin atribuir", description: "Web vitals: tiempo del INP sin script, estilos ni pintado atribuidos: otro proceso, GPU o iframes (ms)" },
 ];
-const DIMENSIONES = [{ parameterName: "load_state", displayName: "Estado de carga", description: "Web vitals: estado de la página en la interacción o el salto (loading, dom-interactive, dom-content-loaded, complete)" }];
+const DIMENSIONES = [
+  { parameterName: "load_state", displayName: "Estado de carga", description: "Web vitals: estado de la página en la interacción o el salto (loading, dom-interactive, dom-content-loaded, complete)" },
+  { parameterName: "inp_script", displayName: "INP origen del script", description: "Web vitals: fase, origen (propio o dominio) y tipo del script más largo del INP" },
+];
 
 const metricas = (await api("/customMetrics")).customMetrics ?? [];
 const dimensiones = (await api("/customDimensions")).customDimensions ?? [];
