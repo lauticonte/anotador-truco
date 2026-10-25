@@ -96,8 +96,8 @@ PR #7 (`perf/inp-dibujo`), mergeado el 25/10 ~18:40. **Verificado en producción
 | 6 | **Publicidad diferida** (rama `release/2.0.1`, sobre la 2.0.0) | El dueño dijo "la sacaría por ahora", **sin aclarar si es pausarla o publicarla**: preguntar. Si es publicarla, hay que rehacerla sobre `master` (sería la 2.0.5) | Dueño decide |
 | 7 | **Search Console:** solicitar indexación de `/` y `/guia-truco` (el contenido cambió) | Solo desde la web: Inspeccionar URL → Solicitar indexación. No hay API para páginas comunes | Dueño |
 | 8 | **CrUX History** (p75 semanal) | Sumar "Chrome UX Report API" a las restricciones de la clave en Google Cloud → Credenciales | Dueño |
-| 9 | Releases `v2.0.4` y `v2.0.5` en GitHub | `gh release create v2.0.4 --target dc87d17 --title "Versión 2.0.4" --notes-file <(awk '/^## \[2.0.4\]/{f=1;next} /^## \[/{if(f)exit} f' CHANGELOG.md)` y después lo mismo con `v2.0.5`, `--target ae87a83` y `--latest` | Dueño (el auto mode lo bloquea) |
-| 10 | Limpieza | Borrar las ramas mergeadas `fix/primer-dibujo`, `seo-tecnico`, `fix/titulo-iframe-anuncio` y `perf/inp-dibujo`. En Vercel → Settings → General, cambiar Node.js de 20.x a 24.x (es solo para que no aparezca el aviso: `engines` ya fuerza 24.x) | Dueño |
+| 9 | ~~Releases `v2.0.4` y `v2.0.5`~~ | Hechos el 25/10 (v2.0.5 es la última) | — |
+| 10 | Limpieza | Borrar las ramas ya mergeadas (el auto mode lo bloquea): `R="docs/handoff docs/handoff-2.0.5 feat/astro fix/primer-dibujo fix/titulo-iframe-anuncio perf/inp-dibujo seo-tecnico"; git push origin --delete ${=R}; git branch -D ${=R}`. **No borrar `release/2.0.1`** (pendiente 6). En Vercel → Settings → General, cambiar Node.js de 20.x a 24.x (es solo para que no aparezca el aviso: `engines` ya fuerza 24.x) | Dueño |
 | 11 | Siguientes mejoras de SEO | B1: guía como "Tabla de valores del truco" (CTR 0,24 % sobre 120 mil impresiones). A7: alto reservado del anuncio en la guía (CLS 0,25). Páginas nuevas: reglas, señas, truco uruguayo, `/pt`. CI con e2e | Agente |
 
 ## 5. Cómo desplegar (decisión del dueño: desde la notebook, no con a1)
