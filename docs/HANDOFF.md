@@ -114,6 +114,22 @@ PR #7 (`perf/inp-dibujo`), mergeado el 25/10 ~18:40. **Verificado en producción
 - Fallas del método: con 45 sumas y 15 restas la partida termina cerca del toque 40 y los últimos toques caen en `/resultado` (aparece `ViewTransitionCallback`). Les pasa igual a las dos versiones. Para la próxima: más restas o menos toques.
 - **Conclusión:** la 2.0.5 baja nuestro costo por toque a menos de la mitad y elimina el primer toque lento, pero **el peor toque con publicidad es de Prebid**. Para que el INP pase el 75 % casi seguro hay que hablar con Moneytizer (menos bidders, `timeout`/refresco más largo, o pausar el refresco mientras se toca). Es decisión del dueño, por ingresos.
 
+### Android emulado en la notebook (27/10)
+
+`Emulation.setCPUThrottlingRate` frena solo el hilo principal: raster, compositor y GPU quedan a velocidad de notebook, y por eso el laboratorio nunca mostró un dibujo lento. Esta vez se limitó **todo Chromium** con cgroups (`systemd-run --user --scope -p CPUQuota=40% -p CPUQuotaPeriodSec=10ms -p AllowedCPUs=0-1`, ~×9 en JS), sin GPU (`--disable-gpu --disable-gpu-compositing`). Corrió contra producción (2.0.6), 30 toques cada 600 ms, 2 corridas por variante. La publicidad vino por el túnel a a1.
+
+| | Mediana | Máximo | Entrada | Procesamiento | Presentación |
+|---|---|---|---|---|---|
+| Sin publicidad, tablero normal | 180 ms | 290–422 | 9–11 | 55 | 112–121 |
+| Sin publicidad, **tablero sin gradientes ni animaciones** | 187–188 | 320–435 | 13 | 55–60 | 112–117 |
+| Con publicidad, normal | 206–240 | 443–1310 | 33–98 | 74–77 | 113–142 |
+| Con publicidad, simplificado | 182–266 | 517–856 | 34–74 | 49–78 | 99–157 |
+
+- **Los gradientes y las animaciones del tablero no cambian nada:** descartados como causa.
+- **La publicidad** multiplica la demora de entrada por 3 a 9 y genera los peores toques: Prebid (`setTimeout`) se lleva de 0,3 a 1,7 s por sesión. Coincide con GA4.
+- **La presentación de esta emulación no sirve para juzgar la GPU:** el trace muestra que la domina el compositor por software (`SoftwareRenderer::DoDrawQuad`, ~28 ms por frame), y un celular compone por GPU. El pintado propio del hilo principal es chico (<1 ms casi siempre, hasta ~18 ms con la CPU limitada). El tooltip del menú (latido infinito de 6,5 a 60 s) no repinta: corre en el compositor.
+- Para medir la GPU hace falta un **Android real**: `chrome://inspect` por USB y un trace mientras se toca.
+
 ### Siguiente paso: desde el 29/10 ~22 h
 
 Son 48 h después de la 2.0.6. En GA4, filtrar `INP` con calificación mejorable o mala y **Sistema operativo = Android**. Abrir por `inp_script` y mirar `inp_style_layout`, `inp_paint` e `inp_unattributed`:
@@ -188,6 +204,7 @@ Para no repetir los errores de esta semana:
 19. **Validar en un navegador real lo que se manda a GA4, no solo lo que mide el laboratorio.** En la 2.0.5, `toques-cdp.mjs` calculaba el desglose del INP por su cuenta y los números daban bien, pero el `web-vitals` que corre en la página mandaba valores imposibles. Se perdieron dos días de datos. Antes de publicar un parámetro nuevo: reemplazar `window.gtag` en la página, provocar el caso real (toques por CDP encima de tareas largas que no dibujan) y comprobar que las partes sumen el valor total.
 20. **Un evento de web vitals es una visita, no un toque.** El INP de cada visita es su peor toque; "1456 visitas" no son 1456 toques.
 21. **Abrir siempre por sistema operativo antes de buscar la causa.** El 69 % total escondía 46 % en Android y 97 % en iPhone.
+22. **El limitador de CPU de DevTools no frena el dibujo.** `setCPUThrottlingRate` limita solo el hilo principal. Para que también vayan lentos el raster y el compositor, limitar el proceso entero con cgroups (sección 3). La cuota no es lineal: con período de 10 ms, 30 % da ×40, 40 % ×9 y 50 % ×3,5. Calibrar con un bucle de JS antes de medir.
 
 ## 8. Accesos y herramientas
 
