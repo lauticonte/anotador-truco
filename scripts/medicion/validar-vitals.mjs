@@ -124,7 +124,9 @@ for (const [caso, inyectar] of Object.entries(CASOS)) {
     for (let i = 0; i < 40 && !window.__ev.some((e) => e.nombre === "INP"); i++) await new Promise((r) => setTimeout(r, 200)); return window.__ev; })()`);
   const vitals = eventos.filter((e) => ["LCP", "INP", "CLS", "FCP", "TTFB"].includes(e.nombre));
   const inp = vitals.find((e) => e.nombre === "INP");
-  if (!inp) fallar(caso, "INP", "no se mandó");
+  // Con publicidad, ~1 de cada 6 cargas de "tareas largas" no captura ningún evento (ni LCP ni CLS): es la captura, no
+  // reportWebVitals (sin causa encontrada; no es gtag pisado). Si pasa, repetir: lo que importa son los rangos
+  if (!inp) fallar(caso, "INP", vitals.length ? "no se mandó" : "no se capturó ningún evento (repetir la corrida; ver el comentario)");
   for (const e of vitals) validar(caso, e.nombre, e.p);
   const anuncio = await ev(`!!document.querySelector(".ad-slot iframe")`);
   const pisado = await ev(`window.__pisado || 0`);
