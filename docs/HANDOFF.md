@@ -167,6 +167,23 @@ PR #7 (`perf/inp-dibujo`), mergeado el 25/10 ~18:40. **Verificado en producción
 - **Quedó sin medir:** separar `buttonPress` solo `transform` contra `matchPlace` apagado, en reposo. La corrida se cortó por el checkpoint de Vercel (abajo). Para repetirla, el script quedó en `final.sh` del scratchpad: una sola carga, variantes por CSS inyectado, + y − alternados.
 - **Vercel Security Checkpoint (código 99):** tantas recargas automatizadas desde la misma IP dispararon la mitigación automática de DDoS de Vercel (12 desafíos a las 23 h del 27/10, todos nuestros; `vercel firewall overview`). Chrome 81 no puede resolver el desafío, así que el Moto G quedó bloqueado más de 5 minutos. Bot Protection y Attack Mode están apagados: a los usuarios no les pasó. **Para medir: una sola carga y variantes sin recargar.**
 
+### Moto G, una sola carga (28/10, ~1 h, producción 2.0.8)
+
+Sin publicidad (Android 4.4 no la carga). Toques + y − alternados, trace de DevTools, `InputLatency::MouseUp`. Script: `final2.sh` del scratchpad.
+
+| Momento | Variante | Mediana | Peor | Lentos | GPU por toque |
+|---|---|---|---|---|---|
+| Primer minuto | con tooltip | 162 ms | 187 | 0/16 | 89 ms |
+| Primer minuto | sin tooltip (2 corridas) | 137–151 | 217–467 | 1–3/16 | 79–92 |
+| En reposo | normal (2 corridas) | 148–156 | 198–225 | 0–1/24 | 91–95 |
+| En reposo | botón solo con `transform` | 155 | 255 | 8/24 | 95 |
+| En reposo | sin la animación del fósforo | 159 | 202 | 1/24 | 71 |
+| En reposo | **sin animaciones (botón y fósforo)** | **104** | 160 | 0/24 | **35** |
+
+- **El tooltip del menú no empeora los toques.** Los ~55 fps constantes de las pruebas anteriores eran del aviso "Tocá para sumar" (animaciones infinitas en el SVG), no del tooltip.
+- **Sacar las dos animaciones del toque baja ~50 ms (un tercio) y la GPU un 60 %.** Sacar una sola no alcanza. El "botón solo con `transform`" (candidato 1 de abajo) **no mejora: descartado.**
+- 24 toques por variante, un solo teléfono, sin publicidad y Chrome 81: marca la dirección, no decide el diseño. **Siguiente paso: A/B con usuarios reales** (el parámetro `experimento` ya está registrado): a la mitad de las visitas apagarles `buttonPress` y `matchPlace`, y comparar el INP de Android en GA4 a los 3 días. Si mejora, el dueño decide si se pierden esas animaciones o se hacen más livianas.
+
 ### Candidatos para la 2.0.8 (sin publicar; decidir con GA4 del 29/10)
 
 1. **`buttonPress` solo con `transform`:** sacar `background-color` de los keyframes. No cambia nada a la vista, la animación pasa al compositor y deja de rasterizar en cada toque. Sin costo de diseño.
