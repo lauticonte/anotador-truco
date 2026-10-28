@@ -2,6 +2,15 @@
 
 Todas las versiones de Truqito. Sigue [Semantic Versioning](https://semver.org/). Lo que ven los usuarios está en **Novedades** dentro de la app (`src/components/Changelog.jsx`).
 
+## [2.0.7] - 2026-10-28
+
+### Para los usuarios
+- Arreglo: el anotador vuelve a andar en celulares y navegadores viejos, donde desde la 2.0.0 se veía pero los botones no respondían.
+
+### Técnico
+- Vite compila por defecto para navegadores modernos, y el bundle traía `??=` y `||=` (Chrome 85+) del cliente de Astro, de `ClientRouter` y de `web-vitals`. En Chrome 81 (el último de Android 4.4) y Samsung Internet viejo no parseaba: `SyntaxError: Unexpected token '='`, ninguna isla hidrataba y no andaban ni los botones ni el menú. La CRA compilaba con `browserslist >0.2%, not dead`. Ahora `vite.build.target` es `chrome80, edge88, firefox78, safari14`: el JS crece ~3 KB (1,4 %). Afectaba a ~0,2–0,4 % de las sesiones. Probado en un Moto G de 2013 (Chrome 81).
+- Queda un `.at()` (Chrome 92+) en el cálculo del INP de `web-vitals`, pero solo corre en navegadores con `interactionId` (Chrome 96+), que ya lo tienen.
+
 ## [2.0.6] - 2026-10-27
 
 ### Para los usuarios
