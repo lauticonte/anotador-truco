@@ -9,7 +9,7 @@ Todas las versiones de Truqito. Sigue [Semantic Versioning](https://semver.org/)
 
 ### Técnico
 - Vite compila por defecto para navegadores modernos, y el bundle traía `??=` y `||=` (Chrome 85+) del cliente de Astro, de `ClientRouter` y de `web-vitals`. En Chrome 81 (el último de Android 4.4) y Samsung Internet viejo no parseaba: `SyntaxError: Unexpected token '='`, ninguna isla hidrataba y no andaban ni los botones ni el menú. La CRA compilaba con `browserslist >0.2%, not dead`. Ahora `vite.build.target` es `chrome80, edge88, firefox78, safari14`: el JS crece ~3 KB (1,4 %). Afectaba a ~0,2–0,4 % de las sesiones. Probado en un Moto G de 2013 (Chrome 81).
-- `web-vitals` usa `Array.prototype.at` (Chrome 92+), y el `target` traduce sintaxis pero no agrega funciones. En Chrome 81 cada métrica tiraba `entries.at is not a function`: esos navegadores no mandaban ninguna web vital. `reportWebVitals.js` lo agrega si falta, antes de registrar las métricas.
+- `web-vitals` usa funciones de Chrome 92–97 (`Array.prototype.at`, `findLast`), y el `target` traduce sintaxis pero no agrega funciones. En Chrome 81 cada métrica tiraba un `TypeError`. `reportWebVitals.js` ahora no mide en navegadores sin `findLast`: tampoco reportan INP (no tienen `interactionId`) y son ~0,2 % de las visitas.
 
 ## [2.0.6] - 2026-10-27
 

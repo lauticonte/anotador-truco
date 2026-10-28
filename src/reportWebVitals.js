@@ -79,11 +79,10 @@ const send =({ name, value, delta, id, rating, navigationType, attribution = {} 
 };
 
 const reportWebVitals = () => {
-  // web-vitals usa Array.prototype.at (Chrome 92+). El target del build traduce sintaxis, no agrega funciones:
-  // sin esto, en Chrome 81 y Samsung Internet viejo cada métrica tiraba "entries.at is not a function"
-  if (!Array.prototype.at) {
-    Object.defineProperty(Array.prototype, "at", { configurable: true, writable: true, value(i) { const n = Math.trunc(i) || 0; return this[n < 0 ? n + this.length : n]; } });
-  }
+  // web-vitals usa funciones de Chrome 92–97 (at, findLast) que el target del build no agrega: en Chrome 81 y
+  // Samsung Internet viejo cada métrica tiraba un TypeError. Esos navegadores tampoco reportan INP (sin
+  // interactionId) y son ~0,2 % de las visitas: no se miden
+  if (!Array.prototype.findLast) return;
   onCLS(send);
   onFCP(send);
   onINP(send);
