@@ -79,6 +79,10 @@ const send =({ name, value, delta, id, rating, navigationType, attribution = {} 
 };
 
 const reportWebVitals = () => {
+  // web-vitals usa funciones de Chrome 92–97 (at, findLast) que el target del build no agrega: en Chrome 81 y
+  // Samsung Internet viejo cada métrica tiraba un TypeError. Esos navegadores tampoco reportan INP (sin
+  // interactionId) y son ~0,2 % de las visitas: no se miden
+  if (!Array.prototype.findLast) return;
   onCLS(send);
   onFCP(send);
   onINP(send);

@@ -6,6 +6,13 @@ import "../styles/Changelog.css";
 const Changelog = ({ isVisible, onClose }) => {
   const changelog = [
     {
+      version: "2.0.7",
+      date: "28/10/2026",
+      changes: [
+        "Arreglo: el anotador vuelve a andar en celulares y navegadores viejos, donde desde la 2.0.0 se veía pero los botones no respondían."
+      ]
+    },
+    {
       version: "2.0.5",
       date: "25/10/2026",
       changes: [

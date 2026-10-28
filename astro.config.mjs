@@ -12,4 +12,7 @@ export default defineConfig({
   build: { format: "file", inlineStylesheets: "always" },
   trailingSlash: "never",
   integrations: [react(), directivas()],
+  // Vite compila por defecto para navegadores modernos: con ??= y ||= (Chrome 85+), en Chrome 81 y Samsung
+  // Internet viejos no hidrataba ninguna isla. Esto cubre más o menos lo mismo que el browserslist de la CRA.
+  vite: { build: { target: ["chrome80", "edge88", "firefox78", "safari14"] } },
 });
