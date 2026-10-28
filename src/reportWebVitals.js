@@ -3,7 +3,24 @@ import { onCLS, onFCP, onINP, onLCP, onTTFB } from "web-vitals/attribution";
 // Manda las Core Web Vitals de cada visita a GA4 como eventos (LCP, INP, CLS, FCP, TTFB),
 // con la calificación y el elemento responsable para saber qué arreglar.
 // Receta de Google: https://github.com/GoogleChrome/web-vitals#send-the-results-to-google-analytics
-const send = ({ name, value, delta, id, rating, navigationType, attribution = {} }) => {
+
+// Estilos y layout del toque, como totalStyleAndLayoutDuration de web-vitals 6.2.3 pero sin su error:
+// un frame que no llega a dibujar tiene styleAndLayoutStart = 0 y la librería sumaba su hora de fin
+// (cientos de miles de ms en GA4). El layout forzado por los scripts se reparte igual que en la librería.
+export const estilosYLayout = ({ longAnimationFrameEntries = [], interactionTime }) => {
+  let total = 0;
+  for (const frame of longAnimationFrameEntries) {
+    if (frame.styleAndLayoutStart > 0) total += frame.startTime + frame.duration - frame.styleAndLayoutStart;
+    for (const script of frame.scripts) {
+      const fin = script.startTime + script.duration;
+      if (fin < interactionTime || !script.duration) continue;
+      total += ((fin - Math.max(interactionTime, script.startTime)) / script.duration) * script.forcedStyleAndLayoutDuration;
+    }
+  }
+  return total;
+};
+
+const send =({ name, value, delta, id, rating, navigationType, attribution = {} }) => {
   if (typeof window.gtag !== "function") return;
 
   const params = {
@@ -37,11 +54,18 @@ const send = ({ name, value, delta, id, rating, navigationType, attribution = {}
       } catch (_) {}
       params.inp_script = `${script.subpart}: ${origen} (${invokerType})`;
       params.inp_script_ms = Math.round(script.intersectingDuration);
+    } else {
+      // Sin esto GA4 mezcla "no hubo script largo" con "el navegador no tiene LoAF" en (not set)
+      params.inp_script = attribution.longAnimationFrameEntries?.length ? "sin script largo" : "sin loaf";
     }
     if (attribution.longAnimationFrameEntries?.length) {
-      params.inp_style_layout = Math.round(attribution.totalStyleAndLayoutDuration || 0);
+      const estilos = estilosYLayout(attribution);
+      params.inp_style_layout = Math.round(estilos);
       params.inp_paint = Math.round(attribution.totalPaintDuration || 0);
-      params.inp_unattributed = Math.round(attribution.totalUnattributedDuration || 0);
+      params.inp_unattributed = Math.round(
+        attribution.nextPaintTime - attribution.interactionTime -
+        (attribution.totalScriptDuration || 0) - estilos - (attribution.totalPaintDuration || 0)
+      );
     }
   } else if (name === "CLS") {
     params.debug_target = attribution.largestShiftTarget;

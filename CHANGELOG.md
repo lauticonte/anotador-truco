@@ -2,6 +2,16 @@
 
 Todas las versiones de Truqito. Sigue [Semantic Versioning](https://semver.org/). Lo que ven los usuarios está en **Novedades** dentro de la app (`src/components/Changelog.jsx`).
 
+## [2.0.6] - 2026-10-27
+
+### Para los usuarios
+- Nada visible: corrige la medición de velocidad que se manda a Analytics. No va en Novedades.
+
+### Técnico
+- `inp_style_layout` llegaba a GA4 con valores imposibles (promedios de 60 000 a 1 100 000 ms) y por eso `inp_unattributed` salía negativo. Es un error de `web-vitals` 6.2.3 (la última): suma `startTime + duration - styleAndLayoutStart` por cada frame largo, y un frame que no dibuja tiene `styleAndLayoutStart = 0`, así que suma su hora de fin. Pasa justo en el caso que se quería medir: un toque que cae encima de una tarea de la subasta. Ahora `reportWebVitals.js` calcula estilos y layout sin esos frames, y el tiempo sin atribuir con ese valor. Probado en Chromium con toques sobre tareas largas que no dibujan: la 2.0.5 manda estilos 5855 ms y sin atribuir −5835; la 2.0.6, 0 y 12 (suman exacto el INP).
+- `inp_script` dice `sin script largo` (hubo frames largos pero ningún script) o `sin loaf` (el navegador no tiene Long Animation Frames), en vez de `(not set)` o vacío. Eran el 60 % de los toques lentos del 26 y 27/10.
+- Los datos de `inp_style_layout` e `inp_unattributed` del 25 al 27/10 no sirven; `inp_script`, `inp_script_ms` e `inp_paint` sí.
+
 ## [2.0.5] - 2026-10-25
 
 ### Para los usuarios
