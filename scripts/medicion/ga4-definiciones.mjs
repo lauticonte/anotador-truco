@@ -17,16 +17,25 @@ const METRICAS = [
   { parameterName: "inp_style_layout", displayName: "INP estilos y layout", description: "Web vitals: estilos y layout en los frames del INP (ms)" },
   { parameterName: "inp_paint", displayName: "INP pintado", description: "Web vitals: pintado en los frames del INP (ms)" },
   { parameterName: "inp_unattributed", displayName: "INP sin atribuir", description: "Web vitals: tiempo del INP sin script, estilos ni pintado atribuidos: otro proceso, GPU o iframes (ms)" },
+  { parameterName: "inp_desde_carga", displayName: "INP momento del toque", description: "Web vitals: ms desde que cargó la página hasta el peor toque del INP" },
+  // Valor real de cada métrica (ms; CLS sin unidad, con decimales): por eso STANDARD y no MILLISECONDS
+  { parameterName: "metric_value", displayName: "Web vital valor", description: "Web vitals: valor de la métrica (ms; CLS sin unidad)", measurementUnit: "STANDARD" },
 ];
 const DIMENSIONES = [
   { parameterName: "load_state", displayName: "Estado de carga", description: "Web vitals: estado de la página en la interacción o el salto (loading, dom-interactive, dom-content-loaded, complete)" },
   { parameterName: "inp_script", displayName: "INP origen del script", description: "Web vitals: fase, origen (propio o dominio) y tipo del script más largo del INP" },
+  { parameterName: "inp_franja", displayName: "INP momento de la visita", description: "Web vitals: franja del peor toque desde la carga (0-6 s, 6-60 s con el tooltip del menú, 1-5 min, 5+ min)" },
+  { parameterName: "app_version", displayName: "Versión de Truqito", description: "Versión del sitio (package.json) que mandó el evento" },
+  { parameterName: "ram_gb", displayName: "Dispositivo RAM en GB", description: "navigator.deviceMemory (solo Chrome, tope 8)" },
+  { parameterName: "nucleos", displayName: "Dispositivo núcleos", description: "navigator.hardwareConcurrency" },
+  { parameterName: "experimento", displayName: "Experimento", description: "Grupo del A/B (ninguno si no hay experimento)" },
+  { parameterName: "navigation_type", displayName: "Tipo de navegación", description: "Web vitals: navigate, reload, back-forward, prerender, restore" },
 ];
 
 const metricas = (await api("/customMetrics")).customMetrics ?? [];
 const dimensiones = (await api("/customDimensions")).customDimensions ?? [];
 if (crear) {
-  for (const m of METRICAS) if (!metricas.some((x) => x.parameterName === m.parameterName)) { await api("/customMetrics", { ...m, scope: "EVENT", measurementUnit: "MILLISECONDS" }); console.log("creada métrica", m.parameterName); }
+  for (const m of METRICAS) if (!metricas.some((x) => x.parameterName === m.parameterName)) { await api("/customMetrics", { measurementUnit: "MILLISECONDS", ...m, scope: "EVENT" }); console.log("creada métrica", m.parameterName); }
   for (const d of DIMENSIONES) if (!dimensiones.some((x) => x.parameterName === d.parameterName)) { await api("/customDimensions", { ...d, scope: "EVENT" }); console.log("creada dimensión", d.parameterName); }
 }
 console.log("== Métricas personalizadas");

@@ -1,4 +1,5 @@
 import { onCLS, onFCP, onINP, onLCP, onTTFB } from "web-vitals/attribution";
+import { version } from "../package.json";
 
 // Manda las Core Web Vitals de cada visita a GA4 como eventos (LCP, INP, CLS, FCP, TTFB),
 // con la calificación y el elemento responsable para saber qué arreglar.
@@ -20,7 +21,17 @@ export const estilosYLayout = ({ longAnimationFrameEntries = [], interactionTime
   return total;
 };
 
-const send =({ name, value, delta, id, rating, navigationType, attribution = {} }) => {
+// Momento de la visita del peor toque: el tooltip del menú late de los 6,5 a los 60 s y el aviso de toque
+// está hasta el primer toque, así se puede ver si las animaciones empeoran el INP
+export const franja = (ms) => (ms < 6000 ? "0-6 s" : ms < 60000 ? "6-60 s" : ms < 300000 ? "1-5 min" : "5+ min");
+
+// Hardware para separar los Android baratos (deviceMemory solo existe en Chrome, redondeado: 0,5, 1, 2, 4, 8…)
+const dispositivo = () => ({
+  ram_gb: navigator.deviceMemory ? String(navigator.deviceMemory) : "sin dato",
+  nucleos: navigator.hardwareConcurrency ? String(navigator.hardwareConcurrency) : "sin dato",
+});
+
+const send = ({ name, value, delta, id, rating, navigationType, attribution = {} }) => {
   if (typeof window.gtag !== "function") return;
 
   const params = {
@@ -31,6 +42,10 @@ const send =({ name, value, delta, id, rating, navigationType, attribution = {} 
     metric_rating: rating,
     navigation_type: navigationType,
     non_interaction: true,
+    app_version: version,
+    // Grupo del A/B de animaciones; "ninguno" hasta que haya experimento
+    experimento: "ninguno",
+    ...dispositivo(),
   };
 
   if (name === "LCP") {
@@ -42,6 +57,10 @@ const send =({ name, value, delta, id, rating, navigationType, attribution = {} 
     params.inp_processing = Math.round(attribution.processingDuration || 0);
     params.inp_presentation = Math.round(attribution.presentationDelay || 0);
     params.load_state = attribution.loadState;
+    if (attribution.interactionTime >= 0) {
+      params.inp_franja = franja(attribution.interactionTime);
+      params.inp_desde_carga = Math.round(attribution.interactionTime);
+    }
     // Long Animation Frames (solo Chrome): qué script alargó el toque y en qué se fue el resto del frame,
     // para separar el dibujo propio de la publicidad
     const script = attribution.longestScript;
@@ -55,8 +74,10 @@ const send =({ name, value, delta, id, rating, navigationType, attribution = {} 
       params.inp_script = `${script.subpart}: ${origen} (${invokerType})`;
       params.inp_script_ms = Math.round(script.intersectingDuration);
     } else {
-      // Sin esto GA4 mezcla "no hubo script largo" con "el navegador no tiene LoAF" en (not set)
-      params.inp_script = attribution.longAnimationFrameEntries?.length ? "sin script largo" : "sin loaf";
+      // Tres casos distintos que, si no, GA4 junta en (not set): hubo frames largos sin script, el toque fue rápido
+      // (ningún frame pasó de 50 ms) o el navegador no tiene Long Animation Frames (Safari, Firefox)
+      params.inp_script = attribution.longAnimationFrameEntries?.length ? "sin script largo"
+        : PerformanceObserver.supportedEntryTypes?.includes("long-animation-frame") ? "sin frames largos" : "sin loaf";
     }
     if (attribution.longAnimationFrameEntries?.length) {
       const estilos = estilosYLayout(attribution);
