@@ -130,6 +130,25 @@ PR #7 (`perf/inp-dibujo`), mergeado el 25/10 ~18:40. **Verificado en producción
 - **La presentación de esta emulación no sirve para juzgar la GPU:** el trace muestra que la domina el compositor por software (`SoftwareRenderer::DoDrawQuad`, ~28 ms por frame), y un celular compone por GPU. El pintado propio del hilo principal es chico (<1 ms casi siempre, hasta ~18 ms con la CPU limitada). El tooltip del menú (latido infinito de 6,5 a 60 s) no repinta: corre en el compositor.
 - Para medir la GPU hace falta un **Android real**: `chrome://inspect` por USB y un trace mientras se toca.
 
+### Teléfonos reales (27/10)
+
+**Xiaomi 14T Pro** (Dimensity 9300+, Chrome 155), `adb` por USB con datos móviles (LTE) para que la publicidad corra sin el AdGuard de casa. 30 toques táctiles (`Input.synthesizeTapGesture`) cada 600 ms, con GA4 bloqueado para no mandar toques de prueba.
+
+| | Mediana | Peor | Espera | JS | Dibujo |
+|---|---|---|---|---|---|
+| Página de control (un botón y un número) | 56 ms | 72 | 17 | 0 | 39 |
+| Truqito, sin publicidad | 88 | 88–104 | 17–18 | ~1 | 66–67 |
+| Truqito, tablero sin gradientes ni animaciones | 88 | 88–104 | 19–20 | ~1 | 65 |
+| Truqito, con publicidad (2 corridas) | 88 | 88–104 | 17–19 | ~1 | 64–67 |
+
+- En un gama alta **no hay ningún toque lento**, con o sin publicidad. Prebid usa 49–117 ms de CPU por sesión, contra 0,3–1,7 s en la notebook frenada. Coincide con el 97 % de iPhone.
+- Truqito le suma ~30 ms de dibujo a la página de control, y **no son los gradientes ni las animaciones del SVG** (descartados en el teléfono y en la notebook). Sin investigar: puede ser la frecuencia de pantalla (120 contra 60 Hz). Es lo único propio que quedaría por mirar en un Android barato.
+- **No se puede frenar sin root:** en Android, DevTools ignora `setCPUThrottlingRate`, y HyperOS ignora `cmd power set-mode 1`. El 14T Pro corre JS más rápido que la notebook.
+- Cómo se hizo: las pestañas que abre CDP en Android quedan ocultas y no dibujan. Hay que abrirla con un intent (`am start -a android.intent.action.VIEW -d <url> -p com.android.chrome`) y conectarse al ws de esa pestaña. Hay que correr `toques-cdp` con `REAL=1 TARGET=<id>`; esa copia del script quedó en el scratchpad y no está en el repo. El DNS privado (`dns.google`) **deja el teléfono sin DNS** en la red de casa porque el router bloquea el 853: usar datos móviles.
+- Para el INP de Android barato hace falta **un gama baja reciente** (Android 12–13, Moto E o Galaxy A0x).
+
+**Moto G de 2013** (XT1032, Android 4.4.4, Chrome 81, el último para KitKat): Truqito **no anda**. Se ve, pero ningún botón ni el menú responden. `SyntaxError: Unexpected token '='` en `client.*.js`, `ClientRouter` y `reportWebVitals`: el bundle usa `??=` y `||=` (Chrome 85+), y las islas no hidratan. **Regresión de la 2.0.0:** la CRA compilaba con `browserslist >0.2%, not dead`, y Vite compila para navegadores modernos. Afecta a ~0,2–0,4 % de las sesiones (Samsung Internet <14 pasó de 13 sesiones por semana a 0). Arreglo propuesto (2.0.7): `vite.build.target` para Chrome 80 y Safari 14, verificado en el Moto G antes de publicar. Ese Chrome no tiene `interactionId`: esos teléfonos no reportan INP.
+
 ### Siguiente paso: desde el 29/10 ~22 h
 
 Son 48 h después de la 2.0.6. En GA4, filtrar `INP` con calificación mejorable o mala y **Sistema operativo = Android**. Abrir por `inp_script` y mirar `inp_style_layout`, `inp_paint` e `inp_unattributed`:
