@@ -1,6 +1,6 @@
 # Handoff: Truqito
 
-Actualizado: **2026-10-28, ~0 h**. Producción: **v2.0.7** (`master` = `4d3d1a7`, PR #11, publicada el 27/10 ~23:50), en https://truco.contelautaro.com.ar. Lo que sigue del INP está en la [sección 3](#3-inp-v205-y-v206).
+Actualizado: **2026-10-28, ~1 h**. Producción: **v2.0.8** (PR #12, publicada el 28/10 00:30). **Datos reales de la 2.0.8: primer vistazo el 29/10 desde las 22 h; confiables el 30/10 desde las 22 h** (sección 3), en https://truco.contelautaro.com.ar. Lo que sigue del INP está en la [sección 3](#3-inp-v205-y-v206).
 
 Este documento alcanza para retomar el trabajo. El detalle histórico está en los documentos de la [tabla del final](#documentos).
 
@@ -15,9 +15,10 @@ Este documento alcanza para retomar el trabajo. El detalle histórico está en l
 | 2.0.4 | 24/10 | `title="Publicidad"` en los iframes de Moneytizer (accesibilidad) |
 | 2.0.5 | 25/10 | INP: el formateador de la hora del historial se crea una vez (era ~800 ms el primer toque con CPU 15×). GA4 recibe el desglose de Long Animation Frames del INP |
 | 2.0.6 | 27/10 | Corrige ese desglose: `inp_style_layout` llegaba con valores imposibles por un error de `web-vitals` (sección 3). `inp_script` distingue `sin script largo` y `sin loaf`. No va en Novedades: los usuarios no ven nada |
-| 2.0.7 | 27/10 | Vuelve a andar en navegadores viejos (Chrome 81, Samsung Internet viejo): desde la 2.0.0 no hidrataba ninguna isla. `vite.build.target` para Chrome 80 y Safari 14, y `web-vitals` no corre sin `findLast`. Verificada en el Moto G y en producción con el túnel |
+| 2.0.8 | 28/10 00:30 | Más datos en GA4: `app_version`, `ram_gb`, `nucleos`, `experimento` (`ninguno`), `inp_franja`, `inp_desde_carga` y `metric_value`, todos registrados antes de publicar. `inp_script` separa `sin frames largos` de `sin loaf`. Validador `validar-vitals.mjs`. No va en Novedades |
+| 2.0.7 | 27/10 23:53 | Vuelve a andar en navegadores viejos (Chrome 81, Samsung Internet viejo): desde la 2.0.0 no hidrataba ninguna isla. `vite.build.target` para Chrome 80 y Safari 14, y `web-vitals` no corre sin `findLast`. Verificada en el Moto G y en producción con el túnel |
 
-Releases en GitHub: v2.0.0 a v2.0.5. **Faltan v2.0.6 y v2.0.7** (el auto mode lo bloquea, pendiente 9). `CHANGELOG.md` y Novedades (`src/components/Changelog.jsx`) están al día.
+Releases en GitHub: v2.0.0 a v2.0.5. **Faltan v2.0.6, v2.0.7 y v2.0.8** (el auto mode lo bloquea, pendiente 9). `CHANGELOG.md` y Novedades (`src/components/Changelog.jsx`) están al día.
 
 ## 2. Números de referencia (línea base)
 
@@ -184,6 +185,22 @@ Sin publicidad (Android 4.4 no la carga). Toques + y − alternados, trace de De
 - **Sacar las dos animaciones del toque baja ~50 ms (un tercio) y la GPU un 60 %.** Sacar una sola no alcanza. El "botón solo con `transform`" (candidato 1 de abajo) **no mejora: descartado.**
 - 24 toques por variante, un solo teléfono, sin publicidad y Chrome 81: marca la dirección, no decide el diseño. **Siguiente paso: A/B con usuarios reales** (el parámetro `experimento` ya está registrado): a la mitad de las visitas apagarles `buttonPress` y `matchPlace`, y comparar el INP de Android en GA4 a los 3 días. Si mejora, el dueño decide si se pierden esas animaciones o se hacen más livianas.
 
+### Listeners de entrada en producción (28/10, 2.0.8, publicidad real por a1)
+
+Idea del artículo de SpeedCurve sobre INP (los ejemplos de H&M y John Lewis): listeners de terceros que corren antes que el propio. Listados con `DOMDebugger.getEventListeners` en `window`, `document` y la cadena del botón +. Cada uno se midió con un trace de 20 toques táctiles con CPU ×4 (JS dentro de los `EventDispatch` del toque):
+
+| Script | Listeners | JS por toque (CPU ×4) |
+|---|---|---|
+| Propio (React en las islas, router de Astro, menú) | click, pointer*, mouse*, touch*, focusin, keydown | 5,1 ms (~1,3 ms en un celular normal) |
+| Google Analytics, medición mejorada | `click` y `auxclick` en `document`, `focus` en `window` | 0,18 ms |
+| Publicidad (Moneytizer, Prebid, Smart) | **ninguno** | 0 |
+
+- **Descartado:** los listeners no frenan el toque. La medición mejorada de GA4 (todas las opciones prendidas, `pageChanges` imprescindible por el `ClientRouter`) no hace falta tocarla.
+- La publicidad pesa por sus **tareas largas** (subasta y refresco), que demoran el toque, no por listeners.
+- Del mismo artículo, ya hecho o que no aplica: separar la analítica del handler, `yieldToMain`, no construir el menú con JS en cada toque, la navegación del toque ganador diferida (`Board.jsx:59`). Lo que queda por mirar: la tarea larga antes de `DOMContentLoaded` (~17 % de las visitas lentas de Android) y el resto de los elementos tocados (menú, modal de nombres con `backdrop-filter: blur`, toque ganador con `filter: brightness` animado) con `debug_target` de la 2.0.8.
+
+**Resumen de las causas del INP de Android:** (1) espera por las tareas largas de la subasta, (2) dibujo en GPUs débiles, con las animaciones del botón y del fósforo como parte propia (~50 ms en el Moto G), (3) **no** nuestro JS (1–2 ms por toque) ni los listeners.
+
 ### Candidatos para la 2.0.8 (sin publicar; decidir con GA4 del 29/10)
 
 1. **`buttonPress` solo con `transform`:** sacar `background-color` de los keyframes. No cambia nada a la vista, la animación pasa al compositor y deja de rasterizar en cada toque. Sin costo de diseño.
@@ -191,7 +208,17 @@ Sin publicidad (Android 4.4 no la carga). Toques + y − alternados, trace de De
 3. **`matchPlace` (fósforo que cae):** en SVG no se compone en GPU. Acortarlo o sacarlo cambia la sensación del toque: **decisión del dueño**.
 Medir antes y después en el Moto G, en reposo, con `final.sh`.
 
-### Siguiente paso: desde el 29/10 ~22 h
+### Siguiente paso: datos reales de la 2.0.8
+
+**Cuándo:** la 2.0.8 se publicó el 28/10 a las 00:30, y GA4 tarda 24–48 h en procesar los informes.
+- **29/10 desde las 22 h:** primer vistazo, con el 28/10 procesado. Alcanza para comprobar que llegan `app_version = 2.0.8`, `inp_franja`, `ram_gb` y `nucleos` con valores lógicos.
+- **30/10 desde las 22 h:** datos confiables, con dos días completos (28 y 29/10; ~1500 visitas de Android). Recién ahí sacar conclusiones.
+
+**Qué mirar** (filtro `app_version = 2.0.8`, Sistema operativo = Android, `INP`):
+1. % en verde por `inp_franja`: si `6-60 s` sale mucho peor que `1-5 min` o `5+ min`, pesa lo que pasa en el primer minuto (tooltip, publicidad que carga).
+2. % en verde por `ram_gb`: confirmar que el problema son los Android con poca RAM (1–4 GB).
+3. Visitas lentas por `inp_script` y `debug_target`, con `inp_style_layout`, `inp_paint` e `inp_unattributed` (ya sin el error de la 2.0.5).
+4. Con eso, decidir: A/B de las animaciones del toque (`experimento`), o pedido a Moneytizer.
 
 Son 48 h después de la 2.0.6. En GA4, filtrar `INP` con calificación mejorable o mala y **Sistema operativo = Android**. Abrir por `inp_script` y mirar `inp_style_layout`, `inp_paint` e `inp_unattributed`:
 - **`inp_paint` o `inp_style_layout` altos con poco script:** es el dibujo. Confirmarlo con un **Android real** por USB (`chrome://inspect`, trace mientras se toca): si lo que tarda es el SVG del tablero, simplificarlo (gradientes de las cabezas y la llama, animación `match-place` en SVG, que no se compone en GPU). Si es el iframe del anuncio, es tema de Moneytizer. Nuestro JS dura ~30 ms por toque: no es la prioridad.
@@ -210,8 +237,8 @@ Son 48 h después de la 2.0.6. En GA4, filtrar `INP` con calificación mejorable
 | 6 | **Publicidad diferida** (rama `release/2.0.1`, sobre la 2.0.0: carga los anuncios 2,5 s después del `load`) | **Sola no alcanza para el INP** (27/10): ~60 % de las visitas lentas de Android tienen su peor toque con la página ya cargada, cuando el anuncio rota y resubasta cada ~10 s durante toda la visita (~8 min). Diferir la primera carga solo ayuda a las que tocan durante la carga (~20 % de las lentas) y cuesta impresiones. Lo que movería el INP es **no subastar mientras se toca** (pausar el refresco unos segundos después de cada toque, o espaciarlo), y eso depende de lo que permita Moneytizer. Decidir con los datos del 29/10. Si se hace, hay que rehacerla sobre `master` | Dueño decide |
 | 7 | **Search Console:** solicitar indexación de `/` y `/guia-truco` (el contenido cambió) | Solo desde la web: Inspeccionar URL → Solicitar indexación. No hay API para páginas comunes | Dueño |
 | 8 | **CrUX History** (p75 semanal) | Sumar "Chrome UX Report API" a las restricciones de la clave en Google Cloud → Credenciales | Dueño |
-| 9 | **Releases `v2.0.6` y `v2.0.7`** | `for v in 2.0.6 2.0.7; do gh release create v$v --target master --title "Versión $v" --notes-file <(awk "/^## \\[$v\\]/{f=1;next} /^## \\[/{f=0} f" CHANGELOG.md); done` (el auto mode lo bloquea) | Dueño |
-| 10 | Limpieza | Borrar las ramas ya mergeadas (el auto mode lo bloquea): `R="docs/handoff docs/handoff-2.0.5 docs/handoff-2.0.6 feat/astro fix/compat-navegadores fix/inp-estilos fix/primer-dibujo fix/titulo-iframe-anuncio perf/inp-dibujo seo-tecnico"; git push origin --delete ${=R}; git branch -D ${=R}`. **No borrar `release/2.0.1`** (pendiente 6). En Vercel → Settings → General, cambiar Node.js de 20.x a 24.x (es solo para que no aparezca el aviso: `engines` ya fuerza 24.x) | Dueño |
+| 9 | **Releases `v2.0.6` y `v2.0.7`** | `for v in 2.0.6 2.0.7 2.0.8; do gh release create v$v --target master --title "Versión $v" --notes-file <(awk "/^## \\[$v\\]/{f=1;next} /^## \\[/{f=0} f" CHANGELOG.md); done` (el auto mode lo bloquea) | Dueño |
+| 10 | Limpieza | Borrar las ramas ya mergeadas (el auto mode lo bloquea): `R="docs/handoff docs/handoff-2.0.5 docs/handoff-2.0.6 feat/astro feat/ga4-medicion fix/compat-navegadores fix/inp-estilos fix/primer-dibujo fix/titulo-iframe-anuncio perf/inp-dibujo seo-tecnico"; git push origin --delete ${=R}; git branch -D ${=R}`. **No borrar `release/2.0.1`** (pendiente 6). En Vercel → Settings → General, cambiar Node.js de 20.x a 24.x (es solo para que no aparezca el aviso: `engines` ya fuerza 24.x) | Dueño |
 | 11 | Siguientes mejoras de SEO | B1: guía como "Tabla de valores del truco" (CTR 0,24 % sobre 120 mil impresiones). A7: alto reservado del anuncio en la guía (CLS 0,25). Páginas nuevas: reglas, señas, truco uruguayo, `/pt`. CI con e2e | Agente |
 
 ## 5. Cómo desplegar (decisión del dueño: desde la notebook, no con a1)
