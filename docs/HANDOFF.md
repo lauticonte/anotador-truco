@@ -220,10 +220,10 @@ Medir antes y después en el Moto G, en reposo, con `final.sh`.
 3. Visitas lentas por `inp_script` y `debug_target`, con `inp_style_layout`, `inp_paint` e `inp_unattributed` (ya sin el error de la 2.0.5).
 4. Con eso, decidir: A/B de las animaciones del toque (`experimento`), o pedido a Moneytizer.
 
-Son 48 h después de la 2.0.6. En GA4, filtrar `INP` con calificación mejorable o mala y **Sistema operativo = Android**. Abrir por `inp_script` y mirar `inp_style_layout`, `inp_paint` e `inp_unattributed`:
-- **`inp_paint` o `inp_style_layout` altos con poco script:** es el dibujo. Confirmarlo con un **Android real** por USB (`chrome://inspect`, trace mientras se toca): si lo que tarda es el SVG del tablero, simplificarlo (gradientes de las cabezas y la llama, animación `match-place` en SVG, que no se compone en GPU). Si es el iframe del anuncio, es tema de Moneytizer. Nuestro JS dura ~30 ms por toque: no es la prioridad.
-- **`input-delay` con un dominio de publicidad**, o `sin script largo` con `inp_unattributed` alto: es la subasta. Lo que sirve es pausar o espaciar el refresco mientras se toca (ver la pregunta de la publicidad diferida, pendiente 6). Es decisión del dueño, por ingresos.
-- **`sin loaf`** en Android sería raro: Chrome tiene LoAF desde la 123.
+Cómo leer `inp_script` en las visitas lentas:
+- **`inp_paint` o `inp_style_layout` altos con poco script:** es el dibujo. En el Moto G, lo propio son las animaciones del botón y del fósforo; el resto puede ser el iframe del anuncio.
+- **`input-delay` con un dominio de publicidad**, o `sin script largo` con `inp_unattributed` alto: es la subasta. Lo que sirve es pausar o espaciar el refresco mientras se toca (pendiente 6). Es decisión del dueño, por ingresos.
+- **`sin frames largos`:** toque rápido (ningún frame pasó de 50 ms). **`sin loaf`** en Android sería raro: Chrome tiene LoAF desde la 123.
 
 ## 4. Pendientes, por prioridad
 
