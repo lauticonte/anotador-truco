@@ -1,6 +1,6 @@
 # Handoff: Truqito
 
-Actualizado: **2026-10-27, ~22 h**. Producción: **v2.0.6** (`master` = `bc59d12`, PR #9, publicada el 27/10 ~21:40), en https://truco.contelautaro.com.ar. Lo que sigue del INP está en la [sección 3](#3-inp-v205-y-v206).
+Actualizado: **2026-10-28, ~0 h**. Producción: **v2.0.7** (`master` = `4d3d1a7`, PR #11, publicada el 27/10 ~23:50), en https://truco.contelautaro.com.ar. Lo que sigue del INP está en la [sección 3](#3-inp-v205-y-v206).
 
 Este documento alcanza para retomar el trabajo. El detalle histórico está en los documentos de la [tabla del final](#documentos).
 
@@ -15,8 +15,9 @@ Este documento alcanza para retomar el trabajo. El detalle histórico está en l
 | 2.0.4 | 24/10 | `title="Publicidad"` en los iframes de Moneytizer (accesibilidad) |
 | 2.0.5 | 25/10 | INP: el formateador de la hora del historial se crea una vez (era ~800 ms el primer toque con CPU 15×). GA4 recibe el desglose de Long Animation Frames del INP |
 | 2.0.6 | 27/10 | Corrige ese desglose: `inp_style_layout` llegaba con valores imposibles por un error de `web-vitals` (sección 3). `inp_script` distingue `sin script largo` y `sin loaf`. No va en Novedades: los usuarios no ven nada |
+| 2.0.7 | 27/10 | Vuelve a andar en navegadores viejos (Chrome 81, Samsung Internet viejo): desde la 2.0.0 no hidrataba ninguna isla. `vite.build.target` para Chrome 80 y Safari 14, y `web-vitals` no corre sin `findLast`. Verificada en el Moto G y en producción con el túnel |
 
-Releases en GitHub: v2.0.0 a v2.0.5. **Falta el de v2.0.6** (el auto mode lo bloquea, pendiente 9). `CHANGELOG.md` y Novedades (`src/components/Changelog.jsx`) están al día.
+Releases en GitHub: v2.0.0 a v2.0.5. **Faltan v2.0.6 y v2.0.7** (el auto mode lo bloquea, pendiente 9). `CHANGELOG.md` y Novedades (`src/components/Changelog.jsx`) están al día.
 
 ## 2. Números de referencia (línea base)
 
@@ -147,7 +148,31 @@ PR #7 (`perf/inp-dibujo`), mergeado el 25/10 ~18:40. **Verificado en producción
 - Cómo se hizo: las pestañas que abre CDP en Android quedan ocultas y no dibujan. Hay que abrirla con un intent (`am start -a android.intent.action.VIEW -d <url> -p com.android.chrome`) y conectarse al ws de esa pestaña. Hay que correr `toques-cdp` con `REAL=1 TARGET=<id>`; esa copia del script quedó en el scratchpad y no está en el repo. El DNS privado (`dns.google`) **deja el teléfono sin DNS** en la red de casa porque el router bloquea el 853: usar datos móviles.
 - Para el INP de Android barato hace falta **un gama baja reciente** (Android 12–13, Moto E o Galaxy A0x).
 
-**Moto G de 2013** (XT1032, Android 4.4.4, Chrome 81, el último para KitKat): Truqito **no anda**. Se ve, pero ningún botón ni el menú responden. `SyntaxError: Unexpected token '='` en `client.*.js`, `ClientRouter` y `reportWebVitals`: el bundle usa `??=` y `||=` (Chrome 85+), y las islas no hidratan. **Regresión de la 2.0.0:** la CRA compilaba con `browserslist >0.2%, not dead`, y Vite compila para navegadores modernos. Afecta a ~0,2–0,4 % de las sesiones (Samsung Internet <14 pasó de 13 sesiones por semana a 0). Arreglo propuesto (2.0.7): `vite.build.target` para Chrome 80 y Safari 14, verificado en el Moto G antes de publicar. Ese Chrome no tiene `interactionId`: esos teléfonos no reportan INP.
+**Moto G de 2013** (XT1032, Android 4.4.4, Chrome 81, el último para KitKat): Truqito **no anda**. Se ve, pero ningún botón ni el menú responden. `SyntaxError: Unexpected token '='` en `client.*.js`, `ClientRouter` y `reportWebVitals`: el bundle usa `??=` y `||=` (Chrome 85+), y las islas no hidratan. **Regresión de la 2.0.0:** la CRA compilaba con `browserslist >0.2%, not dead`, y Vite compila para navegadores modernos. Afecta a ~0,2–0,4 % de las sesiones (Samsung Internet <14 pasó de 13 sesiones por semana a 0). **Arreglado en la 2.0.7** y verificado en el Moto G (preview y producción): las islas hidratan, los botones suman y el menú abre arriba. `web-vitals` usa `at` y `findLast` (Chrome 92–97), que el target no agrega: no se mide en esos navegadores. Igual no tienen `interactionId` y no reportan INP. En Android 4.4 tampoco carga la publicidad: sus certificados raíz son viejos y casi todos los servidores de anuncios dan `ERR_CERT_AUTHORITY_INVALID`.
+
+**Moto G como teléfono lento** (sin publicidad, trace de DevTools: `InputLatency::MouseUp`, del input del sistema hasta que el frame se muestra; Event Timing no existe en Chrome 81):
+
+| Estado | Variante | Mediana | Peor | Lentos | GPU por toque |
+|---|---|---|---|---|---|
+| Partida avanzada, sin animaciones infinitas | normal | 186–215 ms | 311–462 | 11/20 | ~290–350 ms (raster ~170–260) |
+| Pasado el primer minuto, después de reiniciar | normal | 151 | 621 | 3/20 | 207 (raster 145), 9,8 frames por toque |
+| Primer minuto (late el tooltip del menú; ~55 fps constantes) | normal | 117–121 | 160–185 | 0/20 | ~665 cada 0,9 s |
+| Primer minuto | **sin animaciones del botón y el fósforo** | **83** | 137 | 0/20 | 583 |
+| Primer minuto | sin gradientes | 123 | 163 | 0/20 | 662 |
+| Primer minuto | sin las dos | 91 | 149 | 0/20 | 602 |
+
+- **En un teléfono débil, el costo es de la GPU (raster), no del JS.** El hilo principal entrega el frame en ~90 ms (toque → `requestAnimationFrame` + `setTimeout`), y la GPU tarda otro tanto en pintarlo.
+- **Las animaciones cuestan ~35 ms por toque; los gradientes, nada.** `buttonPress` (`Counter.css:56`) anima `transform` **y `background-color`** (el mismo `#2d4263` del botón): con un color en los keyframes no se compone en GPU y se rasteriza cada frame. `matchPlace` anima `<use>` dentro del SVG, que Chrome no compone en GPU.
+- **Mientras late el tooltip del menú** (`tooltipPulse` infinito, de 6,5 a 60 s de cada visita), el teléfono redibuja ~55 veces por segundo, con la GPU ~70 % ocupada. Lo mismo pasa con el aviso "Tocá para sumar" (`ghostPulse` y `tapRipple`, infinitos dentro del SVG, en las primeras 10 visitas hasta el primer toque). Con la GPU ocupada los toques salieron más rápidos: sospecha de DVFS (frecuencia de la GPU), no está medido. El caso que importa es el de reposo.
+- **Quedó sin medir:** separar `buttonPress` solo `transform` contra `matchPlace` apagado, en reposo. La corrida se cortó por el checkpoint de Vercel (abajo). Para repetirla, el script quedó en `final.sh` del scratchpad: una sola carga, variantes por CSS inyectado, + y − alternados.
+- **Vercel Security Checkpoint (código 99):** tantas recargas automatizadas desde la misma IP dispararon la mitigación automática de DDoS de Vercel (12 desafíos a las 23 h del 27/10, todos nuestros; `vercel firewall overview`). Chrome 81 no puede resolver el desafío, así que el Moto G quedó bloqueado más de 5 minutos. Bot Protection y Attack Mode están apagados: a los usuarios no les pasó. **Para medir: una sola carga y variantes sin recargar.**
+
+### Candidatos para la 2.0.8 (sin publicar; decidir con GA4 del 29/10)
+
+1. **`buttonPress` solo con `transform`:** sacar `background-color` de los keyframes. No cambia nada a la vista, la animación pasa al compositor y deja de rasterizar en cada toque. Sin costo de diseño.
+2. **`tooltipPulse` con fin:** que lata 2 o 3 veces y pare, en vez de `infinite`. Ahorra ~54 s de GPU ocupada por visita en teléfonos débiles. Mismo criterio para `ghostPulse` y `tapRipple` del aviso de toque.
+3. **`matchPlace` (fósforo que cae):** en SVG no se compone en GPU. Acortarlo o sacarlo cambia la sensación del toque: **decisión del dueño**.
+Medir antes y después en el Moto G, en reposo, con `final.sh`.
 
 ### Siguiente paso: desde el 29/10 ~22 h
 
@@ -168,8 +193,8 @@ Son 48 h después de la 2.0.6. En GA4, filtrar `INP` con calificación mejorable
 | 6 | **Publicidad diferida** (rama `release/2.0.1`, sobre la 2.0.0: carga los anuncios 2,5 s después del `load`) | **Sola no alcanza para el INP** (27/10): ~60 % de las visitas lentas de Android tienen su peor toque con la página ya cargada, cuando el anuncio rota y resubasta cada ~10 s durante toda la visita (~8 min). Diferir la primera carga solo ayuda a las que tocan durante la carga (~20 % de las lentas) y cuesta impresiones. Lo que movería el INP es **no subastar mientras se toca** (pausar el refresco unos segundos después de cada toque, o espaciarlo), y eso depende de lo que permita Moneytizer. Decidir con los datos del 29/10. Si se hace, hay que rehacerla sobre `master` | Dueño decide |
 | 7 | **Search Console:** solicitar indexación de `/` y `/guia-truco` (el contenido cambió) | Solo desde la web: Inspeccionar URL → Solicitar indexación. No hay API para páginas comunes | Dueño |
 | 8 | **CrUX History** (p75 semanal) | Sumar "Chrome UX Report API" a las restricciones de la clave en Google Cloud → Credenciales | Dueño |
-| 9 | **Release `v2.0.6`** | `gh release create v2.0.6 --target master --title "Versión 2.0.6" --notes-file <(awk '/^## \[2.0.6\]/{f=1;next} /^## \[/{f=0} f' CHANGELOG.md)` (el auto mode lo bloquea) | Dueño |
-| 10 | Limpieza | Borrar las ramas ya mergeadas (el auto mode lo bloquea): `R="docs/handoff docs/handoff-2.0.5 docs/handoff-2.0.6 feat/astro fix/inp-estilos fix/primer-dibujo fix/titulo-iframe-anuncio perf/inp-dibujo seo-tecnico"; git push origin --delete ${=R}; git branch -D ${=R}`. **No borrar `release/2.0.1`** (pendiente 6). En Vercel → Settings → General, cambiar Node.js de 20.x a 24.x (es solo para que no aparezca el aviso: `engines` ya fuerza 24.x) | Dueño |
+| 9 | **Releases `v2.0.6` y `v2.0.7`** | `for v in 2.0.6 2.0.7; do gh release create v$v --target master --title "Versión $v" --notes-file <(awk "/^## \\[$v\\]/{f=1;next} /^## \\[/{f=0} f" CHANGELOG.md); done` (el auto mode lo bloquea) | Dueño |
+| 10 | Limpieza | Borrar las ramas ya mergeadas (el auto mode lo bloquea): `R="docs/handoff docs/handoff-2.0.5 docs/handoff-2.0.6 feat/astro fix/compat-navegadores fix/inp-estilos fix/primer-dibujo fix/titulo-iframe-anuncio perf/inp-dibujo seo-tecnico"; git push origin --delete ${=R}; git branch -D ${=R}`. **No borrar `release/2.0.1`** (pendiente 6). En Vercel → Settings → General, cambiar Node.js de 20.x a 24.x (es solo para que no aparezca el aviso: `engines` ya fuerza 24.x) | Dueño |
 | 11 | Siguientes mejoras de SEO | B1: guía como "Tabla de valores del truco" (CTR 0,24 % sobre 120 mil impresiones). A7: alto reservado del anuncio en la guía (CLS 0,25). Páginas nuevas: reglas, señas, truco uruguayo, `/pt`. CI con e2e | Agente |
 
 ## 5. Cómo desplegar (decisión del dueño: desde la notebook, no con a1)
