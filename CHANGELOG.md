@@ -2,6 +2,18 @@
 
 Todas las versiones de Truqito. Sigue [Semantic Versioning](https://semver.org/). Lo que ven los usuarios está en **Novedades** dentro de la app (`src/components/Changelog.jsx`).
 
+## [2.0.8] - 2026-10-28
+
+### Para los usuarios
+- Nada visible: más datos de velocidad en Analytics para encontrar qué frena a los celulares lentos. No va en Novedades.
+
+### Técnico
+- Cada web vital manda `app_version` (para separar versiones sin cortar por hora), `ram_gb` y `nucleos` (`navigator.deviceMemory` y `hardwareConcurrency`, para separar los Android baratos) y `experimento` (`ninguno` hasta el A/B de animaciones; se registra antes porque GA4 no guarda los parámetros previos a registrarlos).
+- El INP manda `inp_franja` (`0-6 s`, `6-60 s` con el tooltip del menú latiendo, `1-5 min`, `5+ min`) e `inp_desde_carga` (ms): en qué momento de la visita fue el peor toque.
+- `inp_script` separa `sin frames largos` (toque rápido: ningún frame pasó de 50 ms) de `sin loaf` (el navegador no tiene Long Animation Frames). En la 2.0.6 y la 2.0.7 los dos casos salían como `sin loaf`.
+- GA4: registradas las dimensiones `inp_franja`, `app_version`, `ram_gb`, `nucleos`, `experimento` y `navigation_type`, y las métricas `inp_desde_carga` y `metric_value` (el valor real de cada métrica; hasta ahora solo estaba la suma de `delta`).
+- `scripts/medicion/validar-vitals.mjs`: valida en Chrome real lo que se mandaría a GA4 (toques normales, sobre tareas largas que no dibujan y con handler lento; con `DIST`, en el dominio real con publicidad). Comprueba tipos, rangos y que las fases sumen el INP. Detecta el error de la 2.0.5 si se lo vuelve a meter.
+
 ## [2.0.7] - 2026-10-28
 
 ### Para los usuarios
